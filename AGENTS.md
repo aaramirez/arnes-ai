@@ -1,8 +1,31 @@
 # harness-ai
 
-This repository manages reference repositories for AI agent workflows using the `getrepo` and `updaterepos` commands.
+## Purpose
 
-Reference repositories are declared in `repos.json` (project root) and cloned under `repos/` (gitignored). They are read-only sources of patterns, scripts, and examples.
+`harness-ai` is a **study repository** about building **AI agent harnesses**. It serves as a living reference — an Obsidian vault in `docs/` — for anyone interested in learning how a harness works and how to build one.
+
+Study topics covered include: components, architectures, relationships between components, implementation details, comparisons, design guidelines, and design decisions.
+
+## How study material is gathered
+
+Five reference repositories are curated as read-only sources of patterns and implementation detail:
+
+| Repo | Purpose |
+| --- | --- |
+| `codeaashu/claude-code` | Claude Code setup and usage resources |
+| `openai/codex` | OpenAI Codex CLI |
+| `anomalyco/opencode` | opencode CLI — configuration and workflows |
+| `earendil-works/pi` | Agent tooling reference |
+| `betta-tech/byo-coding-agent` | Reference for building custom coding agents and tooling |
+
+- `repos.json` is the manifest of these reference repos (name, url, optional description).
+- Clones live under `repos/` (gitignored). They are **reference material only — never modify files inside `repos/` directly**; consult them for inspiration and patterns.
+
+## The vault
+
+- `docs/` is an Obsidian vault holding study notes and analysis (architecture, components, guidelines, decisions, comparisons).
+- Notes should link to each other with Obsidian wikilinks (`[[...]]`) and cite the reference repos when they describe patterns drawn from them.
+- The vault entry point is `docs/Home.md`.
 
 ## Available commands
 

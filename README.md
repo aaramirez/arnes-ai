@@ -1,33 +1,31 @@
 # harness-ai
 
-Repo management tooling for opencode: add and sync GitHub reference repositories.
+Study repository about building **AI agent harnesses**. `docs/` is an Obsidian vault that serves as a living reference for anyone interested in learning how a harness works and how to build one — covering components, architectures, relationships, implementation details, comparisons, design guidelines, and design decisions.
 
-## Usage
+## The vault
 
-Use the slash commands in opencode:
+Open `docs/` as an Obsidian vault. Start at [[Home]] (entry point).
 
-- **`/getrepo <org/repo>`** — adds the repository to `repos.json` and clones it to `repos/`.
-  Supports `https://github.com/org/repo` and `org/repo` formats. Use `--description "text"` for a description.
+## How study material is gathered
 
+Four reference repositories are curated as read-only sources of patterns:
+
+- `codeaashu/claude-code` — Claude Code setup and usage resources
+- `openai/codex` — OpenAI Codex CLI
+- `anomalyco/opencode` — opencode CLI configuration and workflows
+- `earendil-works/pi` — agent tooling reference
+- `betta-tech/byo-coding-agent` — building custom coding agents and tooling
+
+They are declared in `repos.json` and cloned under `repos/` (gitignored) — never modify them directly; consult them for inspiration and cite them in notes.
+
+## Repo management
+
+Use the slash commands:
+
+- **`/getrepo <org/repo>`** — adds the repository to `repos.json` and clones it to `repos/`. Supports `https://github.com/org/repo` and `org/repo` formats. Use `--description "text"` for a description.
 - **`/updaterepos`** — pulls latest changes for all cloned reference repos. Update a single repo with `/updaterepos org/repo`.
 
-## Configuration
-
-Repos are declared in `repos.json` at the project root:
-
-```json
-[
-  {
-    "name": "anthropics/skills",
-    "url": "https://github.com/anthropics/skills.git",
-    "description": "Anthropic official example skills"
-  }
-]
-```
-
-Clones live under `repos/<org>/<repo>/` and are gitignored — never modify them directly.
-
-## CLI scripts
+### CLI scripts
 
 ```bash
 node .opencode/scripts/getrepo.js https://github.com/anthropics/skills

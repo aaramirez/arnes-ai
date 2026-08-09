@@ -4,9 +4,9 @@
   "description": "Repo management tooling for opencode harnesses",
   "type": "module",
   "scripts": {
-    "test": "node --test"
+    "test": "node --test \"tests/*.test.js\" \"harness-ts/test/*.test.js\""
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=23.6"
   }
 }

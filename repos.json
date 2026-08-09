@@ -1,63 +1,27 @@
 [
   {
-    "name": "anthropics/skills",
-    "url": "https://github.com/anthropics/skills.git",
-    "description": "Anthropic official example skills — reference for SKILL.md format, patterns, MCP servers"
+    "name": "codeaashu/claude-code",
+    "url": "https://github.com/codeaashu/claude-code.git",
+    "description": "Claude Code setup and usage resources — reference for Claude Code workflows"
   },
   {
-    "name": "Gentleman-Programming/gentle-ai",
-    "url": "https://github.com/Gentleman-Programming/gentle-ai.git",
-    "description": "Gentle AI development tools and patterns — reference for AI-assisted coding workflows"
+    "name": "openai/codex",
+    "url": "https://github.com/openai/codex.git",
+    "description": "OpenAI Codex CLI — reference for agentic coding CLI patterns"
   },
   {
-    "name": "GrupoConex/gda-ai",
-    "url": "https://github.com/GrupoConex/gda-ai.git",
-    "description": "GDA AI — reference for AI development workflows and patterns"
+    "name": "anomalyco/opencode",
+    "url": "https://github.com/anomalyco/opencode.git",
+    "description": "opencode CLI — reference for opencode configuration and workflows"
+  },
+  {
+    "name": "earendil-works/pi",
+    "url": "https://github.com/earendil-works/pi.git",
+    "description": "pi — reference for agent tooling"
   },
   {
     "name": "betta-tech/byo-coding-agent",
     "url": "https://github.com/betta-tech/byo-coding-agent.git",
     "description": "BYO Coding Agent — reference for building custom coding agents and tooling"
-  },
-  {
-    "name": "anthropics/claude-quickstarts",
-    "url": "https://github.com/anthropics/claude-quickstarts.git",
-    "description": "Anthropic Claude quickstart templates — reference for MCP, agents, and API integration patterns"
-  },
-  {
-    "name": "agentskills/agentskills",
-    "url": "https://github.com/agentskills/agentskills.git"
-  },
-  {
-    "name": "anthropics/claude-plugins-official",
-    "url": "https://github.com/anthropics/claude-plugins-official.git"
-  },
-  {
-    "name": "anthropics/claude-code",
-    "url": "https://github.com/anthropics/claude-code.git"
-  },
-  {
-    "name": "affaan-m/ecc",
-    "url": "https://github.com/affaan-m/ecc.git"
-  },
-  {
-    "name": "aaramirez/ia-en-la-empresa",
-    "url": "https://github.com/aaramirez/ia-en-la-empresa.git",
-    "description": "IA en la Empresa — reference for AI implementation in enterprise environments"
-  },
-  {
-    "name": "GrupoConex/corpfibex-kb",
-    "url": "https://github.com/GrupoConex/corpfibex-kb.git",
-    "description": "Corporación Fibex Telecom - Base de conocimiento corporativo (gobierno, estrategia, comités)"
-  },
-  {
-    "name": "GrupoConex/gda-kb",
-    "url": "https://github.com/GrupoConex/gda-kb.git",
-    "description": "GDA Knowledge Base - Base de conocimiento operativa (arquitectura, procesos, cobranza)"
-  },
-  {
-    "name": "aaramirez/kb",
-    "url": "https://github.com/aaramirez/kb.git",
-    "description": "KB personal - Base de conocimiento pessoale"
   }
 ]
