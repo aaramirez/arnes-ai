@@ -1,0 +1,9 @@
+node_modules/
+.opencode/node_modules/
+.env
+dist/
+*.log
+.DS_Store
+repos/
+generated/
+docs/

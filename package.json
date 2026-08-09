@@ -1,0 +1,12 @@
+{
+  "name": "harness-ai",
+  "version": "1.0.0",
+  "description": "Repo management tooling for opencode harnesses",
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

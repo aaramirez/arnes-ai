@@ -1,0 +1,17 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "command": {
+    "getrepo": {
+      "description": "Add a GitHub repository to repos.json and clone it to repos/",
+      "template": "Add a reference repository by URL. Parse the repository URL from: $ARGUMENTS. Run node .opencode/scripts/getrepo.js <url> to add it to repos.json and clone it. Report the result: which entry was added, where it was cloned. Supports formats: https://github.com/org/repo, org/repo. Use --description \"text\" to add a description."
+    },
+    "updaterepos": {
+      "description": "Pull latest changes for all reference repositories in repos/",
+      "template": "Update all cloned reference repositories. Run node .opencode/scripts/updaterepos.js to pull latest changes. Report the results: how many updated, up to date, or failed. To update a specific repo: node .opencode/scripts/updaterepos.js org/repo"
+    }
+  },
+  "default_agent": "build",
+  "instructions": [
+    "AGENTS.md"
+  ]
+}
