@@ -1,3 +1,11 @@
+---
+title: Arquitectura de un Agent Harness inspirado en Pi
+type: note
+tags:
+  - arquitectura
+  - pi
+---
+
 # Arquitectura de un Agent Harness inspirado en Pi
 
 ## 1. Propósito

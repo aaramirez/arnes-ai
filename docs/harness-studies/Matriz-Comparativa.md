@@ -1,3 +1,11 @@
+---
+title: Matriz Comparativa
+type: framework
+tags:
+  - framework
+  - matriz
+---
+
 # Matriz Comparativa
 
 Comparación "peras con peras" de los harnesses de referencia. **Una fila por dimensión** ([[Criterio-de-Evaluacion]]) y **una columna por harness** de `repos.json`. Cada celda resume el hallazgo del estudio correspondiente (o el marcador ✔ / ◐ / ✖ / n/a); las celdas `—` se completan al publicarse cada estudio.

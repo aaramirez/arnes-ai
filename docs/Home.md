@@ -1,3 +1,10 @@
+---
+title: Home
+tags:
+  - vault
+  - index
+---
+
 # Home
 
 Bienvenido al vault de estudio de **arnes-ai** — un repositorio de estudio sobre cómo funcionan y cómo se construyen los **AI agent harnesses**.

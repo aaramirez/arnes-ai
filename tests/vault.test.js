@@ -62,7 +62,50 @@ function firstTable(content) {
   return rows;
 }
 
+function frontmatter(content) {
+  if (!/^---\r?\n/.test(content)) return null;
+  const end = content.indexOf('\n---');
+  if (end === -1) return null;
+  return content.slice(4, end);
+}
+
+function hasFrontmatterKeys(file, keys) {
+  const fm = frontmatter(read(file));
+  if (fm === null) return false;
+  return keys.every(k => new RegExp(`^${k}:`, 'm').test(fm));
+}
+
+function markdownFiles(dir) {
+  const out = [];
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    if (entry.name === '.obsidian') continue;
+    const full = join(dir, entry.name);
+    if (entry.isDirectory()) out.push(...markdownFiles(full));
+    else if (entry.name.endsWith('.md')) out.push(full);
+  }
+  return out;
+}
+
+const FRAMEWORK_KEYS = ['title', 'type', 'tags'];
+const STUDY_KEYS = ['title', 'type', 'repo', 'categoría', 'lenguaje', 'estado', 'fecha'];
+
 describe('vault structure', () => {
+  it('every vault note opens with YAML frontmatter', () => {
+    const files = markdownFiles(DOCS);
+    assert.ok(files.length > 0, 'docs/ should contain markdown notes');
+    for (const file of files) {
+      assert.ok(hasFrontmatterKeys(file, ['title']), `${file} should start with --- frontmatter`);
+    }
+  });
+
+  it('framework docs declare title, type and tags', () => {
+    for (const file of [CRITERIO, PLANTILLA, MATRIZ]) {
+      for (const key of FRAMEWORK_KEYS) {
+        assert.ok(hasFrontmatterKeys(file, [key]), `${file} frontmatter should have "${key}"`);
+      }
+    }
+  });
+
   it('docs/Home.md exists and links to the study framework', () => {
     assert.ok(existsSync(HOME), 'docs/Home.md should exist');
     const content = read(HOME);
@@ -122,6 +165,17 @@ describe('harness study notes', () => {
       const headers = h2Headers(read(join(STUDIES_DIR, file)));
       for (const section of REQUIRED_SECTIONS) {
         assert.ok(headers.includes(section), `${file} should have section "${section}"`);
+      }
+    }
+  });
+
+  it('every study note declares the frontmatter fields', () => {
+    if (!existsSync(STUDIES_DIR)) return;
+    const notes = readdirSync(STUDIES_DIR)
+      .filter(f => f.endsWith('.md') && !FRAMEWORK_FILES.has(f));
+    for (const file of notes) {
+      for (const key of STUDY_KEYS) {
+        assert.ok(hasFrontmatterKeys(join(STUDIES_DIR, file), [key]), `${file} frontmatter should have "${key}"`);
       }
     }
   });

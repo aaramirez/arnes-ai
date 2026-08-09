@@ -1,3 +1,11 @@
+---
+title: Criterio de Evaluación de Harnesses
+type: framework
+tags:
+  - framework
+  - criterio
+---
+
 # Criterio de Evaluación de Harnesses
 
 Marco de estudio **homogéneo** para analizar los harnesses de referencia uno por uno y compararlos "peras con peras". Este documento es la **única fuente de las dimensiones y preguntas** — la [[Plantilla-Estudio-Harness]] no repite las guías, solo estructura las respuestas.

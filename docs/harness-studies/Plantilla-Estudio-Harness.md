@@ -1,10 +1,18 @@
+---
+title: Plantilla de Estudio de Harness
+type: template
+tags:
+  - framework
+  - plantilla
+---
+
 # Plantilla de Estudio de Harness
 
 Plantilla **homogénea** para todo estudio de harness. Cada nota de estudio debe:
 
 - usar exactamente las secciones `##` listadas abajo (en este orden);
 - en cada sección responder con **Hallazgo** (qué hace, cómo) + **Evidencia** citando el repositorio de referencia (`repos/<org>/<repo>/<path>:<line>`);
-- abrir con una **tabla resumen** dimensión → estado (✔ / ◐ / ✖ / n/a) que alimenta la [[Matriz-Comparativa]];
+- abrir con **frontmatter YAML** y una **tabla resumen** dimensión → estado (✔ / ◐ / ✖ / n/a) que alimenta la [[Matriz-Comparativa]];
 - cerrar con el wikilink `[[Matriz-Comparativa]]`.
 
 Las preguntas guía de cada dimensión están en [[Criterio-de-Evaluacion]] — aquí no se repiten, solo se estructura la respuesta.
@@ -12,6 +20,16 @@ Las preguntas guía de cada dimensión están en [[Criterio-de-Evaluacion]] — 
 ## Formato de apertura
 
 ```markdown
+---
+title: <Nombre del harness>
+type: estudio
+repo: <org/repo>
+categoría: <harness completo | CLI | librería | recursos/workflows>
+lenguaje: <...>
+estado: <en-progreso | publicado>
+fecha: <AAAA-MM-DD>
+---
+
 # <Nombre del harness>
 
 [[Criterio-de-Evaluacion]] · [[Matriz-Comparativa]]
