@@ -1,8 +1,8 @@
-# harness-ai
+# arnes-ai
 
 ## Purpose
 
-`harness-ai` is a **study repository** about building **AI agent harnesses**. It serves as a living reference — an Obsidian vault in `docs/` — for anyone interested in learning how a harness works and how to build one.
+`arnes-ai` is a **study repository** about building **AI agent harnesses**. It serves as a living reference — an Obsidian vault in `docs/` — for anyone interested in learning how a harness works and how to build one.
 
 Study topics covered include: components, architectures, relationships between components, implementation details, comparisons, design guidelines, and design decisions.
 
@@ -26,6 +26,18 @@ Five reference repositories are curated as read-only sources of patterns and imp
 - `docs/` is an Obsidian vault holding study notes and analysis (architecture, components, guidelines, decisions, comparisons).
 - Notes should link to each other with Obsidian wikilinks (`[[...]]`) and cite the reference repos when they describe patterns drawn from them.
 - The vault entry point is `docs/Home.md`.
+
+## Harness Study Framework
+
+When studying a reference harness, follow the homogeneous framework in `docs/harness-studies/`:
+
+- [[Criterio-de-Evaluacion]] — the 16 study dimensions (5 blocks), the observation scale (✔/◐/✖/n/a), repo classification, and study order. Single source of criteria — do not duplicate the dimension guides.
+- [[Plantilla-Estudio-Harness]] — the fixed section layout every study note must follow verbatim (sections 0–15, `##` headers, same order). Each section = **Hallazgo** + **Evidencia** citing `repos/<org>/<repo>/<path>:<line>`.
+- [[Matriz-Comparativa]] — one row per dimension, one column per repo in `repos.json`; update the relevant cell when a study lands.
+
+Rules:
+- Study notes live in `docs/harness-studies/<slug>.md` and must pass the structural test `tests/vault.test.js`.
+- The rubric is descriptive (markers, not scores). Never modify files inside `repos/` — cite them only.
 
 ## Available commands
 

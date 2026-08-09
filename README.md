@@ -1,10 +1,18 @@
-# harness-ai
+# arnes-ai
 
 Study repository about building **AI agent harnesses**. `docs/` is an Obsidian vault that serves as a living reference for anyone interested in learning how a harness works and how to build one — covering components, architectures, relationships, implementation details, comparisons, design guidelines, and design decisions.
 
 ## The vault
 
 Open `docs/` as an Obsidian vault. Start at [[Home]] (entry point).
+
+The study framework lives in `docs/harness-studies/`:
+
+- **Criterio-de-Evaluacion** — the 16 dimensions (5 blocks) used to study every harness, the ✔/◐/✖/n/a observation scale, repo classification, and study order
+- **Plantilla-Estudio-Harness** — the fixed template (sections 0–15) every harness study follows
+- **Matriz-Comparativa** — the "apples to apples" comparison table: one row per dimension, one column per reference repo
+
+Harness studies are done one at a time, in the order defined in the Criterio; each must pass the structural test in `tests/vault.test.js`.
 
 ## How study material is gathered
 

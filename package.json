@@ -1,10 +1,10 @@
 {
-  "name": "harness-ai",
+  "name": "arnes-ai",
   "version": "1.0.0",
   "description": "Repo management tooling for opencode harnesses",
   "type": "module",
   "scripts": {
-    "test": "node --test \"tests/*.test.js\" \"harness-ts/test/*.test.js\""
+    "test": "node --test \"tests/*.test.js\" \"arnes0.1/test/*.test.*\""
   },
   "engines": {
     "node": ">=23.6"

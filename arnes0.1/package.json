@@ -1,0 +1,18 @@
+{
+  "name": "arnes",
+  "version": "0.1.0",
+  "description": "A small, hackable coding-agent harness in TypeScript",
+  "type": "module",
+  "scripts": {
+    "test": "node --test \"test/*.test.ts\"",
+    "typecheck": "tsc --noEmit",
+    "start": "node --env-file-if-exists=.env src/main.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.8.0"
+  },
+  "engines": {
+    "node": ">=23.6"
+  }
+}
