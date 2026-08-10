@@ -23,5 +23,40 @@
     "name": "betta-tech/byo-coding-agent",
     "url": "https://github.com/betta-tech/byo-coding-agent.git",
     "description": "BYO Coding Agent — reference for building custom coding agents and tooling"
+  },
+  {
+    "name": "OpenHands/OpenHands",
+    "url": "https://github.com/OpenHands/OpenHands.git",
+    "description": "OpenHands: open-source AI coding agent platform"
+  },
+  {
+    "name": "ai-boost/awesome-harness-engineering",
+    "url": "https://github.com/ai-boost/awesome-harness-engineering.git",
+    "description": "awesome-harness-engineering: curated list of AI agent harness engineering resources"
+  },
+  {
+    "name": "continuedev/continue",
+    "url": "https://github.com/continuedev/continue.git",
+    "description": "Continue: open-source AI coding assistant (IDE extension + agent harness)"
+  },
+  {
+    "name": "Ancienttwo/repo-harness",
+    "url": "https://github.com/Ancienttwo/repo-harness.git",
+    "description": "repo-harness: reference for agent harness structure"
+  },
+  {
+    "name": "RyanAlberts/best-of-Agent-Harnesses",
+    "url": "https://github.com/RyanAlberts/best-of-Agent-Harnesses.git",
+    "description": "best-of-Agent-Harnesses: curated list of agent harnesses"
+  },
+  {
+    "name": "block/buzz",
+    "url": "https://github.com/block/buzz.git",
+    "description": "buzz: Block's open-source AI agent for work (devenv)"
+  },
+  {
+    "name": "Aider-AI/aider",
+    "url": "https://github.com/Aider-AI/aider.git",
+    "description": "aider: open-source AI pair programming CLI in the terminal"
   }
 ]

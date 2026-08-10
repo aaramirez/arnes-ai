@@ -47,15 +47,15 @@ describe('repos.json', () => {
     assert.ok(Array.isArray(data), 'repos.json should be an array');
   });
 
-  it('contains 5 reference repos', () => {
+  it('contains 12 reference repos', () => {
     const data = JSON.parse(readFileSync(REPOS_PATH, 'utf8'));
-    assert.equal(data.length, 5, 'repos.json should contain 5 entries');
+    assert.equal(data.length, 12, 'repos.json should contain 12 entries');
   });
 
   it('contains the expected repos', () => {
     const data = JSON.parse(readFileSync(REPOS_PATH, 'utf8'));
     const names = data.map(r => r.name).sort();
-    assert.deepEqual(names, ['anomalyco/opencode', 'betta-tech/byo-coding-agent', 'codeaashu/claude-code', 'earendil-works/pi', 'openai/codex']);
+    assert.deepEqual(names, ['Aider-AI/aider', 'Ancienttwo/repo-harness', 'OpenHands/OpenHands', 'RyanAlberts/best-of-Agent-Harnesses', 'ai-boost/awesome-harness-engineering', 'anomalyco/opencode', 'betta-tech/byo-coding-agent', 'block/buzz', 'codeaashu/claude-code', 'continuedev/continue', 'earendil-works/pi', 'openai/codex']);
   });
 
   it('every entry has name and url', () => {

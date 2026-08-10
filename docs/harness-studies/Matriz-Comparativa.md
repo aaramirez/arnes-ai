@@ -10,25 +10,25 @@ tags:
 
 Comparación "peras con peras" de los harnesses de referencia. **Una fila por dimensión** ([[Criterio-de-Evaluacion]]) y **una columna por harness** de `repos.json`. Cada celda resume el hallazgo del estudio correspondiente (o el marcador ✔ / ◐ / ✖ / n/a); las celdas `—` se completan al publicarse cada estudio.
 
-| # | Dimensión | `betta-tech/byo-coding-agent` | `anomalyco/opencode` | `openai/codex` | `earendil-works/pi` | `codeaashu/claude-code` |
-| --- | --- | --- | --- | --- | --- | --- |
-| 0 | Ficha | — | — | — | — | — |
-| 1 | Estructura del repo | — | — | — | — | — |
-| 2 | Capas y componentes | — | — | — | — | — |
-| 3 | Flujo end-to-end | — | — | — | — | — |
-| 4 | Contratos internos | — | — | — | — | — |
-| 5 | Agent loop | — | — | — | — | — |
-| 6 | Mensajes y contexto | — | — | — | — | — |
-| 7 | Provider seam | — | — | — | — | — |
-| 8 | Tool runtime | — | — | — | — | — |
-| 9 | Permisos y seguridad | — | — | — | — | — |
-| 10 | Compaction / gestión de contexto | — | — | — | — | — |
-| 11 | Subagentes / orquestación | — | — | — | — | — |
-| 12 | UI / presentación | — | — | — | — | — |
-| 13 | Configuración y extensibilidad | — | — | — | — | — |
-| 14 | Decisiones de diseño destacadas | — | — | — | — | — |
-| 15 | Valoración y lecciones | — | — | — | — | — |
-| V | Global | — | — | — | — | — |
+| # | Dimensión | `codeaashu/claude-code` | `openai/codex` | `anomalyco/opencode` | `earendil-works/pi` | `betta-tech/byo-coding-agent` | `OpenHands/OpenHands` | `ai-boost/awesome-harness-engineering` | `continuedev/continue` | `Ancienttwo/repo-harness` | `RyanAlberts/best-of-Agent-Harnesses` | `block/buzz` | `Aider-AI/aider` |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 0 | Ficha | — | — | — | — | — | — | — | — | — | — | — | — |
+| 1 | Estructura del repo | — | — | — | — | — | — | — | — | — | — | — | — |
+| 2 | Capas y componentes | — | — | — | — | — | — | — | — | — | — | — | — |
+| 3 | Flujo end-to-end | — | — | — | — | — | — | — | — | — | — | — | — |
+| 4 | Contratos internos | — | — | — | — | — | — | — | — | — | — | — | — |
+| 5 | Agent loop | — | — | — | — | — | — | — | — | — | — | — | — |
+| 6 | Mensajes y contexto | — | — | — | — | — | — | — | — | — | — | — | — |
+| 7 | Provider seam | — | — | — | — | — | — | — | — | — | — | — | — |
+| 8 | Tool runtime | — | — | — | — | — | — | — | — | — | — | — | — |
+| 9 | Permisos y seguridad | — | — | — | — | — | — | — | — | — | — | — | — |
+| 10 | Compaction / gestión de contexto | — | — | — | — | — | — | — | — | — | — | — | — |
+| 11 | Subagentes / orquestación | — | — | — | — | — | — | — | — | — | — | — | — |
+| 12 | UI / presentación | — | — | — | — | — | — | — | — | — | — | — | — |
+| 13 | Configuración y extensibilidad | — | — | — | — | — | — | — | — | — | — | — | — |
+| 14 | Decisiones de diseño destacadas | — | — | — | — | — | — | — | — | — | — | — | — |
+| 15 | Valoración y lecciones | — | — | — | — | — | — | — | — | — | — | — | — |
+| V | Global | — | — | — | — | — | — | — | — | — | — | — | — |
 
 ## Leyenda
 
@@ -42,5 +42,12 @@ Comparación "peras con peras" de los harnesses de referencia. **Una fila por di
 - openai/codex — pendiente
 - earendil-works/pi — pendiente
 - codeaashu/claude-code — pendiente
+- OpenHands/OpenHands — pendiente
+- ai-boost/awesome-harness-engineering — pendiente
+- continuedev/continue — pendiente
+- Ancienttwo/repo-harness — pendiente
+- RyanAlberts/best-of-Agent-Harnesses — pendiente
+- block/buzz — pendiente
+- Aider-AI/aider — pendiente
 
 [[Home]] · [[Criterio-de-Evaluacion]] · [[Plantilla-Estudio-Harness]]

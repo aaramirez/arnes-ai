@@ -15,7 +15,7 @@
  */
 
 import { execSync } from 'child_process';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'fs';
 import { join, dirname, basename } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -41,6 +41,16 @@ function saveConfig(config) {
 function run(cmd, cwd) {
   try {
     execSync(cmd, { cwd, stdio: 'pipe', encoding: 'utf-8' });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function isValidClone(dest) {
+  if (!existsSync(join(dest, '.git'))) return false;
+  try {
+    execSync('git rev-parse --verify HEAD', { cwd: dest, stdio: 'pipe', encoding: 'utf-8' });
     return true;
   } catch {
     return false;
@@ -129,16 +139,21 @@ function main() {
 
   // Clone
   const dest = join(REPOS_DIR, name);
-  if (existsSync(join(dest, '.git'))) {
+  if (isValidClone(dest)) {
     console.log(`Repository already cloned at repos/${name}/`);
   } else {
+    if (existsSync(dest)) {
+      console.log(`Removing incomplete clone at repos/${name}/...`);
+      rmSync(dest, { recursive: true, force: true });
+    }
     console.log(`Cloning ${url}...`);
     mkdirSync(dirname(dest), { recursive: true });
-    const ok = run(`git clone --depth 1 ${url} "${dest}"`, ROOT);
+    const ok = run(`git clone --single-branch --depth 1 ${url} "${dest}"`, ROOT);
     if (ok) {
       console.log(`Cloned to repos/${name}/`);
     } else {
       console.error('Clone failed.');
+      rmSync(dest, { recursive: true, force: true });
       process.exit(1);
     }
   }
