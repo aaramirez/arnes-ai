@@ -1,0 +1,338 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "eve — Mapa de componentes",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1160,
+      630
+    ],
+    "repository": {
+      "url": "https://github.com/vercel/eve",
+      "revision": "055f1d1d96c6e0c14e04fe632850c16ef0788b98"
+    }
+  },
+  "components": [
+    {
+      "id": "canales",
+      "type": "external",
+      "label": "Canales (borde)",
+      "sublabel": "HTTP · chat · MCP · cron",
+      "pos": [
+        20,
+        200
+      ],
+      "size": [
+        150,
+        70
+      ],
+      "sources": [
+        {
+          "path": "docs/channels/overview.mdx",
+          "line": 133,
+          "end_line": 150,
+          "label": "catálogo de canales"
+        }
+      ]
+    },
+    {
+      "id": "auth",
+      "type": "security",
+      "label": "Route auth",
+      "sublabel": "walk ordenado, fail-closed",
+      "pos": [
+        200,
+        200
+      ],
+      "size": [
+        150,
+        70
+      ]
+    },
+    {
+      "id": "sesion",
+      "type": "backend",
+      "label": "Sesión durable",
+      "sublabel": "workflowEntry",
+      "pos": [
+        380,
+        200
+      ],
+      "size": [
+        140,
+        70
+      ],
+      "sources": [
+        {
+          "path": "packages/eve/src/execution/session/entry.ts",
+          "line": 48,
+          "end_line": 49,
+          "label": "workflowEntry"
+        }
+      ]
+    },
+    {
+      "id": "paso",
+      "type": "backend",
+      "label": "Turno → paso",
+      "sublabel": "turnStep = checkpoint",
+      "pos": [
+        555,
+        200
+      ],
+      "size": [
+        140,
+        70
+      ],
+      "sources": [
+        {
+          "path": "packages/eve/src/execution/session/turn-step.ts",
+          "line": 125,
+          "end_line": 126,
+          "label": "turnStep"
+        }
+      ]
+    },
+    {
+      "id": "harness",
+      "type": "backend",
+      "label": "Harness",
+      "sublabel": "1 llamada al modelo por paso",
+      "pos": [
+        730,
+        200
+      ],
+      "size": [
+        160,
+        70
+      ],
+      "tag": "compaction"
+    },
+    {
+      "id": "tools",
+      "type": "backend",
+      "label": "Tools + Connections",
+      "sublabel": "MCP / OpenAPI",
+      "pos": [
+        730,
+        370
+      ],
+      "size": [
+        160,
+        70
+      ],
+      "tag": "HITL"
+    },
+    {
+      "id": "modelo",
+      "type": "external",
+      "label": "Modelo",
+      "sublabel": "AI Gateway o provider AI SDK",
+      "pos": [
+        965,
+        200
+      ],
+      "size": [
+        175,
+        70
+      ]
+    },
+    {
+      "id": "otel",
+      "type": "external",
+      "label": "OpenTelemetry",
+      "sublabel": "trazas",
+      "pos": [
+        965,
+        40
+      ],
+      "size": [
+        175,
+        64
+      ]
+    },
+    {
+      "id": "stream",
+      "type": "messagebus",
+      "label": "Stream NDJSON",
+      "sublabel": "/session/:id/stream",
+      "pos": [
+        735,
+        40
+      ],
+      "size": [
+        150,
+        64
+      ]
+    },
+    {
+      "id": "world",
+      "type": "database",
+      "label": "Workflow world",
+      "sublabel": "Workflow / disco / Postgres",
+      "pos": [
+        540,
+        40
+      ],
+      "size": [
+        170,
+        70
+      ]
+    },
+    {
+      "id": "apis",
+      "type": "external",
+      "label": "APIs internas / SaaS",
+      "sublabel": "servicios externos",
+      "pos": [
+        965,
+        373
+      ],
+      "size": [
+        175,
+        64
+      ]
+    },
+    {
+      "id": "sandbox",
+      "type": "security",
+      "label": "Sandbox",
+      "sublabel": "/workspace + procesos",
+      "pos": [
+        730,
+        530
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "sources": [
+        {
+          "path": "docs/concepts/security-model.md",
+          "line": 8,
+          "end_line": 20,
+          "label": "fronteras de confianza"
+        }
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "App runtime (confiable, con secretos)",
+      "wraps": [
+        "auth",
+        "sesion",
+        "paso",
+        "harness",
+        "tools"
+      ],
+      "pad": 22
+    },
+    {
+      "kind": "security-group",
+      "label": "Sandbox aislado, sin process.env",
+      "wraps": [
+        "sandbox"
+      ],
+      "pad": 14
+    }
+  ],
+  "connections": [
+    {
+      "from": "canales",
+      "to": "auth",
+      "variant": "emphasis"
+    },
+    {
+      "from": "auth",
+      "to": "sesion",
+      "variant": "emphasis"
+    },
+    {
+      "from": "sesion",
+      "to": "paso",
+      "variant": "emphasis"
+    },
+    {
+      "from": "paso",
+      "to": "harness",
+      "variant": "emphasis"
+    },
+    {
+      "from": "harness",
+      "to": "modelo",
+      "label": "streamText",
+      "labelDy": 12
+    },
+    {
+      "from": "paso",
+      "to": "world",
+      "label": "checkpoint ↔ replay"
+    },
+    {
+      "from": "harness",
+      "to": "tools",
+      "label": "tras aprobación HITL",
+      "labelAt": [
+        810,
+        320
+      ]
+    },
+    {
+      "from": "tools",
+      "to": "apis"
+    },
+    {
+      "from": "tools",
+      "to": "sandbox",
+      "label": "bash / read_file / write_file",
+      "variant": "security",
+      "labelAt": [
+        810,
+        485
+      ]
+    },
+    {
+      "from": "harness",
+      "to": "otel",
+      "variant": "dashed"
+    },
+    {
+      "from": "harness",
+      "to": "stream",
+      "label": "eventos",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Jerarquía durable",
+      "items": [
+        "Sesión (use workflow) → turno (runTurnSteps) → paso (use step)",
+        "Cada paso es un checkpoint grabado en el workflow world",
+        "El harness hace 1 llamada al modelo por paso y compacta antes de llamar"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Frontera de confianza",
+      "items": [
+        "Todo lo que está fuera del sandbox tiene acceso a los secretos",
+        "El sandbox no ve process.env: solo /workspace y procesos",
+        "Las tools cruzan la frontera con bash / read_file / write_file"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Entradas agrupadas",
+      "items": [
+        "Canales: eve HTTP /eve/v1/session, Slack / Teams / Discord / Telegram / Twilio",
+        "GitHub / Linear, MCP /eve/v1/mcp, defineChannel y schedules cron",
+        "Todos pasan por route auth antes de crear la sesión"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "eve · Plan de implementación self-hosted",
+    "quality_profile": "showcase"
+  },
+  "lanes": [
+    { "id": "plan", "label": "Fases sugeridas (fuera de Vercel)" }
+  ],
+  "mainPath": ["f0", "f1", "f2", "f3", "f4"],
+  "nodes": [
+    { "id": "f0", "lane": "plan", "col": 0, "type": "frontend", "label": "Fase 0 · Piloto", "sublabel": "1 agente, world local", "tag": "Docker deny-all · oidc · OTel", "width": 170 },
+    { "id": "f1", "lane": "plan", "col": 1, "type": "database", "label": "Fase 1 · Producción", "sublabel": "Postgres world, microsandbox", "tag": "secret manager · ingress · evals", "width": 170 },
+    { "id": "f2", "lane": "plan", "col": 2, "type": "messagebus", "label": "Fase 2 · Canales", "sublabel": "Slack/Teams propios", "tag": "HITL en tools sensibles", "width": 170 },
+    { "id": "f3", "lane": "plan", "col": 3, "type": "backend", "label": "Fase 3 · Multi-agente", "sublabel": "defineRemoteAgent + JWT", "tag": "trustedForwarders", "width": 170 },
+    { "id": "f4", "lane": "plan", "col": 4, "type": "security", "label": "Fase 4 · Multi-tenant", "sublabel": "autorización sesión/tenant", "tag": "memoria y credenciales", "width": 170 }
+  ],
+  "edges": [
+    { "id": "e-f0-f1", "from": "f0", "to": "f1", "variant": "emphasis" },
+    { "id": "e-f1-f2", "from": "f1", "to": "f2", "variant": "emphasis" },
+    { "id": "e-f2-f3", "from": "f2", "to": "f3", "variant": "emphasis" },
+    { "id": "e-f3-f4", "from": "f3", "to": "f4", "variant": "emphasis" }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Fases 0 y 1",
+      "items": [
+        "Piloto: 1 agente, world local con volumen, Docker deny-all, oidc, OTel",
+        "Producción inicial: Postgres world, microsandbox, secret manager, ingress, evals en CI",
+        "repos/vercel/eve/docs/guides/deployment/self-hosting.md:108-120"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Fases 2 a 4",
+      "items": [
+        "Canales: Slack/Teams con credenciales propias, HITL en tools sensibles",
+        "Multi-agente: defineRemoteAgent + JWT de servicio, trustedForwarders",
+        "Multi-tenant: autorización por sesión/tenant, memoria y credenciales por tenant"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Gate antes de producción",
+      "items": [
+        "Plan sugerido por este estudio a partir de la documentación de eve",
+        "Pre-production checklist: repos/vercel/eve/docs/concepts/security-model.md:84-101"
+      ]
+    }
+  ]
+}

@@ -21,10 +21,12 @@ Aquí consolidamos análisis, arquitecturas, decisiones de diseño, comparacione
 
 | Estudio | Categoría | Estado |
 | --- | --- | --- |
+| [[vercel-eve]] | harness completo (agentes durables) | publicado |
 | *pendiente — betta-tech/byo-coding-agent* | harness completo | próximamente |
 
 ## Notas del vault
 
+- Diagramas de eve (`docs/diagramas/vercel-eve/`): [[Eve-Arquitectura-y-Flujos]] · [[Eve-10-Flujos-Empresariales]] · [[Eve-Implementacion-Self-Hosted]] · interactivos: [[Eve-Diagramas-Archify]]
 - [[Arquitectura_Agent_Harness_inspirado_en_Pi]] — diseño conceptual de un agent harness inspirado en Pi
 
 ## Repos de referencia

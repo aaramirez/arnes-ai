@@ -1,0 +1,230 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Flujo 3 — Aprobación humana de una acción sensible",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [
+      1080,
+      610
+    ]
+  },
+  "participants": [
+    {
+      "id": "solicitante",
+      "type": "frontend",
+      "label": "Solicitante",
+      "sublabel": "persona"
+    },
+    {
+      "id": "sesion",
+      "type": "backend",
+      "label": "Sesión eve",
+      "sublabel": "turno durable"
+    },
+    {
+      "id": "politica",
+      "type": "security",
+      "label": "Política approval",
+      "sublabel": "decide, no el modelo"
+    },
+    {
+      "id": "tool",
+      "type": "backend",
+      "label": "refund_charge",
+      "sublabel": "tool sensible"
+    },
+    {
+      "id": "canal",
+      "type": "messagebus",
+      "label": "Stream / canal",
+      "sublabel": "Slack, Teams o UI"
+    },
+    {
+      "id": "aprobador",
+      "type": "frontend",
+      "label": "Aprobador",
+      "sublabel": "persona autorizada"
+    }
+  ],
+  "segments": [
+    {
+      "from": 158,
+      "to": 242,
+      "label": "Propuesta y política"
+    },
+    {
+      "from": 254,
+      "to": 338,
+      "label": "Pausa durable"
+    },
+    {
+      "from": 350,
+      "to": 434,
+      "label": "Respuesta validada"
+    },
+    {
+      "from": 446,
+      "to": 530,
+      "label": "Ejecución"
+    }
+  ],
+  "messages": [
+    {
+      "id": "m01",
+      "from": "solicitante",
+      "to": "sesion",
+      "y": 176,
+      "label": "Reembolsa 1.500 USD al cliente X",
+      "variant": "emphasis",
+      "note": "El modelo propone refund_charge (paso 2 del original, auto-mensaje). repos/vercel/eve/docs/tools/human-in-the-loop.md:14-83"
+    },
+    {
+      "id": "m02",
+      "from": "sesion",
+      "to": "politica",
+      "y": 204,
+      "label": "approval con toolInput y session",
+      "variant": "security"
+    },
+    {
+      "id": "m03",
+      "from": "politica",
+      "to": "sesion",
+      "y": 232,
+      "label": "user-approval: monto > 1000",
+      "variant": "return",
+      "note": "Resultados posibles: approved, denied, user-approval o not-applicable."
+    },
+    {
+      "id": "m04",
+      "from": "sesion",
+      "to": "canal",
+      "y": 272,
+      "label": "input.requested kind tool-approval",
+      "variant": "emphasis",
+      "note": "session.waiting: el turno queda aparcado sin cómputo; puede esperar horas o días y sobrevive a reinicios. repos/vercel/eve/docs/tools/human-in-the-loop.md:170-190"
+    },
+    {
+      "id": "m05",
+      "from": "canal",
+      "to": "aprobador",
+      "y": 300,
+      "label": "Botones Aprobar / Rechazar",
+      "variant": "default"
+    },
+    {
+      "id": "m06",
+      "from": "aprobador",
+      "to": "canal",
+      "y": 328,
+      "label": "Aprobar",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m07",
+      "from": "canal",
+      "to": "sesion",
+      "y": 368,
+      "label": "inputResponses requestId + approve",
+      "variant": "default"
+    },
+    {
+      "id": "m08",
+      "from": "sesion",
+      "to": "politica",
+      "y": 396,
+      "label": "response: ¿aprobador autorizado?",
+      "variant": "security",
+      "note": "Sin política response la aprobación falla cerrada. repos/vercel/eve/packages/eve/src/harness/approval-delivery-coordinator.ts:368-377"
+    },
+    {
+      "id": "m09",
+      "from": "politica",
+      "to": "sesion",
+      "y": 424,
+      "label": "ok",
+      "variant": "return"
+    },
+    {
+      "id": "m10",
+      "from": "sesion",
+      "to": "tool",
+      "y": 464,
+      "label": "execute",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m11",
+      "from": "tool",
+      "to": "sesion",
+      "y": 492,
+      "label": "refund ok",
+      "variant": "return"
+    },
+    {
+      "id": "m12",
+      "from": "sesion",
+      "to": "canal",
+      "y": 520,
+      "label": "approval.settled, action.result, respuesta",
+      "variant": "default"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "sesion",
+      "from": 170,
+      "to": 526,
+      "type": "backend"
+    },
+    {
+      "participant": "politica",
+      "from": 198,
+      "to": 238,
+      "type": "security"
+    },
+    {
+      "participant": "politica",
+      "from": 390,
+      "to": 430,
+      "type": "security"
+    },
+    {
+      "participant": "tool",
+      "from": 458,
+      "to": 498,
+      "type": "backend"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "rose",
+      "title": "Quién autoriza",
+      "items": [
+        "La política approval decide; el modelo no autoriza",
+        "Omitir approval equivale a never(): se ejecuta sin preguntar",
+        "Fuente: repos/vercel/eve/docs/tools/human-in-the-loop.md:14-83"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Pausa durable",
+      "items": [
+        "input.requested aparca el turno sin cómputo",
+        "Un texto no relacionado no cuenta como rechazo",
+        "Fuente: repos/vercel/eve/docs/tools/human-in-the-loop.md:170-190"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Falla cerrada",
+      "items": [
+        "La política response valida quién respondió",
+        "Sin ella, la aprobación falla cerrada",
+        "Fuente: repos/vercel/eve/packages/eve/src/harness/approval-delivery-coordinator.ts:368-377"
+      ]
+    }
+  ]
+}

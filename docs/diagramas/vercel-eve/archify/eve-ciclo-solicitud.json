@@ -1,0 +1,210 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "eve — Ciclo de vida de una solicitud HTTP",
+    "viewBox": [
+      1560,
+      740
+    ],
+    "quality_profile": "showcase",
+    "column_fit": "spread"
+  },
+  "participants": [
+    {
+      "id": "cliente",
+      "type": "external",
+      "label": "Cliente"
+    },
+    {
+      "id": "canal",
+      "type": "backend",
+      "label": "eveChannel"
+    },
+    {
+      "id": "auth",
+      "type": "security",
+      "label": "Route auth"
+    },
+    {
+      "id": "sesion",
+      "type": "backend",
+      "label": "Sesión durable"
+    },
+    {
+      "id": "paso",
+      "type": "backend",
+      "label": "turnStep"
+    },
+    {
+      "id": "harness",
+      "type": "backend",
+      "label": "Harness"
+    },
+    {
+      "id": "modelo",
+      "type": "cloud",
+      "label": "Modelo"
+    },
+    {
+      "id": "tool",
+      "type": "external",
+      "label": "Tool"
+    },
+    {
+      "id": "stream",
+      "type": "messagebus",
+      "label": "Stream NDJSON"
+    }
+  ],
+  "segments": [
+    {
+      "from": 164,
+      "to": 366,
+      "label": "Admisión y sesión"
+    },
+    {
+      "from": 376,
+      "to": 606,
+      "label": "Loop: mientras haya tool calls"
+    },
+    {
+      "from": 616,
+      "to": 650,
+      "label": "Cierre del turno"
+    }
+  ],
+  "messages": [
+    {
+      "from": "cliente",
+      "to": "canal",
+      "label": "POST /eve/v1/session con message",
+      "variant": "emphasis",
+      "y": 186
+    },
+    {
+      "from": "canal",
+      "to": "auth",
+      "label": "routeAuth(request, auth)",
+      "variant": "security",
+      "y": 214
+    },
+    {
+      "from": "auth",
+      "to": "canal",
+      "label": "SessionAuthContext o 401",
+      "variant": "return",
+      "y": 242
+    },
+    {
+      "from": "canal",
+      "to": "sesion",
+      "label": "createSession modo conversation",
+      "variant": "emphasis",
+      "y": 270
+    },
+    {
+      "from": "canal",
+      "to": "cliente",
+      "label": "200 sessionId, status accepted",
+      "variant": "return",
+      "y": 298
+    },
+    {
+      "from": "cliente",
+      "to": "stream",
+      "label": "GET /session/:id/stream",
+      "variant": "default",
+      "y": 326
+    },
+    {
+      "from": "sesion",
+      "to": "stream",
+      "label": "session.started, turn.started",
+      "variant": "dashed",
+      "y": 354
+    },
+    {
+      "from": "sesion",
+      "to": "paso",
+      "label": "turnStep = checkpoint",
+      "variant": "emphasis",
+      "y": 398
+    },
+    {
+      "from": "paso",
+      "to": "harness",
+      "label": "ejecutar paso (maybeCompact)",
+      "variant": "default",
+      "y": 426
+    },
+    {
+      "from": "harness",
+      "to": "modelo",
+      "label": "1 llamada streamText",
+      "variant": "emphasis",
+      "y": 454
+    },
+    {
+      "from": "modelo",
+      "to": "harness",
+      "label": "texto y/o tool calls",
+      "variant": "return",
+      "y": 482
+    },
+    {
+      "from": "harness",
+      "to": "tool",
+      "label": "execute(input, ctx)",
+      "variant": "default",
+      "y": 510
+    },
+    {
+      "from": "tool",
+      "to": "harness",
+      "label": "resultado o error como dato",
+      "variant": "return",
+      "y": 538
+    },
+    {
+      "from": "harness",
+      "to": "stream",
+      "label": "message.appended, actions.requested, action.result",
+      "variant": "dashed",
+      "y": 566
+    },
+    {
+      "from": "paso",
+      "to": "sesion",
+      "label": "DurableSession persistido",
+      "variant": "return",
+      "y": 594
+    },
+    {
+      "from": "sesion",
+      "to": "stream",
+      "label": "message.completed, turn.completed, session.waiting",
+      "variant": "dashed",
+      "y": 638
+    }
+  ],
+  "cards": [
+    {
+      "dot": "rose",
+      "title": "Auth antes de la sesión",
+      "items": [
+        "routeAuth corre antes de createSession; sin contexto válido responde 401",
+        "repos/vercel/eve/packages/eve/src/eve-channel/index.ts:150-152"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Un paso, una llamada al modelo",
+      "items": [
+        "ToolLoopAgent: repos/vercel/eve/packages/eve/src/harness/tool-loop.ts:1617",
+        "Continuar o terminar: repos/vercel/eve/packages/eve/src/harness/tool-loop.ts:2883-2894",
+        "Catálogo de eventos del stream: repos/vercel/eve/packages/eve/src/protocol/message.ts:181"
+      ]
+    }
+  ]
+}

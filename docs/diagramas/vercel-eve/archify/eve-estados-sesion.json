@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "eve · Estados de una sesión",
+    "quality_profile": "showcase",
+    "viewBox": [
+      980,
+      566
+    ]
+  },
+  "lanes": [
+    {
+      "id": "main",
+      "label": "Sesión → turno → paso"
+    },
+    {
+      "id": "pausas",
+      "label": "Pausas dentro del turno"
+    },
+    {
+      "id": "terminal",
+      "label": "Salidas terminales"
+    }
+  ],
+  "states": [
+    {
+      "id": "creada",
+      "type": "start",
+      "label": "Creada",
+      "sublabel": "POST /session",
+      "lane": "main",
+      "col": 1,
+      "step": "01",
+      "tag": "entrada"
+    },
+    {
+      "id": "paso",
+      "type": "active",
+      "label": "EnTurno · Paso",
+      "sublabel": "checkpoint turnStep",
+      "lane": "main",
+      "col": 2,
+      "step": "02",
+      "tag": "tool calls"
+    },
+    {
+      "id": "esperando",
+      "type": "waiting",
+      "label": "Esperando",
+      "sublabel": "session.waiting",
+      "lane": "main",
+      "col": 3,
+      "step": "03",
+      "tag": "entre turnos"
+    },
+    {
+      "id": "terminada",
+      "type": "success",
+      "label": "Terminada",
+      "sublabel": "reset o timeout",
+      "lane": "main",
+      "col": 4,
+      "step": "04",
+      "tag": "terminal"
+    },
+    {
+      "id": "aparcado",
+      "type": "waiting",
+      "label": "Aparcado",
+      "sublabel": "aprobación / pregunta",
+      "lane": "pausas",
+      "col": 0
+    },
+    {
+      "id": "fallida",
+      "type": "failure",
+      "label": "Fallida",
+      "sublabel": "error terminal",
+      "lane": "terminal",
+      "col": 1,
+      "tag": "terminal",
+      "yOffset": -80
+    }
+  ],
+  "transitions": [
+    {
+      "id": "t-aparcar",
+      "from": "paso",
+      "to": "aparcado",
+      "variant": "security",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "t-reanudar",
+      "from": "aparcado",
+      "to": "paso",
+      "variant": "emphasis",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "t-followup",
+      "from": "esperando",
+      "to": "paso",
+      "label": "follow-up",
+      "variant": "emphasis",
+      "route": "top-channel",
+      "fromSide": "top",
+      "toSide": "top"
+    },
+    {
+      "id": "t-error",
+      "from": "paso",
+      "to": "fallida",
+      "variant": "security",
+      "channelX": 485
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Transiciones del turno",
+      "items": [
+        "Creada → Paso con un mensaje; Paso → Paso si hubo tool calls",
+        "Aparcado por aprobación, pregunta, OAuth o límite",
+        "Paso → Esperando con turn.completed; steering sigue en el turno",
+        "repos/vercel/eve/packages/eve/src/execution/session/turn.ts:82-85"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Niveles y cierre",
+      "items": [
+        "Sesión → turno → paso; cada paso es un checkpoint",
+        "Terminada por reset o sessionTimeoutMs de 30 días",
+        "repos/vercel/eve/docs/concepts/execution-model-and-durability.mdx:10-16",
+        "repos/vercel/eve/packages/eve/src/execution/session/timeout.ts:2"
+      ]
+    }
+  ]
+}

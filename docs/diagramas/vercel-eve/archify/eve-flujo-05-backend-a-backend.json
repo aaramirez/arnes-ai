@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Flujo 5 — Integración backend a backend",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [
+      1080,
+      494
+    ]
+  },
+  "participants": [
+    {
+      "id": "job",
+      "type": "backend",
+      "label": "Job del ERP",
+      "sublabel": "origen del trabajo"
+    },
+    {
+      "id": "cliente",
+      "type": "backend",
+      "label": "eve/client",
+      "sublabel": "Client con bearer"
+    },
+    {
+      "id": "canal",
+      "type": "security",
+      "label": "eveChannel",
+      "sublabel": "auth de servicio"
+    },
+    {
+      "id": "sesion",
+      "type": "backend",
+      "label": "Sesión eve",
+      "sublabel": "create-once"
+    },
+    {
+      "id": "erp",
+      "type": "database",
+      "label": "Sistema del ERP",
+      "sublabel": "persistencia"
+    }
+  ],
+  "segments": [
+    {
+      "from": 158,
+      "to": 330,
+      "label": "Alta idempotente"
+    },
+    {
+      "from": 350,
+      "to": 414,
+      "label": "Resultado estructurado"
+    }
+  ],
+  "messages": [
+    {
+      "id": "m01",
+      "from": "job",
+      "to": "cliente",
+      "y": 176,
+      "label": "nueva factura 4213",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m02",
+      "from": "cliente",
+      "to": "canal",
+      "y": 212,
+      "label": "POST /session + operationId + outputSchema",
+      "variant": "emphasis",
+      "note": "message, operationId factura-4213 y outputSchema vía client.sessions.create. repos/vercel/eve/docs/guides/client/overview.mdx:48-102"
+    },
+    {
+      "id": "m03",
+      "from": "canal",
+      "to": "sesion",
+      "y": 248,
+      "label": "crea la sesión una vez por operationId",
+      "variant": "security",
+      "note": "Antes, la auth de servicio con jwtEcdsa o Basic devuelve un principal service (paso 3 del original, auto-mensaje). repos/vercel/eve/docs/channels/eve.mdx:64-79"
+    },
+    {
+      "id": "m04",
+      "from": "canal",
+      "to": "cliente",
+      "y": 284,
+      "label": "sessionId",
+      "variant": "return",
+      "note": "Si el POST se reintenta con el mismo operationId devuelve la misma sesión, no la duplica."
+    },
+    {
+      "id": "m05",
+      "from": "cliente",
+      "to": "canal",
+      "y": 320,
+      "label": "stream o response.result",
+      "variant": "default"
+    },
+    {
+      "id": "m06",
+      "from": "sesion",
+      "to": "cliente",
+      "y": 368,
+      "label": "resultado JSON validado contra el schema",
+      "variant": "return",
+      "note": "Antes, la sesión extrae, valida y clasifica (paso 8 del original, auto-mensaje). repos/vercel/eve/docs/guides/client/output-schema.mdx"
+    },
+    {
+      "id": "m07",
+      "from": "cliente",
+      "to": "erp",
+      "y": 404,
+      "label": "guarda categoría, monto y riesgo",
+      "variant": "emphasis"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "cliente",
+      "from": 170,
+      "to": 410,
+      "type": "backend"
+    },
+    {
+      "participant": "canal",
+      "from": 206,
+      "to": 326,
+      "type": "security"
+    },
+    {
+      "participant": "sesion",
+      "from": 242,
+      "to": 374,
+      "type": "backend"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Create-once",
+      "items": [
+        "operationId deduplica por principal autenticado",
+        "No funciona con llamantes anónimos",
+        "Fuente: repos/vercel/eve/docs/channels/eve.mdx:64-79"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Auth de servicio",
+      "items": [
+        "Client con auth bearer y redirect manual",
+        "httpBasic, jwtHmac o jwtEcdsa en channels/eve.ts",
+        "Fuente: repos/vercel/eve/docs/guides/client/overview.mdx:48-102"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Salida estructurada",
+      "items": [
+        "outputSchema evita parsear texto",
+        "Fuente: repos/vercel/eve/docs/guides/client/output-schema.mdx"
+      ]
+    }
+  ]
+}

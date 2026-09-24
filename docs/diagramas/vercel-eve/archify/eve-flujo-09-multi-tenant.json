@@ -1,0 +1,202 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Flujo 9 — Multi-tenant seguro",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [
+      1300,
+      562
+    ]
+  },
+  "participants": [
+    {
+      "id": "usuario",
+      "type": "frontend",
+      "label": "Usuario (tenant ACME)"
+    },
+    {
+      "id": "routeauth",
+      "type": "security",
+      "label": "Route auth"
+    },
+    {
+      "id": "sesion",
+      "type": "backend",
+      "label": "Sesión eve"
+    },
+    {
+      "id": "memoria",
+      "type": "database",
+      "label": "Memoria"
+    },
+    {
+      "id": "tool",
+      "type": "backend",
+      "label": "Tool"
+    },
+    {
+      "id": "vault",
+      "type": "security",
+      "label": "Vault de credenciales"
+    },
+    {
+      "id": "api",
+      "type": "external",
+      "label": "API del tenant"
+    }
+  ],
+  "segments": [
+    {
+      "from": 168,
+      "to": 234,
+      "label": "Identidad del tenant"
+    },
+    {
+      "from": 246,
+      "to": 312,
+      "label": "Contexto"
+    },
+    {
+      "from": 324,
+      "to": 492,
+      "label": "Credencial por tenant"
+    }
+  ],
+  "messages": [
+    {
+      "from": "usuario",
+      "to": "routeauth",
+      "y": 186,
+      "label": "request con JWT (tenantId acme)",
+      "variant": "security",
+      "note": "El tenantId sale solo de la auth verificada"
+    },
+    {
+      "from": "routeauth",
+      "to": "sesion",
+      "y": 220,
+      "label": "principal user + attributes.tenantId",
+      "variant": "security"
+    },
+    {
+      "from": "sesion",
+      "to": "memoria",
+      "y": 264,
+      "label": "recall con scope tenant + usuario",
+      "variant": "default"
+    },
+    {
+      "from": "sesion",
+      "to": "tool",
+      "y": 298,
+      "label": "execute",
+      "variant": "emphasis",
+      "note": "requireTenantCaller lee el tenant de ctx, NO del prompt ni de argumentos"
+    },
+    {
+      "from": "tool",
+      "to": "vault",
+      "y": 342,
+      "label": "credencial de acme",
+      "variant": "security"
+    },
+    {
+      "from": "vault",
+      "to": "tool",
+      "y": 376,
+      "label": "token de acme",
+      "variant": "return"
+    },
+    {
+      "from": "tool",
+      "to": "api",
+      "y": 410,
+      "label": "llamada con token de acme",
+      "variant": "emphasis"
+    },
+    {
+      "from": "api",
+      "to": "tool",
+      "y": 444,
+      "label": "datos de acme",
+      "variant": "return"
+    },
+    {
+      "from": "tool",
+      "to": "sesion",
+      "y": 478,
+      "label": "resultado sin credenciales",
+      "variant": "return",
+      "note": "El modelo nunca ve las credenciales"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "routeauth",
+      "from": 180,
+      "to": 226,
+      "type": "security"
+    },
+    {
+      "participant": "sesion",
+      "from": 214,
+      "to": 484,
+      "type": "backend"
+    },
+    {
+      "participant": "memoria",
+      "from": 258,
+      "to": 270,
+      "type": "database"
+    },
+    {
+      "participant": "tool",
+      "from": 292,
+      "to": 484,
+      "type": "backend"
+    },
+    {
+      "participant": "vault",
+      "from": 336,
+      "to": 382,
+      "type": "security"
+    },
+    {
+      "participant": "api",
+      "from": 404,
+      "to": 450,
+      "type": "external"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "El tenant sale de la auth",
+      "items": [
+        "Nunca del prompt, de argumentos de tools ni de respuestas de APIs",
+        "repos/vercel/eve/docs/patterns/multi-tenant-auth.md:14-37",
+        "Memoria con scope del tenant: repos/vercel/eve/docs/patterns/multi-tenant-memory.md:14"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Brecha principal",
+      "items": [
+        "eve no aplica propiedad de sesión: un sessionId de otro tenant pasa la route auth",
+        "Controla el mapeo sesión→usuario/tenant en tu app o en un proxy",
+        "Compara ctx.session.auth.initiator con auth.current: repos/vercel/eve/docs/guides/auth-and-route-protection.md:256-267"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Configurar",
+      "items": [
+        "AuthFn que devuelva attributes.tenantId y helper requireTenantCaller(ctx)",
+        "auth: async (ctx) => ... en las connections MCP y OpenAPI",
+        "Approval por tenant: repos/vercel/eve/docs/patterns/multi-tenant-approvals.md:19"
+      ]
+    }
+  ]
+}

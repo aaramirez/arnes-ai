@@ -1,0 +1,247 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Flujo 4 — OAuth por usuario a un sistema externo",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [
+      1080,
+      638
+    ]
+  },
+  "participants": [
+    {
+      "id": "usuario",
+      "type": "frontend",
+      "label": "Usuario",
+      "sublabel": "principal user"
+    },
+    {
+      "id": "sesion",
+      "type": "backend",
+      "label": "Sesión eve",
+      "sublabel": "turno durable"
+    },
+    {
+      "id": "tool",
+      "type": "backend",
+      "label": "Tool / Connection",
+      "sublabel": "ctx.getToken"
+    },
+    {
+      "id": "authz",
+      "type": "security",
+      "label": "Autorización",
+      "sublabel": "interactiva de eve"
+    },
+    {
+      "id": "idp",
+      "type": "external",
+      "label": "OAuth externo",
+      "sublabel": "IdP del sistema"
+    },
+    {
+      "id": "api",
+      "type": "external",
+      "label": "API externa",
+      "sublabel": "Jira, CRM"
+    }
+  ],
+  "segments": [
+    {
+      "from": 158,
+      "to": 298,
+      "label": "Sin token del usuario"
+    },
+    {
+      "from": 302,
+      "to": 386,
+      "label": "Consentimiento"
+    },
+    {
+      "from": 390,
+      "to": 558,
+      "label": "Reintento con token"
+    }
+  ],
+  "messages": [
+    {
+      "id": "m01",
+      "from": "usuario",
+      "to": "sesion",
+      "y": 176,
+      "label": "Crea un ticket en Jira con esto",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m02",
+      "from": "sesion",
+      "to": "tool",
+      "y": 204,
+      "label": "execute",
+      "variant": "default"
+    },
+    {
+      "id": "m03",
+      "from": "tool",
+      "to": "authz",
+      "y": 232,
+      "label": "¿hay token de este usuario?",
+      "variant": "security",
+      "note": "ctx.getToken consulta defineInteractiveAuthorization; principalType debe ser user. repos/vercel/eve/docs/guides/auth-and-route-protection.md:273"
+    },
+    {
+      "id": "m04",
+      "from": "authz",
+      "to": "tool",
+      "y": 260,
+      "label": "no hay token",
+      "variant": "return"
+    },
+    {
+      "id": "m05",
+      "from": "tool",
+      "to": "sesion",
+      "y": 288,
+      "label": "autorización requerida",
+      "variant": "return"
+    },
+    {
+      "id": "m06",
+      "from": "sesion",
+      "to": "usuario",
+      "y": 320,
+      "label": "authorization.required + URL",
+      "variant": "dashed",
+      "note": "Incluye la URL de consentimiento; el turno queda aparcado de forma durable (paso 7 del original, auto-mensaje). repos/vercel/eve/docs/connections/overview.mdx:206"
+    },
+    {
+      "id": "m07",
+      "from": "usuario",
+      "to": "idp",
+      "y": 348,
+      "label": "Inicia sesión y consiente",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m08",
+      "from": "idp",
+      "to": "authz",
+      "y": 376,
+      "label": "redirect al callback de eve",
+      "variant": "security",
+      "note": "completeAuthorization intercambia el code por un token (paso 10 del original, auto-mensaje). repos/vercel/eve/docs/connections/overview.mdx:236-270"
+    },
+    {
+      "id": "m09",
+      "from": "authz",
+      "to": "sesion",
+      "y": 408,
+      "label": "authorization.completed, resume",
+      "variant": "return"
+    },
+    {
+      "id": "m10",
+      "from": "sesion",
+      "to": "tool",
+      "y": 436,
+      "label": "reintenta execute",
+      "variant": "default"
+    },
+    {
+      "id": "m11",
+      "from": "tool",
+      "to": "api",
+      "y": 464,
+      "label": "Bearer token del usuario",
+      "variant": "security",
+      "note": "El modelo nunca ve el token. Ante un 401 aguas abajo, ctx.requireAuth(provider) re-autoriza."
+    },
+    {
+      "id": "m12",
+      "from": "api",
+      "to": "tool",
+      "y": 492,
+      "label": "ticket creado",
+      "variant": "return"
+    },
+    {
+      "id": "m13",
+      "from": "tool",
+      "to": "sesion",
+      "y": 520,
+      "label": "resultado",
+      "variant": "return"
+    },
+    {
+      "id": "m14",
+      "from": "sesion",
+      "to": "usuario",
+      "y": 548,
+      "label": "Listo, JIRA-812",
+      "variant": "return"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "sesion",
+      "from": 170,
+      "to": 326,
+      "type": "backend"
+    },
+    {
+      "participant": "tool",
+      "from": 198,
+      "to": 294,
+      "type": "backend"
+    },
+    {
+      "participant": "authz",
+      "from": 370,
+      "to": 414,
+      "type": "security"
+    },
+    {
+      "participant": "sesion",
+      "from": 402,
+      "to": 554,
+      "type": "backend"
+    },
+    {
+      "participant": "tool",
+      "from": 430,
+      "to": 526,
+      "type": "backend"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "violet",
+      "title": "Actuar como el usuario",
+      "items": [
+        "Exige principal user verificado",
+        "Sesión anónima o de servicio: falla",
+        "Fuente: repos/vercel/eve/docs/guides/auth-and-route-protection.md:273"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Turno aparcado",
+      "items": [
+        "authorization.required pausa el turno de forma durable",
+        "authorization.completed lo reanuda",
+        "Fuente: repos/vercel/eve/docs/connections/overview.mdx:206"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Fuera de Vercel",
+      "items": [
+        "startAuthorization y completeAuthorization propios",
+        "Tokens cifrados y refresh a tu cargo",
+        "Fuente: repos/vercel/eve/docs/connections/overview.mdx:236-270"
+      ]
+    }
+  ]
+}

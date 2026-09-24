@@ -1,0 +1,317 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "eve — Topologías de despliegue",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1160,
+      640
+    ],
+    "repository": {
+      "url": "https://github.com/vercel/eve",
+      "revision": "055f1d1d96c6e0c14e04fe632850c16ef0788b98"
+    }
+  },
+  "components": [
+    {
+      "id": "v_cli",
+      "type": "frontend",
+      "label": "eve link + eve deploy",
+      "sublabel": "CLI",
+      "pos": [
+        40,
+        110
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "sources": [
+        {
+          "path": "docs/guides/deployment/overview.md",
+          "line": 12,
+          "end_line": 15,
+          "label": "estrategias"
+        }
+      ]
+    },
+    {
+      "id": "v_cron",
+      "type": "cloud",
+      "label": "Vercel Cron",
+      "sublabel": "schedules",
+      "pos": [
+        40,
+        400
+      ],
+      "size": [
+        160,
+        64
+      ],
+      "brand": "vercel"
+    },
+    {
+      "id": "v_fn",
+      "type": "backend",
+      "label": "Vercel Functions",
+      "sublabel": "rutas /eve/v1",
+      "pos": [
+        250,
+        255
+      ],
+      "size": [
+        160,
+        70
+      ],
+      "brand": "vercel",
+      "sources": [
+        {
+          "path": "docs/guides/deployment/vercel.mdx",
+          "line": 131,
+          "end_line": 136,
+          "label": "servicios de Vercel"
+        }
+      ]
+    },
+    {
+      "id": "v_wf",
+      "type": "database",
+      "label": "Vercel Workflow",
+      "sublabel": "estado durable",
+      "pos": [
+        460,
+        110
+      ],
+      "size": [
+        150,
+        64
+      ]
+    },
+    {
+      "id": "v_sbx",
+      "type": "security",
+      "label": "Vercel Sandbox",
+      "sublabel": "microVM",
+      "pos": [
+        460,
+        258
+      ],
+      "size": [
+        150,
+        64
+      ]
+    },
+    {
+      "id": "v_runs",
+      "type": "external",
+      "label": "Agent Runs",
+      "sublabel": "observabilidad",
+      "pos": [
+        460,
+        400
+      ],
+      "size": [
+        150,
+        64
+      ]
+    },
+    {
+      "id": "s_px",
+      "type": "security",
+      "label": "Reverse proxy / ingress",
+      "sublabel": "/eve/ y /.well-known/workflow/",
+      "pos": [
+        680,
+        255
+      ],
+      "size": [
+        180,
+        70
+      ],
+      "sources": [
+        {
+          "path": "docs/guides/deployment/self-hosting.md",
+          "line": 57,
+          "end_line": 62,
+          "label": "prefijos del proxy"
+        }
+      ]
+    },
+    {
+      "id": "s_node",
+      "type": "backend",
+      "label": "Servidor Nitro Node",
+      "sublabel": "eve build + eve start",
+      "pos": [
+        680,
+        470
+      ],
+      "size": [
+        180,
+        70
+      ]
+    },
+    {
+      "id": "s_world",
+      "type": "database",
+      "label": "World",
+      "sublabel": ".eve/.workflow-data o world-postgres",
+      "pos": [
+        920,
+        110
+      ],
+      "size": [
+        200,
+        64
+      ]
+    },
+    {
+      "id": "s_sbx",
+      "type": "security",
+      "label": "Sandbox",
+      "sublabel": "Docker / microsandbox / propio",
+      "pos": [
+        920,
+        258
+      ],
+      "size": [
+        200,
+        64
+      ]
+    },
+    {
+      "id": "s_cron",
+      "type": "backend",
+      "label": "Runner de schedules",
+      "sublabel": "Nitro",
+      "pos": [
+        920,
+        400
+      ],
+      "size": [
+        200,
+        64
+      ]
+    },
+    {
+      "id": "s_otel",
+      "type": "external",
+      "label": "OTel",
+      "sublabel": "a tu backend",
+      "pos": [
+        920,
+        540
+      ],
+      "size": [
+        200,
+        64
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Vercel (gestionado)",
+      "wraps": [
+        "v_cli",
+        "v_cron",
+        "v_fn",
+        "v_wf",
+        "v_sbx",
+        "v_runs"
+      ],
+      "pad": 20
+    },
+    {
+      "kind": "region",
+      "label": "Self-hosted (contenedor propio)",
+      "wraps": [
+        "s_px",
+        "s_node",
+        "s_world",
+        "s_sbx",
+        "s_cron",
+        "s_otel"
+      ],
+      "pad": 20
+    }
+  ],
+  "connections": [
+    {
+      "from": "v_cli",
+      "to": "v_fn",
+      "label": "deploy",
+      "variant": "emphasis"
+    },
+    {
+      "from": "v_cron",
+      "to": "v_fn",
+      "label": "dispara"
+    },
+    {
+      "from": "v_fn",
+      "to": "v_wf",
+      "variant": "emphasis"
+    },
+    {
+      "from": "v_fn",
+      "to": "v_sbx",
+      "variant": "security"
+    },
+    {
+      "from": "v_fn",
+      "to": "v_runs",
+      "variant": "dashed"
+    },
+    {
+      "from": "s_px",
+      "to": "s_node",
+      "label": "reenvía sin reescribir",
+      "variant": "emphasis",
+      "labelAt": [
+        770,
+        397
+      ]
+    },
+    {
+      "from": "s_node",
+      "to": "s_world",
+      "variant": "emphasis"
+    },
+    {
+      "from": "s_node",
+      "to": "s_sbx",
+      "variant": "security"
+    },
+    {
+      "from": "s_node",
+      "to": "s_cron"
+    },
+    {
+      "from": "s_node",
+      "to": "s_otel",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Vercel",
+      "items": [
+        "eve link + eve deploy publica en Vercel Functions",
+        "Estado en Vercel Workflow, ejecución en Vercel Sandbox (microVM)",
+        "Vercel Cron dispara schedules; Agent Runs da observabilidad"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Self-hosted",
+      "items": [
+        "eve build + eve start: servidor Nitro Node en contenedor",
+        "El proxy reenvía /eve/ y /.well-known/workflow/",
+        "World en disco o @workflow/world-postgres; sandbox Docker, microsandbox o provider propio"
+      ]
+    }
+  ]
+}

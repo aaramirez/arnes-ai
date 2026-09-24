@@ -1,0 +1,204 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "eve · Decisión de compactación",
+    "quality_profile": "showcase"
+  },
+  "lanes": [
+    {
+      "id": "chequeo",
+      "label": "Chequeo previo"
+    },
+    {
+      "id": "fase1",
+      "label": "Fase 1 · sin modelo"
+    },
+    {
+      "id": "fase2",
+      "label": "Fase 2 · resumen y último recurso"
+    }
+  ],
+  "mainPath": [
+    "antes",
+    "umbral",
+    "recortar",
+    "suficiente",
+    "resumir",
+    "historial",
+    "excedido",
+    "cola",
+    "llamar"
+  ],
+  "nodes": [
+    {
+      "id": "antes",
+      "lane": "chequeo",
+      "col": 0,
+      "type": "external",
+      "label": "Antes de llamar",
+      "sublabel": "cada llamada al modelo",
+      "width": 140
+    },
+    {
+      "id": "umbral",
+      "lane": "chequeo",
+      "col": 1,
+      "type": "security",
+      "label": "¿Tokens > umbral?",
+      "sublabel": "90% ventana o 100k",
+      "width": 140
+    },
+    {
+      "id": "llamar",
+      "lane": "chequeo",
+      "col": 5,
+      "type": "cloud",
+      "label": "Llamar al modelo",
+      "sublabel": "streamText",
+      "width": 140
+    },
+    {
+      "id": "recortar",
+      "lane": "fase1",
+      "col": 1,
+      "type": "backend",
+      "label": "Recortar resultados",
+      "sublabel": "tool results grandes",
+      "width": 140
+    },
+    {
+      "id": "suficiente",
+      "lane": "fase1",
+      "col": 2,
+      "type": "security",
+      "label": "¿Suficiente?",
+      "width": 140
+    },
+    {
+      "id": "resumir",
+      "lane": "fase2",
+      "col": 2,
+      "type": "backend",
+      "label": "Resumir región",
+      "sublabel": "antigua · generateText",
+      "width": 140
+    },
+    {
+      "id": "historial",
+      "lane": "fase2",
+      "col": 3,
+      "type": "database",
+      "label": "Nuevo historial",
+      "sublabel": "checkpoint + resumen + 10",
+      "width": 140
+    },
+    {
+      "id": "excedido",
+      "lane": "fase2",
+      "col": 4,
+      "type": "security",
+      "label": "¿Sigue excedido?",
+      "width": 140
+    },
+    {
+      "id": "cola",
+      "lane": "fase2",
+      "col": 5,
+      "type": "messagebus",
+      "label": "Cola a solo texto",
+      "sublabel": "luego achicar ventana",
+      "width": 140
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-antes-umbral",
+      "from": "antes",
+      "to": "umbral"
+    },
+    {
+      "id": "e-umbral-no",
+      "from": "umbral",
+      "to": "llamar",
+      "label": "No",
+      "role": "branch"
+    },
+    {
+      "id": "e-umbral-si",
+      "from": "umbral",
+      "to": "recortar",
+      "label": "Sí",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-recortar",
+      "from": "recortar",
+      "to": "suficiente"
+    },
+    {
+      "id": "e-suf-si",
+      "from": "suficiente",
+      "to": "llamar",
+      "label": "Sí",
+      "role": "branch"
+    },
+    {
+      "id": "e-suf-no",
+      "from": "suficiente",
+      "to": "resumir",
+      "label": "No",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-resumir",
+      "from": "resumir",
+      "to": "historial"
+    },
+    {
+      "id": "e-historial",
+      "from": "historial",
+      "to": "excedido"
+    },
+    {
+      "id": "e-exc-no",
+      "from": "excedido",
+      "to": "llamar",
+      "label": "No",
+      "role": "branch"
+    },
+    {
+      "id": "e-exc-si",
+      "from": "excedido",
+      "to": "cola",
+      "label": "Sí",
+      "variant": "security",
+      "role": "error"
+    },
+    {
+      "id": "e-cola",
+      "from": "cola",
+      "to": "llamar",
+      "variant": "emphasis"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Umbral y ventana",
+      "items": [
+        "Compacta si los tokens estimados superan el 90% de la ventana (100k si es desconocida)",
+        "repos/vercel/eve/packages/eve/src/execution/session.ts:12-14"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Algoritmo en dos fases",
+      "items": [
+        "Fase 1 recorta tool results grandes de la región antigua sin llamar al modelo",
+        "Fase 2 resume con generateText; conserva checkpoint + resumen + últimos 10 mensajes literales",
+        "repos/vercel/eve/packages/eve/src/harness/compaction.ts:198-293"
+      ]
+    }
+  ]
+}

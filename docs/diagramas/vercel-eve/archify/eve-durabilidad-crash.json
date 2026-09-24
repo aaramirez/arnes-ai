@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "eve — Durabilidad: qué pasa si el proceso muere",
+    "viewBox": [
+      1560,
+      640
+    ],
+    "quality_profile": "showcase",
+    "column_fit": "spread"
+  },
+  "participants": [
+    {
+      "id": "world",
+      "type": "database",
+      "label": "Workflow world"
+    },
+    {
+      "id": "procA",
+      "type": "backend",
+      "label": "Proceso A"
+    },
+    {
+      "id": "procB",
+      "type": "backend",
+      "label": "Proceso B"
+    },
+    {
+      "id": "stream",
+      "type": "messagebus",
+      "label": "Stream"
+    }
+  ],
+  "segments": [
+    {
+      "from": 175,
+      "to": 300,
+      "label": "Proceso A: pasos 1 y 2 grabados; crash o redeploy durante el paso 3"
+    },
+    {
+      "from": 330,
+      "to": 540,
+      "label": "Proceso B: reanudación"
+    }
+  ],
+  "messages": [
+    {
+      "from": "procA",
+      "to": "world",
+      "y": 210,
+      "label": "paso 1 completado y grabado",
+      "variant": "emphasis"
+    },
+    {
+      "from": "procA",
+      "to": "world",
+      "y": 262,
+      "label": "paso 2 completado y grabado",
+      "variant": "emphasis",
+      "note": "Proceso A cae por crash o redeploy durante el paso 3"
+    },
+    {
+      "from": "procB",
+      "to": "world",
+      "y": 368,
+      "label": "reanuda la sesión",
+      "variant": "default"
+    },
+    {
+      "from": "world",
+      "to": "procB",
+      "y": 420,
+      "label": "replay pasos 1 y 2 sin re-ejecutar",
+      "variant": "return"
+    },
+    {
+      "from": "procB",
+      "to": "stream",
+      "y": 500,
+      "label": "re-ejecuta el paso 3 completo: eventos con ids nuevos",
+      "variant": "emphasis",
+      "note": "El consumidor ve ambos intentos del paso 3"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Replay, no re-ejecución",
+      "items": [
+        "Proceso A cae (crash o redeploy) durante el paso 3",
+        "Los pasos completados se reproducen desde su resultado grabado",
+        "Solo el paso interrumpido se re-ejecuta, completo"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Efectos duplicables",
+      "items": [
+        "El consumidor del stream ve ambos intentos del paso 3",
+        "Los efectos no idempotentes deben ser idempotentes o pasar por aprobación"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "Evidencia",
+      "items": [
+        "repos/vercel/eve/docs/concepts/execution-model-and-durability.mdx:94-96"
+      ]
+    }
+  ]
+}

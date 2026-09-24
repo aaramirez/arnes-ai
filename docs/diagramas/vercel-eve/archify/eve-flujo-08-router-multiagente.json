@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Flujo 8 — Router multi-agente por dominio",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [
+      1300,
+      560
+    ]
+  },
+  "participants": [
+    {
+      "id": "usuario",
+      "type": "frontend",
+      "label": "Usuario"
+    },
+    {
+      "id": "router",
+      "type": "backend",
+      "label": "Agente router"
+    },
+    {
+      "id": "finanzas",
+      "type": "external",
+      "label": "Agente Finanzas (remoto)"
+    },
+    {
+      "id": "legal",
+      "type": "external",
+      "label": "Agente Legal (remoto)"
+    }
+  ],
+  "segments": [
+    {
+      "from": 165,
+      "to": 200,
+      "label": "Pregunta"
+    },
+    {
+      "from": 215,
+      "to": 364,
+      "label": "Dispatch a remotos"
+    },
+    {
+      "from": 379,
+      "to": 490,
+      "label": "Callbacks y respuesta"
+    }
+  ],
+  "messages": [
+    {
+      "from": "usuario",
+      "to": "router",
+      "y": 186,
+      "label": "¿Pagamos la factura X y el contrato lo permite?",
+      "variant": "emphasis"
+    },
+    {
+      "from": "router",
+      "to": "finanzas",
+      "y": 236,
+      "label": "POST /eve/v1/session + callback URL",
+      "variant": "security",
+      "note": "Con auth de servicio; para el modelo, cada agente remoto es una tool más"
+    },
+    {
+      "from": "finanzas",
+      "to": "router",
+      "y": 274,
+      "label": "working, taskId",
+      "variant": "return"
+    },
+    {
+      "from": "router",
+      "to": "legal",
+      "y": 312,
+      "label": "POST /eve/v1/session + callback URL",
+      "variant": "security",
+      "note": "forwardPrincipal opcional: el remoto ve al usuario original solo si su trustedForwarders acepta al router"
+    },
+    {
+      "from": "legal",
+      "to": "router",
+      "y": 350,
+      "label": "working, taskId",
+      "variant": "return"
+    },
+    {
+      "from": "finanzas",
+      "to": "router",
+      "y": 400,
+      "label": "callback de resultado",
+      "variant": "dashed",
+      "note": "Los resultados llegan por callbacks durables"
+    },
+    {
+      "from": "legal",
+      "to": "router",
+      "y": 438,
+      "label": "callback de resultado",
+      "variant": "dashed",
+      "note": "El router registra subagent.completed x2"
+    },
+    {
+      "from": "router",
+      "to": "usuario",
+      "y": 476,
+      "label": "Respuesta combinada",
+      "variant": "return",
+      "note": "Al terminar la sesión padre, eve envía reset a cada hijo remoto"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "router",
+      "from": 180,
+      "to": 482,
+      "type": "backend"
+    },
+    {
+      "participant": "finanzas",
+      "from": 230,
+      "to": 406,
+      "type": "external"
+    },
+    {
+      "participant": "legal",
+      "from": 306,
+      "to": 444,
+      "type": "external"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Dispatch y callbacks",
+      "items": [
+        "eve inicia una sesión en el remoto y le pasa una URL de callback",
+        "Al cerrar la sesión padre, eve limpia las sesiones hijas (reset)",
+        "repos/vercel/eve/docs/guides/remote-agents.md:185-201"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Identidad entre agentes",
+      "items": [
+        "forwardPrincipal: true solo vale si el trustedForwarders del receptor acepta al router",
+        "Fuera de Vercel no hay OIDC entre deploys: usa JWT de servicio o headers",
+        "repos/vercel/eve/docs/guides/auth-and-route-protection.md:224-246"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Configurar",
+      "items": [
+        "Router: agent/subagents/finanzas/agent.ts con defineRemoteAgent({ url, auth, headers })",
+        "Especialista: channels/eve.ts con auth que acepte al router y trustedForwarders",
+        "Fuera de Vercel, un transport explícito: repos/vercel/eve/docs/subagents/index.mdx:126-141"
+      ]
+    }
+  ]
+}

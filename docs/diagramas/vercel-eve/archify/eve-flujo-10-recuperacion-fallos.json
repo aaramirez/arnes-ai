@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Flujo 10 — Recuperación ante fallos y redeploys",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [
+      1300,
+      500
+    ]
+  },
+  "participants": [
+    {
+      "id": "ops",
+      "type": "external",
+      "label": "Operaciones"
+    },
+    {
+      "id": "v1",
+      "type": "backend",
+      "label": "Versión 1 (anterior)"
+    },
+    {
+      "id": "world",
+      "type": "database",
+      "label": "Workflow world"
+    },
+    {
+      "id": "v2",
+      "type": "backend",
+      "label": "Versión 2 (nueva)"
+    },
+    {
+      "id": "usuario",
+      "type": "frontend",
+      "label": "Usuario"
+    }
+  ],
+  "segments": [
+    {
+      "from": 165,
+      "to": 240,
+      "label": "Interrupción"
+    },
+    {
+      "from": 255,
+      "to": 370,
+      "label": "Reanudación"
+    },
+    {
+      "from": 385,
+      "to": 420,
+      "label": "Handoff"
+    }
+  ],
+  "messages": [
+    {
+      "from": "v1",
+      "to": "world",
+      "y": 186,
+      "label": "paso 1 y paso 2 grabados",
+      "variant": "emphasis"
+    },
+    {
+      "from": "ops",
+      "to": "v1",
+      "y": 226,
+      "label": "deploy o crash en el paso 3",
+      "variant": "dashed"
+    },
+    {
+      "from": "v2",
+      "to": "world",
+      "y": 276,
+      "label": "reanuda la sesión",
+      "variant": "emphasis"
+    },
+    {
+      "from": "world",
+      "to": "v2",
+      "y": 316,
+      "label": "replay de pasos 1 y 2",
+      "variant": "return",
+      "note": "Los pasos completados no se re-ejecutan; V2 re-ejecuta el paso 3 completo"
+    },
+    {
+      "from": "v2",
+      "to": "usuario",
+      "y": 356,
+      "label": "el turno termina normalmente",
+      "variant": "return",
+      "note": "Aprobaciones y OAuth aparcados siguen esperando sin cómputo"
+    },
+    {
+      "from": "usuario",
+      "to": "v2",
+      "y": 406,
+      "label": "nuevo mensaje en sesión inactiva",
+      "variant": "default",
+      "note": "En Vercel, una sesión inactiva pasa al deploy nuevo con su modelo, tools e instrucciones actuales; el trabajo en curso no se mueve de deploy"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "v1",
+      "from": 180,
+      "to": 232,
+      "type": "backend"
+    },
+    {
+      "participant": "world",
+      "from": 180,
+      "to": 322,
+      "type": "database"
+    },
+    {
+      "participant": "v2",
+      "from": 270,
+      "to": 412,
+      "type": "backend"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Replay durable",
+      "items": [
+        "El paso interrumpido se re-ejecuta completo",
+        "Un consumidor del stream ve ambos intentos, con ids distintos",
+        "repos/vercel/eve/docs/concepts/execution-model-and-durability.mdx:94-116"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Handoff y límites",
+      "items": [
+        "El handoff de sesiones inactivas está documentado para Vercel producción",
+        "No hay rollback transparente al modelo de ejecución anterior",
+        "repos/vercel/eve/docs/concepts/execution-model-and-durability.mdx:26-30"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Configurar en self-hosting",
+      "items": [
+        "Volumen persistente para .eve/.workflow-data o @workflow/world-postgres",
+        "Tools idempotentes (clave hacia la API) o approval: always()",
+        "repos/vercel/eve/docs/guides/deployment/self-hosting.md:27-29"
+      ]
+    }
+  ]
+}

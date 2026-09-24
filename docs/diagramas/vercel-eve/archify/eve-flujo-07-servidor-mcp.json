@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Flujo 7 — Agente expuesto como servidor MCP",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [
+      1300,
+      580
+    ]
+  },
+  "participants": [
+    {
+      "id": "cliente",
+      "type": "external",
+      "label": "Cliente MCP"
+    },
+    {
+      "id": "mcp",
+      "type": "security",
+      "label": "mcpChannel /eve/v1/mcp"
+    },
+    {
+      "id": "sesion",
+      "type": "backend",
+      "label": "Sesión eve (modo task)"
+    }
+  ],
+  "segments": [
+    {
+      "from": 169,
+      "to": 296,
+      "label": "Arranque durable"
+    },
+    {
+      "from": 307,
+      "to": 370,
+      "label": "Polling"
+    },
+    {
+      "from": 381,
+      "to": 508,
+      "label": "Input y cierre"
+    }
+  ],
+  "messages": [
+    {
+      "from": "cliente",
+      "to": "mcp",
+      "y": 186,
+      "label": "initialize",
+      "variant": "default",
+      "note": "Recibe instructions y 4 tools: agent_start, agent_get, agent_update, agent_cancel"
+    },
+    {
+      "from": "cliente",
+      "to": "mcp",
+      "y": 218,
+      "label": "agent_start: message + outputSchema",
+      "variant": "emphasis",
+      "note": "No es idempotente: reintentar crea una segunda tarea"
+    },
+    {
+      "from": "mcp",
+      "to": "sesion",
+      "y": 250,
+      "label": "auth OK → crea la invocación durable",
+      "variant": "security",
+      "note": "mcpChannel aplica auth en cada operación; aunque se corte la conexión, la invocación no se cancela"
+    },
+    {
+      "from": "mcp",
+      "to": "cliente",
+      "y": 282,
+      "label": "invocationId",
+      "variant": "return",
+      "note": "Con none(), el invocationId funciona como capability: no lo pongas en logs"
+    },
+    {
+      "from": "cliente",
+      "to": "mcp",
+      "y": 324,
+      "label": "agent_get invocationId",
+      "variant": "dashed",
+      "note": "Loop respetando pollAfterMs"
+    },
+    {
+      "from": "mcp",
+      "to": "cliente",
+      "y": 356,
+      "label": "status: working",
+      "variant": "return"
+    },
+    {
+      "from": "mcp",
+      "to": "cliente",
+      "y": 398,
+      "label": "status: input_required + inputRequests",
+      "variant": "return"
+    },
+    {
+      "from": "cliente",
+      "to": "mcp",
+      "y": 430,
+      "label": "agent_update con responses",
+      "variant": "emphasis",
+      "note": "Se envía el batch completo de respuestas"
+    },
+    {
+      "from": "cliente",
+      "to": "mcp",
+      "y": 462,
+      "label": "agent_get",
+      "variant": "default"
+    },
+    {
+      "from": "mcp",
+      "to": "cliente",
+      "y": 494,
+      "label": "status: completed + result",
+      "variant": "return"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "mcp",
+      "from": 180,
+      "to": 500,
+      "type": "security"
+    },
+    {
+      "participant": "sesion",
+      "from": 244,
+      "to": 500,
+      "type": "backend"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Trabajo durable",
+      "items": [
+        "Tras responder agent_start, el trabajo no se cancela aunque se corte la conexión",
+        "El cliente consulta el estado con polling (pollAfterMs)",
+        "repos/vercel/eve/docs/channels/mcp.mdx:165-218"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Puntos de control",
+      "items": [
+        "agent_start no es idempotente: perder la respuesta y reintentar duplica la tarea",
+        "Con auth, cada invocación pertenece al principal que la creó",
+        "Con none(), no registres el invocationId en logs"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Configurar",
+      "items": [
+        "agent/channels/mcp.ts con mcpChannel({ auth: ... })",
+        "La auth es obligatoria incluso en desarrollo"
+      ]
+    }
+  ]
+}

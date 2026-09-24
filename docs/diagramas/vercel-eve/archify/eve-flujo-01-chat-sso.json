@@ -1,0 +1,191 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "eve — Flujo 1: Chat web interno con SSO corporativo",
+    "viewBox": [
+      1560,
+      690
+    ],
+    "quality_profile": "showcase",
+    "column_fit": "spread"
+  },
+  "participants": [
+    {
+      "id": "empleado",
+      "type": "external",
+      "label": "Empleado"
+    },
+    {
+      "id": "idp",
+      "type": "security",
+      "label": "IdP corporativo"
+    },
+    {
+      "id": "web",
+      "type": "frontend",
+      "label": "Web app · useEveAgent"
+    },
+    {
+      "id": "canal",
+      "type": "backend",
+      "label": "eveChannel"
+    },
+    {
+      "id": "sesion",
+      "type": "backend",
+      "label": "Sesión eve"
+    },
+    {
+      "id": "stream",
+      "type": "messagebus",
+      "label": "Stream NDJSON"
+    }
+  ],
+  "segments": [
+    {
+      "from": 164,
+      "to": 258,
+      "label": "Login SSO (fuera de eve)"
+    },
+    {
+      "from": 270,
+      "to": 394,
+      "label": "Sesión autenticada"
+    },
+    {
+      "from": 406,
+      "to": 530,
+      "label": "Respuesta en streaming"
+    },
+    {
+      "from": 542,
+      "to": 606,
+      "label": "Seguimiento"
+    }
+  ],
+  "messages": [
+    {
+      "from": "empleado",
+      "to": "web",
+      "y": 186,
+      "label": "Abre la intranet",
+      "variant": "default"
+    },
+    {
+      "from": "web",
+      "to": "idp",
+      "y": 216,
+      "label": "Login OIDC",
+      "variant": "security"
+    },
+    {
+      "from": "idp",
+      "to": "web",
+      "y": 246,
+      "label": "access token JWT",
+      "variant": "return"
+    },
+    {
+      "from": "empleado",
+      "to": "web",
+      "y": 292,
+      "label": "Escribe una pregunta",
+      "variant": "default"
+    },
+    {
+      "from": "web",
+      "to": "canal",
+      "y": 322,
+      "label": "POST /eve/v1/session con Bearer token",
+      "variant": "emphasis",
+      "note": "auth: oidc verifica issuer, audience y firma"
+    },
+    {
+      "from": "canal",
+      "to": "sesion",
+      "y": 352,
+      "label": "crea sesión con principal user",
+      "variant": "emphasis"
+    },
+    {
+      "from": "canal",
+      "to": "web",
+      "y": 382,
+      "label": "sessionId",
+      "variant": "return"
+    },
+    {
+      "from": "web",
+      "to": "stream",
+      "y": 428,
+      "label": "GET /session/:id/stream",
+      "variant": "default"
+    },
+    {
+      "from": "sesion",
+      "to": "stream",
+      "y": 458,
+      "label": "message.appended en deltas",
+      "variant": "dashed"
+    },
+    {
+      "from": "stream",
+      "to": "web",
+      "y": 488,
+      "label": "el reducer arma el mensaje",
+      "variant": "return"
+    },
+    {
+      "from": "web",
+      "to": "empleado",
+      "y": 518,
+      "label": "Respuesta en streaming",
+      "variant": "return"
+    },
+    {
+      "from": "empleado",
+      "to": "web",
+      "y": 564,
+      "label": "Pregunta de seguimiento",
+      "variant": "default"
+    },
+    {
+      "from": "web",
+      "to": "canal",
+      "y": 594,
+      "label": "POST /eve/v1/session/:id",
+      "variant": "emphasis",
+      "note": "Misma sesión por su ID, con historial durable"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "rose",
+      "title": "Auth en el canal",
+      "items": [
+        "auth: oidc verifica issuer, audience y firma del Bearer token",
+        "eveChannel({ auth: [oidc({ issuer, audiences, discoveryUrl }), localDev()] }); quita placeholderAuth() antes de producción",
+        "repos/vercel/eve/docs/guides/auth-and-route-protection.md:86-99"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Propiedad de la sesión",
+      "items": [
+        "El seguimiento va a la misma sesión por su ID, con historial durable",
+        "La route auth no verifica que el ID de sesión pertenezca al usuario: compara ctx.session.auth.initiator con auth.current en tools sensibles",
+        "repos/vercel/eve/docs/guides/auth-and-route-protection.md:267"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Frontend",
+      "items": [
+        "useEveAgent({ host }) y cors si la web está en otro origen",
+        "repos/vercel/eve/packages/eve/src/react/use-eve-agent.ts:136",
+        "repos/vercel/eve/docs/channels/eve.mdx:136-157"
+      ]
+    }
+  ]
+}

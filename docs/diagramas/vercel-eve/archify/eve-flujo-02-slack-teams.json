@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "eve — Flujo 2: Asistente en Slack o Microsoft Teams",
+    "viewBox": [
+      1560,
+      640
+    ],
+    "quality_profile": "showcase",
+    "column_fit": "spread"
+  },
+  "participants": [
+    {
+      "id": "usuario",
+      "type": "external",
+      "label": "Usuario en Slack"
+    },
+    {
+      "id": "slack",
+      "type": "cloud",
+      "label": "Slack"
+    },
+    {
+      "id": "canal",
+      "type": "security",
+      "label": "slackChannel"
+    },
+    {
+      "id": "sesion",
+      "type": "backend",
+      "label": "Sesión eve del hilo"
+    },
+    {
+      "id": "tools",
+      "type": "external",
+      "label": "Tools"
+    }
+  ],
+  "segments": [
+    {
+      "from": 164,
+      "to": 262,
+      "label": "Entrada verificada"
+    },
+    {
+      "from": 278,
+      "to": 440,
+      "label": "Ejecución y respuesta en el hilo"
+    },
+    {
+      "from": 456,
+      "to": 554,
+      "label": "Continuación en el hilo"
+    }
+  ],
+  "messages": [
+    {
+      "from": "usuario",
+      "to": "slack",
+      "y": 186,
+      "label": "@agente ¿estado del pedido 4213?",
+      "variant": "default"
+    },
+    {
+      "from": "slack",
+      "to": "canal",
+      "y": 218,
+      "label": "Event API firmado con HMAC",
+      "variant": "security",
+      "note": "Verifica la firma en tiempo constante; principal user = usuario de Slack"
+    },
+    {
+      "from": "canal",
+      "to": "sesion",
+      "y": 250,
+      "label": "resume la sesión del hilo o crea una",
+      "variant": "emphasis"
+    },
+    {
+      "from": "sesion",
+      "to": "tools",
+      "y": 300,
+      "label": "consultar_pedido",
+      "variant": "default"
+    },
+    {
+      "from": "tools",
+      "to": "sesion",
+      "y": 332,
+      "label": "resultado",
+      "variant": "return"
+    },
+    {
+      "from": "sesion",
+      "to": "canal",
+      "y": 364,
+      "label": "evento de respuesta",
+      "variant": "return"
+    },
+    {
+      "from": "canal",
+      "to": "slack",
+      "y": 396,
+      "label": "chat.postMessage en el hilo",
+      "variant": "emphasis"
+    },
+    {
+      "from": "slack",
+      "to": "usuario",
+      "y": 428,
+      "label": "Respuesta",
+      "variant": "return"
+    },
+    {
+      "from": "usuario",
+      "to": "slack",
+      "y": 478,
+      "label": "responde en el hilo",
+      "variant": "default"
+    },
+    {
+      "from": "slack",
+      "to": "canal",
+      "y": 510,
+      "label": "nuevo evento, misma dirección",
+      "variant": "security"
+    },
+    {
+      "from": "canal",
+      "to": "sesion",
+      "y": 542,
+      "label": "mismo turno si es steering o turno nuevo",
+      "variant": "emphasis"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "rose",
+      "title": "Firma y principal",
+      "items": [
+        "Verifica la firma en tiempo constante; firmas inválidas (SLACK_SIGNING_SECRET) no llegan a la sesión",
+        "repos/vercel/eve/docs/concepts/security-model.md:60-72",
+        "principal user = usuario de Slack: repos/vercel/eve/docs/guides/auth-and-route-protection.md:318"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Configurar",
+      "items": [
+        "eve add channel/slack; fuera de Vercel: SLACK_BOT_TOKEN y SLACK_SIGNING_SECRET",
+        "Scopes app_mentions:read, chat:write e im:history",
+        "Request URL /eve/v1/slack para eventos, interactividad y slash commands",
+        "repos/vercel/eve/docs/channels/slack.mdx:50-63"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Teams funciona igual",
+      "items": [
+        "Bot Framework Activity y Adaptive Cards para HITL",
+        "repos/vercel/eve/docs/channels/teams.mdx:82"
+      ]
+    }
+  ]
+}

@@ -58,5 +58,19 @@
     "name": "Aider-AI/aider",
     "url": "https://github.com/Aider-AI/aider.git",
     "description": "aider: open-source AI pair programming CLI in the terminal"
+  },
+  {
+    "name": "aaramirez/book-harness",
+    "url": "https://github.com/aaramirez/book-harness.git"
+  },
+  {
+    "name": "vercel/eve",
+    "url": "https://github.com/vercel/eve.git",
+    "description": "eve: Vercel filesystem-first framework for durable AI agents"
+  },
+  {
+    "name": "yibie/awesome-jev",
+    "url": "https://github.com/yibie/awesome-jev.git",
+    "description": "Curated list of projects built on Jev, TypeSafe AI typed-decision model (default evaluator of eve auto() approvals)"
   }
 ]

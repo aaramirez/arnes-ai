@@ -7,3 +7,6 @@ dist/
 repos/
 generated/
 .obsidian/
+
+# Evidencia local de archify visual-check (sidecars); los .html entregados viven en rendered/*.html
+docs/diagramas/**/archify/rendered/*.visual-check.*

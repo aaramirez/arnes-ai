@@ -1,0 +1,206 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "eve · Resolución de auth de entrada",
+    "quality_profile": "showcase"
+  },
+  "lanes": [
+    {
+      "id": "aceptado",
+      "label": "Aceptado"
+    },
+    {
+      "id": "walk",
+      "label": "Filtro de red y walk ordenado de AuthFn"
+    },
+    {
+      "id": "rechazo",
+      "label": "Rechazos",
+      "variant": "exception"
+    }
+  ],
+  "mainPath": [
+    "request",
+    "ip",
+    "authfn1",
+    "ok",
+    "tools"
+  ],
+  "nodes": [
+    {
+      "id": "request",
+      "lane": "walk",
+      "col": 0,
+      "type": "external",
+      "label": "Request entrante",
+      "width": 118
+    },
+    {
+      "id": "ip",
+      "lane": "walk",
+      "col": 1,
+      "type": "security",
+      "label": "¿IP permitida?",
+      "sublabel": "createIpAllowList",
+      "width": 118
+    },
+    {
+      "id": "authfn1",
+      "lane": "walk",
+      "col": 2,
+      "type": "security",
+      "label": "AuthFn 1",
+      "sublabel": "p.ej. tu OIDC",
+      "width": 118
+    },
+    {
+      "id": "authfn2",
+      "lane": "walk",
+      "col": 3,
+      "type": "security",
+      "label": "AuthFn 2",
+      "sublabel": "p.ej. jwtEcdsa",
+      "width": 118
+    },
+    {
+      "id": "localdev",
+      "lane": "walk",
+      "col": 4,
+      "type": "security",
+      "label": "localDev",
+      "sublabel": "solo en eve dev",
+      "width": 118
+    },
+    {
+      "id": "ok",
+      "lane": "aceptado",
+      "col": 3,
+      "type": "backend",
+      "label": "Aceptado",
+      "sublabel": "ctx.session.auth.current",
+      "width": 140
+    },
+    {
+      "id": "tools",
+      "lane": "aceptado",
+      "col": 5,
+      "type": "backend",
+      "label": "Tools",
+      "sublabel": "principalId / tenantId",
+      "width": 140
+    },
+    {
+      "id": "descartado",
+      "lane": "rechazo",
+      "col": 1,
+      "type": "external",
+      "label": "Descartado",
+      "width": 140
+    },
+    {
+      "id": "error",
+      "lane": "rechazo",
+      "col": 2,
+      "type": "external",
+      "label": "401 / 403",
+      "sublabel": "error específico",
+      "width": 140
+    },
+    {
+      "id": "denegado",
+      "lane": "rechazo",
+      "col": 4,
+      "type": "external",
+      "label": "401",
+      "sublabel": "+ WWW-Authenticate",
+      "width": 140
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-request-ip",
+      "from": "request",
+      "to": "ip"
+    },
+    {
+      "id": "e-ip-no",
+      "from": "ip",
+      "to": "descartado",
+      "label": "No",
+      "variant": "security"
+    },
+    {
+      "id": "e-ip-si",
+      "from": "ip",
+      "to": "authfn1",
+      "label": "Sí",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-a1-ok",
+      "from": "authfn1",
+      "to": "ok",
+      "label": "SessionAuthContext",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-a1-null",
+      "from": "authfn1",
+      "to": "authfn2",
+      "label": "null"
+    },
+    {
+      "id": "e-a1-throw",
+      "from": "authfn1",
+      "to": "error",
+      "label": "throw",
+      "variant": "security"
+    },
+    {
+      "id": "e-a2-ok",
+      "from": "authfn2",
+      "to": "ok",
+      "label": "SessionAuthContext",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-a2-null",
+      "from": "authfn2",
+      "to": "localdev",
+      "label": "null"
+    },
+    {
+      "id": "e-local-null",
+      "from": "localdev",
+      "to": "denegado",
+      "label": "null en producción",
+      "variant": "security"
+    },
+    {
+      "id": "e-ok-tools",
+      "from": "ok",
+      "to": "tools",
+      "label": "credenciales y permisos"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Walk ordenado, fail-closed",
+      "items": [
+        "Cada AuthFn devuelve SessionAuthContext (acepta), null (no reconoce) o lanza (rechazo específico)",
+        "repos/vercel/eve/packages/eve/src/public/channels/auth.ts:702-735",
+        "repos/vercel/eve/docs/guides/auth-and-route-protection.md:37-45"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Allow-list de IPs",
+      "items": [
+        "createIpAllowList es opcional y corre antes del walk",
+        "repos/vercel/eve/docs/guides/auth-and-route-protection.md:201-203"
+      ]
+    }
+  ]
+}

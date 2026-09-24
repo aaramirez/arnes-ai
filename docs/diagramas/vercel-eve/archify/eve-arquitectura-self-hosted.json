@@ -1,0 +1,364 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "eve — Arquitectura de referencia self-hosted",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1140,
+      640
+    ],
+    "repository": {
+      "url": "https://github.com/vercel/eve",
+      "revision": "055f1d1d96c6e0c14e04fe632850c16ef0788b98"
+    }
+  },
+  "components": [
+    {
+      "id": "clientes",
+      "type": "frontend",
+      "label": "Clientes",
+      "sublabel": "web · Slack · ERP · MCP",
+      "pos": [
+        20,
+        285
+      ],
+      "size": [
+        150,
+        70
+      ]
+    },
+    {
+      "id": "waf",
+      "type": "security",
+      "label": "WAF + TLS",
+      "sublabel": "rate limit",
+      "pos": [
+        200,
+        285
+      ],
+      "size": [
+        150,
+        70
+      ]
+    },
+    {
+      "id": "ingress",
+      "type": "security",
+      "label": "Ingress / reverse proxy",
+      "sublabel": "sin reescribir rutas",
+      "pos": [
+        380,
+        285
+      ],
+      "size": [
+        190,
+        70
+      ],
+      "sources": [
+        {
+          "path": "docs/guides/deployment/self-hosting.md",
+          "line": 8,
+          "end_line": 62,
+          "label": "Node, world, sandbox y proxy"
+        }
+      ]
+    },
+    {
+      "id": "ag1",
+      "type": "backend",
+      "label": "eve start",
+      "sublabel": "agente soporte",
+      "pos": [
+        650,
+        122
+      ],
+      "size": [
+        160,
+        70
+      ]
+    },
+    {
+      "id": "ag2",
+      "type": "backend",
+      "label": "eve start",
+      "sublabel": "agente finanzas",
+      "pos": [
+        650,
+        447
+      ],
+      "size": [
+        160,
+        70
+      ],
+      "sources": [
+        {
+          "path": "docs/subagents/index.mdx",
+          "line": 126,
+          "end_line": 141,
+          "label": "transporte explícito"
+        }
+      ]
+    },
+    {
+      "id": "identidad",
+      "type": "security",
+      "label": "Identidad",
+      "sublabel": "IdP OIDC + emisor JWT",
+      "pos": [
+        200,
+        450
+      ],
+      "size": [
+        170,
+        70
+      ]
+    },
+    {
+      "id": "sbx",
+      "type": "security",
+      "label": "Pool de sandboxes",
+      "sublabel": "microsandbox / Docker / propio",
+      "pos": [
+        900,
+        20
+      ],
+      "size": [
+        210,
+        64
+      ],
+      "sources": [
+        {
+          "path": "docs/sandbox/microsandbox.mdx",
+          "line": 27,
+          "label": "políticas de red"
+        }
+      ]
+    },
+    {
+      "id": "pg",
+      "type": "database",
+      "label": "Postgres",
+      "sublabel": "@workflow/world-postgres",
+      "pos": [
+        900,
+        125
+      ],
+      "size": [
+        210,
+        64
+      ],
+      "brand": "postgresql",
+      "sources": [
+        {
+          "path": "docs/agent-config.md",
+          "line": 234,
+          "end_line": 245,
+          "label": "world-postgres"
+        }
+      ]
+    },
+    {
+      "id": "mem",
+      "type": "database",
+      "label": "Memoria",
+      "sublabel": "provider propio",
+      "pos": [
+        900,
+        230
+      ],
+      "size": [
+        210,
+        64
+      ]
+    },
+    {
+      "id": "secretos",
+      "type": "security",
+      "label": "Secretos + tokens OAuth",
+      "sublabel": "secret manager · bóveda cifrada",
+      "pos": [
+        900,
+        345
+      ],
+      "size": [
+        210,
+        64
+      ],
+      "sources": [
+        {
+          "path": "docs/connections/overview.mdx",
+          "line": 236,
+          "end_line": 238,
+          "label": "OAuth propio"
+        }
+      ]
+    },
+    {
+      "id": "modelos",
+      "type": "external",
+      "label": "Modelos",
+      "sublabel": "gateway LLM → provider AI SDK",
+      "pos": [
+        900,
+        450
+      ],
+      "size": [
+        210,
+        64
+      ],
+      "sources": [
+        {
+          "path": "packages/eve/src/harness/tool-loop.ts",
+          "line": 2046,
+          "end_line": 2075,
+          "label": "costo desde gateway"
+        }
+      ]
+    },
+    {
+      "id": "obs",
+      "type": "external",
+      "label": "Observabilidad",
+      "sublabel": "OTel collector → APM · logs",
+      "pos": [
+        900,
+        555
+      ],
+      "size": [
+        210,
+        64
+      ],
+      "sources": [
+        {
+          "path": "docs/guides/instrumentation/otel.mdx",
+          "line": 10,
+          "end_line": 70,
+          "label": "OpenTelemetry"
+        }
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Borde",
+      "wraps": [
+        "waf",
+        "ingress"
+      ],
+      "pad": 18
+    },
+    {
+      "kind": "region",
+      "label": "Cluster: Kubernetes / ECS / VMs",
+      "wraps": [
+        "ag1",
+        "ag2"
+      ],
+      "pad": 20
+    }
+  ],
+  "connections": [
+    {
+      "from": "clientes",
+      "to": "waf",
+      "variant": "emphasis"
+    },
+    {
+      "from": "waf",
+      "to": "ingress",
+      "variant": "emphasis"
+    },
+    {
+      "from": "ingress",
+      "to": "ag1",
+      "label": "/eve/ + /.well-known/workflow/",
+      "variant": "emphasis"
+    },
+    {
+      "from": "ingress",
+      "to": "ag2",
+      "variant": "emphasis"
+    },
+    {
+      "from": "clientes",
+      "to": "identidad",
+      "label": "login",
+      "variant": "dashed"
+    },
+    {
+      "from": "identidad",
+      "to": "ag2",
+      "label": "JWT de servicio",
+      "variant": "dashed"
+    },
+    {
+      "from": "ag1",
+      "to": "ag2",
+      "label": "defineRemoteAgent + JWT",
+      "variant": "security",
+      "labelAt": [
+        730,
+        320
+      ]
+    },
+    {
+      "from": "ag1",
+      "to": "sbx",
+      "variant": "security"
+    },
+    {
+      "from": "ag1",
+      "to": "pg",
+      "label": "world",
+      "labelDy": 12
+    },
+    {
+      "from": "ag1",
+      "to": "mem"
+    },
+    {
+      "from": "ag2",
+      "to": "secretos",
+      "variant": "security"
+    },
+    {
+      "from": "ag2",
+      "to": "modelos"
+    },
+    {
+      "from": "ag2",
+      "to": "obs",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Ingress",
+      "items": [
+        "El proxy reenvía /eve/ y /.well-known/workflow/ sin reescribir rutas",
+        "WAF, TLS y rate limiting van en tu borde, no en eve"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Lectura simplificada",
+      "items": [
+        "Ambos agentes usan todas las dependencias de la derecha y el JWT de servicio",
+        "Cada dependencia se dibuja una vez para mantener el mapa legible",
+        "Clientes = web interna (useEveAgent), Slack / Teams, ERP / CRM (eve/client) y clientes MCP"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Lo que traes tú",
+      "items": [
+        "World durable en Postgres, sandbox con aislamiento real",
+        "IdP OIDC (Entra ID / Okta / Keycloak) y emisor de JWT de servicio",
+        "Secret manager, bóveda de tokens OAuth, gateway LLM y OTel"
+      ]
+    }
+  ]
+}

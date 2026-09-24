@@ -1,0 +1,186 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Flujo 6 — Reporte programado con subagentes",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [
+      1080,
+      494
+    ]
+  },
+  "participants": [
+    {
+      "id": "runner",
+      "type": "cloud",
+      "label": "Runner Nitro",
+      "sublabel": "schedules"
+    },
+    {
+      "id": "schedule",
+      "type": "backend",
+      "label": "schedules/daily.ts",
+      "sublabel": "defineSchedule"
+    },
+    {
+      "id": "sesion",
+      "type": "backend",
+      "label": "Sesión task",
+      "sublabel": "padre"
+    },
+    {
+      "id": "ventas",
+      "type": "backend",
+      "label": "Subagente ventas",
+      "sublabel": "contexto propio"
+    },
+    {
+      "id": "soporte",
+      "type": "backend",
+      "label": "Subagente soporte",
+      "sublabel": "contexto propio"
+    },
+    {
+      "id": "slack",
+      "type": "messagebus",
+      "label": "Canal Slack",
+      "sublabel": "destino"
+    }
+  ],
+  "segments": [
+    {
+      "from": 158,
+      "to": 220,
+      "label": "Disparo"
+    },
+    {
+      "from": 238,
+      "to": 368,
+      "label": "Delegación en paralelo"
+    },
+    {
+      "from": 386,
+      "to": 414,
+      "label": "Consolidación"
+    }
+  ],
+  "messages": [
+    {
+      "id": "m01",
+      "from": "runner",
+      "to": "schedule",
+      "y": 176,
+      "label": "cron 0 12 * * 1-5 en UTC",
+      "variant": "emphasis",
+      "note": "En self-hosting lo dispara el runner de Nitro que arranca eve start. repos/vercel/eve/docs/schedules.mdx:150-156"
+    },
+    {
+      "id": "m02",
+      "from": "schedule",
+      "to": "sesion",
+      "y": 210,
+      "label": "to(canal), send Prepara el reporte, appAuth",
+      "variant": "emphasis",
+      "note": "Forma run: handler con to(...) y appAuth. repos/vercel/eve/docs/schedules.mdx:10-33"
+    },
+    {
+      "id": "m03",
+      "from": "sesion",
+      "to": "ventas",
+      "y": 256,
+      "label": "delegar en background",
+      "variant": "dashed",
+      "note": "taskDeliveryPolicy cohort por defecto en schedules. repos/vercel/eve/packages/eve/src/tasks/delivery-policy.ts:35-58"
+    },
+    {
+      "id": "m04",
+      "from": "sesion",
+      "to": "soporte",
+      "y": 290,
+      "label": "delegar en background",
+      "variant": "dashed",
+      "note": "El presupuesto de tokens se reparte entre subagentes. repos/vercel/eve/packages/eve/src/subagents/token-budget.ts:18-38"
+    },
+    {
+      "id": "m05",
+      "from": "ventas",
+      "to": "sesion",
+      "y": 324,
+      "label": "resultado ventas",
+      "variant": "return"
+    },
+    {
+      "id": "m06",
+      "from": "soporte",
+      "to": "sesion",
+      "y": 358,
+      "label": "resultado soporte",
+      "variant": "return"
+    },
+    {
+      "id": "m07",
+      "from": "sesion",
+      "to": "slack",
+      "y": 404,
+      "label": "publica el resumen consolidado",
+      "variant": "emphasis",
+      "note": "Antes, el cohort completo despierta al padre una vez (paso 8 del original, auto-mensaje)."
+    }
+  ],
+  "activations": [
+    {
+      "participant": "schedule",
+      "from": 170,
+      "to": 216,
+      "type": "backend"
+    },
+    {
+      "participant": "sesion",
+      "from": 204,
+      "to": 410,
+      "type": "backend"
+    },
+    {
+      "participant": "ventas",
+      "from": 250,
+      "to": 330,
+      "type": "backend"
+    },
+    {
+      "participant": "soporte",
+      "from": 284,
+      "to": 364,
+      "type": "backend"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Disparo del schedule",
+      "items": [
+        "Cron de 5 campos en UTC",
+        "Forma markdown: prompt que se dispara y se olvida; forma run: handler",
+        "Fuente: repos/vercel/eve/docs/schedules.mdx:10-33"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Cohort",
+      "items": [
+        "El padre recibe todos los resultados juntos",
+        "Publica una sola vez",
+        "Fuente: repos/vercel/eve/packages/eve/src/tasks/delivery-policy.ts:35-58"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Hosts propios",
+      "items": [
+        "Un host que solo sirve HTTP no dispara los crons",
+        "Hay que llamarlos desde un scheduler externo",
+        "Fuente: repos/vercel/eve/docs/schedules.mdx:150-156"
+      ]
+    }
+  ]
+}
