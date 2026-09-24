@@ -1,0 +1,220 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Cómo se produce el propio libro",
+    "quality_profile": "showcase"
+  },
+  "lanes": [
+    {
+      "id": "author",
+      "label": "Gobierno y autoría"
+    },
+    {
+      "id": "gate",
+      "label": "Bloqueo de publicación",
+      "variant": "exception"
+    },
+    {
+      "id": "build",
+      "label": "Build (build-all)"
+    }
+  ],
+  "mainPath": [
+    "constitution",
+    "registries",
+    "plans",
+    "architect",
+    "author",
+    "validators"
+  ],
+  "nodes": [
+    {
+      "id": "constitution",
+      "lane": "author",
+      "col": 0,
+      "type": "security",
+      "label": "Constitución",
+      "sublabel": "P-01..P-30, INV",
+      "width": 140
+    },
+    {
+      "id": "registries",
+      "lane": "author",
+      "col": 1,
+      "type": "database",
+      "label": "Registros",
+      "sublabel": "components / contracts",
+      "tag": "+ glossary",
+      "width": 140
+    },
+    {
+      "id": "plans",
+      "lane": "author",
+      "col": 2,
+      "type": "database",
+      "label": "Planes",
+      "sublabel": "planes/ por capítulo",
+      "width": 140
+    },
+    {
+      "id": "architect",
+      "lane": "author",
+      "col": 3,
+      "type": "backend",
+      "label": "book-architect",
+      "sublabel": "Chapter Brief",
+      "width": 140
+    },
+    {
+      "id": "author",
+      "lane": "author",
+      "col": 4,
+      "type": "backend",
+      "label": "chapter-author",
+      "sublabel": "+ skills",
+      "width": 140
+    },
+    {
+      "id": "validators",
+      "lane": "author",
+      "col": 5,
+      "type": "security",
+      "label": "Validadores",
+      "sublabel": "contracts → chapter",
+      "width": 140
+    },
+    {
+      "id": "stop",
+      "lane": "gate",
+      "col": 5,
+      "type": "security",
+      "label": "failed_validation",
+      "sublabel": "exit 1",
+      "width": 140
+    },
+    {
+      "id": "ir",
+      "lane": "build",
+      "col": 2,
+      "type": "database",
+      "label": "build-book-ir",
+      "sublabel": "dist/book-ir.json",
+      "width": 140
+    },
+    {
+      "id": "mindmap",
+      "lane": "build",
+      "col": 3,
+      "type": "frontend",
+      "label": "build-mind-map",
+      "width": 140
+    },
+    {
+      "id": "web",
+      "lane": "build",
+      "col": 4,
+      "type": "frontend",
+      "label": "build-web",
+      "width": 140
+    },
+    {
+      "id": "pdf",
+      "lane": "build",
+      "col": 5,
+      "type": "external",
+      "label": "build-pdf",
+      "sublabel": "pandoc",
+      "width": 140
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-k-reg",
+      "from": "constitution",
+      "to": "registries"
+    },
+    {
+      "id": "e-reg-pl",
+      "from": "registries",
+      "to": "plans"
+    },
+    {
+      "id": "e-pl-ba",
+      "from": "plans",
+      "to": "architect"
+    },
+    {
+      "id": "e-ba-ca",
+      "from": "architect",
+      "to": "author",
+      "label": "brief"
+    },
+    {
+      "id": "e-ca-val",
+      "from": "author",
+      "to": "validators"
+    },
+    {
+      "id": "e-val-stop",
+      "from": "validators",
+      "to": "stop",
+      "label": "falla: deny",
+      "variant": "security",
+      "role": "error"
+    },
+    {
+      "id": "e-val-ir",
+      "from": "validators",
+      "to": "ir",
+      "label": "ok",
+      "variant": "emphasis",
+      "fromSide": "right",
+      "toSide": "top"
+    },
+    {
+      "id": "e-ir-mm",
+      "from": "ir",
+      "to": "mindmap"
+    },
+    {
+      "id": "e-mm-web",
+      "from": "mindmap",
+      "to": "web"
+    },
+    {
+      "id": "e-web-pdf",
+      "from": "web",
+      "to": "pdf"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "violet",
+      "title": "Constitución, agentes y skills",
+      "items": [
+        "Constitución (P-01..P-30, INV) → registros components / contracts / glossary → planes/",
+        "book-architect: Chapter Brief; chapter-author + skills write-technical-chapter, define-contract / component, write-pseudocode, impacto, retrieval",
+        "Evidencia: ARCHITECTURE_CONSTITUTION.md:8-28, agents/book-architect.md:3-10, agents/chapter-author.md:3-8"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Validación y build",
+      "items": [
+        "Validadores: contracts → components → chapter + retrieval-set; falla + publishing deny → book-state failed_validation, exit 1",
+        "ok → build-book-ir (dist/book-ir.json) → build-mind-map → build-web → build-pdf (pandoc); Node sin dependencias",
+        "Evidencia: policies/publishing.yaml:13-14, scripts/build-all:41-80, scripts/README.md:3-12"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "Alcance y compresión",
+      "items": [
+        "Archify y el PDF ejecutivo (scripts/build-flujos-doc.py) se generan fuera de build-all",
+        "Compresión: skills y orden de validadores solo en tarjetas",
+        "Rutas relativas a repos/aaramirez/book-harness/ (constitución en constitution/)"
+      ]
+    }
+  ]
+}

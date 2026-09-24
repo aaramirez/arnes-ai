@@ -1,0 +1,176 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Orden de construcción (CH-25)",
+    "quality_profile": "showcase"
+  },
+  "lanes": [
+    {
+      "id": "orden",
+      "label": "Orden prescrito por el libro"
+    },
+    {
+      "id": "reglas",
+      "label": "Principio y excepción"
+    }
+  ],
+  "phases": [
+    {
+      "id": "base",
+      "label": "Fundación",
+      "fromCol": 0,
+      "toCol": 0
+    },
+    {
+      "id": "unico",
+      "label": "Agente único",
+      "fromCol": 1,
+      "toCol": 2,
+      "variant": "emphasis"
+    },
+    {
+      "id": "enterprise",
+      "label": "Enterprise",
+      "fromCol": 3,
+      "toCol": 4,
+      "variant": "dashed"
+    }
+  ],
+  "mainPath": [
+    "t0",
+    "t1",
+    "t2",
+    "t3",
+    "t4"
+  ],
+  "nodes": [
+    {
+      "id": "t0",
+      "lane": "orden",
+      "col": 0,
+      "type": "database",
+      "label": "CH-00",
+      "sublabel": "Constitución",
+      "tag": "7 contratos base"
+    },
+    {
+      "id": "t1",
+      "lane": "orden",
+      "col": 1,
+      "type": "backend",
+      "label": "Tramo 1",
+      "sublabel": "CH-01..11",
+      "tag": "núcleo"
+    },
+    {
+      "id": "t2",
+      "lane": "orden",
+      "col": 2,
+      "type": "backend",
+      "label": "Tramo 2",
+      "sublabel": "CH-12..13",
+      "tag": "integración"
+    },
+    {
+      "id": "t3",
+      "lane": "orden",
+      "col": 3,
+      "type": "cloud",
+      "label": "Tramo 3",
+      "sublabel": "CH-14..24",
+      "tag": "planos enterprise"
+    },
+    {
+      "id": "t4",
+      "lane": "orden",
+      "col": 4,
+      "type": "cloud",
+      "label": "CH-26..27",
+      "sublabel": "turno gobernado",
+      "tag": "kill switch"
+    },
+    {
+      "id": "p09",
+      "lane": "reglas",
+      "col": 1,
+      "type": "security",
+      "label": "P-09",
+      "sublabel": "agente único primero",
+      "tag": "Article I"
+    },
+    {
+      "id": "cmp013",
+      "lane": "reglas",
+      "col": 3,
+      "type": "external",
+      "label": "CMP-013",
+      "sublabel": "único multi-agente",
+      "tag": "CH-15"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-t0-t1",
+      "from": "t0",
+      "to": "t1"
+    },
+    {
+      "id": "e-t1-t2",
+      "from": "t1",
+      "to": "t2"
+    },
+    {
+      "id": "e-t2-t3",
+      "from": "t2",
+      "to": "t3"
+    },
+    {
+      "id": "e-t3-t4",
+      "from": "t3",
+      "to": "t4"
+    },
+    {
+      "id": "e-p09-t1",
+      "from": "p09",
+      "to": "t1",
+      "variant": "security",
+      "role": "branch",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "e-t3-cmp013",
+      "from": "t3",
+      "to": "cmp013",
+      "variant": "dashed",
+      "role": "branch"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Secuencia [doc]",
+      "items": [
+        "CH-00 → Tramo 1 (núcleo) → Tramo 2 (DENY / APPROVAL / STOP) → Tramo 3 (planos enterprise) → CH-26..27",
+        "P-09 (Article I) rige todo el orden; CMP-013 AgentCommunicationGateway, parte del Tramo 3 (CH-15), es el único multi-agente"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Cableado abierto (ch25:778-796)",
+      "items": [
+        "9 puntos: p. ej. admisión → activateAgent, Gateway end-to-end, CredentialBroker en ToolCall",
+        "Además: registro, certificación, handoff y skills reales"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "Evidencia (chNN = book/chapters/NN-*/chapter.md)",
+      "items": [
+        "ch25:268-270 P-09 · ch25:312-343 orden",
+        "ch25:421-445 P-06, P-15 · ch25:533-546 CMP-013"
+      ]
+    }
+  ]
+}

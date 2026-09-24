@@ -48,6 +48,14 @@ Rules:
 
 Both commands run scripts under `.opencode/scripts/` (zero external dependencies, cross-platform).
 
+## Available skills
+
+| Skill | Description |
+| --- | --- |
+| `estudio-visual` (`.claude/skills/estudio-visual/`) | Build a visual study set for a harness or technical content: 3 evidence-cited Mermaid notes (architecture & internal flows, 10 enterprise flows, implementation) in `docs/diagramas/<slug>/`, plus their interactive Archify version (JSON + validated HTML) and an index note. Reference output: `docs/diagramas/vercel-eve/`. |
+
+`.claude/skills/estudio-visual/scripts/archify-check.js <dir-archify> [--repo-root repos/<org>/<repo>]` revalidates every Archify source in a set and checks its rendered HTML exists.
+
 ## Available scripts
 
 | Script | Description |

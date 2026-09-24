@@ -1,0 +1,157 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Plan de implementación sugerido",
+    "quality_profile": "showcase"
+  },
+  "lanes": [
+    {
+      "id": "fases",
+      "label": "Fases sugeridas [inferencia]"
+    }
+  ],
+  "phases": [
+    {
+      "id": "fundar",
+      "label": "Reglas + núcleo",
+      "fromCol": 0,
+      "toCol": 1,
+      "variant": "emphasis"
+    },
+    {
+      "id": "gobernar",
+      "label": "Gobierno enterprise",
+      "fromCol": 2,
+      "toCol": 4
+    },
+    {
+      "id": "multi",
+      "label": "Multi-agente",
+      "fromCol": 5,
+      "toCol": 5,
+      "variant": "dashed"
+    }
+  ],
+  "mainPath": [
+    "f0",
+    "f1",
+    "f2",
+    "f3",
+    "f4",
+    "f5"
+  ],
+  "nodes": [
+    {
+      "id": "f0",
+      "lane": "fases",
+      "col": 0,
+      "type": "database",
+      "label": "Fase 0",
+      "sublabel": "Constitución propia",
+      "tag": "P-01..30 + INV"
+    },
+    {
+      "id": "f1",
+      "lane": "fases",
+      "col": 1,
+      "type": "backend",
+      "label": "Fase 1",
+      "sublabel": "Núcleo",
+      "tag": "Policy + Idempotency"
+    },
+    {
+      "id": "f2",
+      "lane": "fases",
+      "col": 2,
+      "type": "security",
+      "label": "Fase 2",
+      "sublabel": "Evidencia y control",
+      "tag": "Audit + Operational"
+    },
+    {
+      "id": "f3",
+      "lane": "fases",
+      "col": 3,
+      "type": "security",
+      "label": "Fase 3",
+      "sublabel": "Datos y personas",
+      "tag": "DataGov + Handoff"
+    },
+    {
+      "id": "f4",
+      "lane": "fases",
+      "col": 4,
+      "type": "cloud",
+      "label": "Fase 4",
+      "sublabel": "Ciclo de vida",
+      "tag": "Eval como gate"
+    },
+    {
+      "id": "f5",
+      "lane": "fases",
+      "col": 5,
+      "type": "external",
+      "label": "Fase 5",
+      "sublabel": "Multi-agente",
+      "tag": "grants acotados"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-f0-f1",
+      "from": "f0",
+      "to": "f1"
+    },
+    {
+      "id": "e-f1-f2",
+      "from": "f1",
+      "to": "f2"
+    },
+    {
+      "id": "e-f2-f3",
+      "from": "f2",
+      "to": "f3"
+    },
+    {
+      "id": "e-f3-f4",
+      "from": "f3",
+      "to": "f4"
+    },
+    {
+      "id": "e-f4-f5",
+      "from": "f4",
+      "to": "f5"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "amber",
+      "title": "Plan [inferencia], orden [doc]",
+      "items": [
+        "Este plan es recomendación del estudio; el orden CH-00 → CH-27 sí lo prescribe el libro (ch25:312-343)",
+        "F0: adoptar P-01..P-30 e INV · F1: eve u otro framework + PolicyEngine + IdempotencyGuard",
+        "F2: Audit + Operational + Admission · F3: DataGov + CredentialBroker + Handoff",
+        "F4: EvaluationHarness como gate + capabilities · F5: AgentCommunicationGateway con grants"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Checklist pre-producción",
+      "items": [
+        "Sin API directa de proveedor; el modelo no autoriza; tool calls validadas (INV-01, 03-05, P-13)",
+        "Side effects con política e idempotencia; límites, cancelación y run reconstruible (INV-06, 09-11, 13, E09)",
+        "Aprobación válida; trazabilidad; auditoría ≠ telemetría (INV-15, 19, P-25)",
+        "Admisión, credenciales fuera del contexto, tenant aislado, kill switch fuera del loop, certificación (INV-E02, E07, E08, E13, E14)"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "Evidencia",
+      "items": [
+        "constitution/ARCHITECTURE_CONSTITUTION.md:153-229: INV-01..20",
+        "constitution/ARCHITECTURE_CONSTITUTION.md:975-989: INV-E01..E14"
+      ]
+    }
+  ]
+}

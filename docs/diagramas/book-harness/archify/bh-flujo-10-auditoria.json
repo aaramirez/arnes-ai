@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Flujo 10 — Evidencia de auditoría inmutable",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [1200, 560]
+  },
+  "participants": [
+    { "id": "src", "type": "security", "label": "Decisión (p.ej. DENY)" },
+    { "id": "aud", "type": "database", "label": "AuditLedger" },
+    { "id": "eb", "type": "messagebus", "label": "EventBus" },
+    { "id": "auditor", "type": "external", "label": "Auditor" }
+  ],
+  "segments": [
+    { "from": 160, "to": 340, "label": "Registro" },
+    { "from": 360, "to": 500, "label": "Consulta" }
+  ],
+  "messages": [
+    { "id": "m1", "from": "src", "to": "aud", "y": 210, "label": "recordAuditEntry(subjectRef, versionSnapshot, actor)", "variant": "emphasis", "note": "AUD valida subjectRef, actor y versionSnapshot (paso interno plegado)." },
+    { "id": "m2", "from": "aud", "to": "src", "y": 260, "label": "AuditRecord (contentHash, sin status)", "variant": "return", "note": "Registro estructuralmente inmutable." },
+    { "id": "m3", "from": "aud", "to": "eb", "y": 310, "label": "AUDIT_RECORD_CREATED (si execution y agentId)", "variant": "dashed", "note": "El evento es solo notificación; la evidencia es el registro." },
+    { "id": "m4", "from": "auditor", "to": "aud", "y": 420, "label": "consultar la evidencia", "variant": "default", "note": "El auditor consulta el ledger, no la telemetría." }
+  ],
+  "activations": [
+    { "participant": "aud", "from": 202, "to": 318, "type": "database" },
+    { "participant": "aud", "from": 412, "to": 440, "type": "database" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Registro inmutable", "items": ["Origen de ejemplo: PolicyEngine DENY", "AuditLedger valida subjectRef, actor y versionSnapshot", "AuditRecord con contentHash y sin campo status", "Faltar subjectRef, actor o snapshot: error no recuperable"] },
+    { "dot": "violet", "title": "Evidencia, no telemetría", "items": ["El evento es solo una notificación condicional", "El auditor consulta el ledger, no logs ni trazas", "CH-26 audita admisión y ejecución; CH-27 directiva y traspaso"] },
+    { "dot": "slate", "title": "Evidencia (book-harness)", "items": ["ch19:430-441 — el problema", "ch19:991-1147 — secuencia y pseudocódigo", "ch19:1216-1227 — fallos", "ch19:1256-1275 — evento condicional"] }
+  ]
+}

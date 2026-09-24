@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Flujo 7 — Delegación acotada entre agentes",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [1200, 540]
+  },
+  "participants": [
+    { "id": "origen", "type": "backend", "label": "Run origen" },
+    { "id": "gateway", "type": "security", "label": "AgentCommunicationGateway" },
+    { "id": "protocolo", "type": "messagebus", "label": "Protocol Adapter A2A" },
+    { "id": "transporte", "type": "messagebus", "label": "Transport Adapter · Preview" },
+    { "id": "destino", "type": "external", "label": "Agente destino" }
+  ],
+  "segments": [
+    { "from": 162, "to": 322, "label": "Autorización en la frontera" },
+    { "from": 336, "to": 460, "label": "Adaptadores reemplazables" }
+  ],
+  "messages": [
+    { "from": "origen", "to": "gateway", "y": 190, "label": "1 · authorizeAgentCommunicationMessage", "variant": "security", "note": "Recibe message y DelegationGrant." },
+    { "from": "gateway", "to": "origen", "y": 238, "label": "2 · sin delegationGrantId: sin delegación", "variant": "return" },
+    { "from": "gateway", "to": "origen", "y": 290, "label": "3 · con grant: autorizado tras 4 chequeos", "variant": "return", "note": "¿Existe? ¿Coincide el id? ¿Vigente? ¿El scope cubre el mensaje?" },
+    { "from": "origen", "to": "protocolo", "y": 364, "label": "4 · enviar por protocolo", "variant": "emphasis" },
+    { "from": "protocolo", "to": "transporte", "y": 398, "label": "5 · transporte", "variant": "dashed" },
+    { "from": "transporte", "to": "destino", "y": 432, "label": "6 · entrega", "variant": "dashed" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Autoridad delegada", "items": ["Todo mensaje cruza una frontera explícita (INV-E03)", "Con grant: existencia, coincidencia, vigencia (now() > expiresAt) y scope", "Errores DELEGATION_GRANT_NOT_FOUND, _MISMATCH, _EXPIRED, DELEGATION_SCOPE_EXCEEDED: recuperables, no reintentables"] },
+    { "dot": "amber", "title": "Adaptadores y límites", "items": ["Protocolo y transporte reemplazables (INV-E04); A2A opcional (INV-E05)", "Transport Adapter es Preview", "Profundidad y costo acotados por ExecutionBudget (INV-E06)", "Sin eventos: el mensaje no tiene sessionId"] },
+    { "dot": "slate", "title": "Evidencia en el libro", "items": ["ch15:402-426 problema · ch15:940-1031 secuencia", "ch15:1100-1112 fallos · ch15:1140-1158 sin eventos", "ch25:533-546 CMP-013, única excepción multi-agente"] }
+  ]
+}

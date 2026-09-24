@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Flujo 5 — Kill switch con traspaso a humano",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [1320, 620]
+  },
+  "participants": [
+    { "id": "operador", "type": "external", "label": "Operador" },
+    { "id": "killfn", "type": "backend", "label": "Función kill switch" },
+    { "id": "opctl", "type": "security", "label": "OperationalController" },
+    { "id": "audit", "type": "database", "label": "AuditLedger" },
+    { "id": "handoff", "type": "backend", "label": "HandoffCoordinator" },
+    { "id": "humano", "type": "external", "label": "Humano receptor" }
+  ],
+  "segments": [
+    { "from": 162, "to": 320, "label": "Directiva KILL_SWITCH" },
+    { "from": 334, "to": 470, "label": "Evidencia y traspaso" },
+    { "from": 484, "to": 540, "label": "Entrega · Preview" }
+  ],
+  "messages": [
+    { "from": "operador", "to": "killfn", "y": 184, "label": "1 · detener el run", "variant": "emphasis" },
+    { "from": "killfn", "to": "opctl", "y": 218, "label": "2 · issueControlDirective KILL_SWITCH", "variant": "security", "note": "La directiva queda ISSUED, sin evento." },
+    { "from": "killfn", "to": "opctl", "y": 252, "label": "3 · applyControlDirective", "variant": "security" },
+    { "from": "opctl", "to": "killfn", "y": 286, "label": "4 · CANCELLED sin runTurn", "variant": "return", "note": "Emite CONTROL_DIRECTIVE_APPLIED. Sin runTurn ni evaluateExecutionContinuation." },
+    { "from": "killfn", "to": "audit", "y": 354, "label": "5 · recordAuditEntry directiva", "variant": "default" },
+    { "from": "killfn", "to": "handoff", "y": 388, "label": "6 · createHandoffPackage KILL_SWITCH", "variant": "emphasis" },
+    { "from": "handoff", "to": "killfn", "y": 422, "label": "7 · HandoffPackage PENDING", "variant": "return" },
+    { "from": "killfn", "to": "audit", "y": 456, "label": "8 · recordAuditEntry traspaso", "variant": "default" },
+    { "from": "handoff", "to": "humano", "y": 516, "label": "9 · Channel Adapter · Preview", "variant": "dashed", "note": "Entrega y PENDING→ACCEPTED→COMPLETED son Preview." }
+  ],
+  "cards": [
+    { "dot": "rose", "title": "Detener sin el loop", "items": ["Función: interruptGovernedEnterpriseRunWithKillSwitch", "applyControlDirective pasa a CANCELLED sin runTurn ni evaluateExecutionContinuation", "Emite CONTROL_DIRECTIVE_APPLIED; el primero en llegar a terminal gana", "Guardas: KILL_SWITCH_ON_TERMINAL_AGENT_STATE, CONTROL_DIRECTIVE_ALREADY_APPLIED"] },
+    { "dot": "violet", "title": "Evidencia y paquete", "items": ["Directiva y traspaso quedan en AuditLedger", "HandoffPackage estructurado: runId, sessionId, motivo, contexto, destinatario", "Preview: entrega por Channel Adapter y PENDING→ACCEPTED→COMPLETED", "No se invoca desde runGovernedEnterpriseTurn"] },
+    { "dot": "slate", "title": "Evidencia en el libro", "items": ["ch27:577-650 pseudocódigo · ch27:510-514 no cableada", "ch18:1083-1197, ch18:1302-1316 directiva y guardas", "ch23:958-1090 HandoffPackage", "diagrams/archify/rendered/capitulo-27-integracion-enterprise-caminos-de-control.html"] }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Flujo 1 — Admisión de una activación externa",
+    "viewBox": [1320, 560],
+    "column_fit": "spread",
+    "quality_profile": "showcase"
+  },
+  "participants": [
+    { "id": "trigger", "type": "external", "label": "Trigger externo" },
+    { "id": "ingress", "type": "frontend", "label": "Ingress Adapter" },
+    { "id": "admission", "type": "security", "label": "AdmissionController" },
+    { "id": "routing", "type": "messagebus", "label": "Routing (Preview)" },
+    { "id": "core", "type": "backend", "label": "AgentCore" }
+  ],
+  "segments": [
+    { "from": 160, "to": 260, "label": "Admisión fail-closed" },
+    { "from": 290, "to": 360, "label": "ADMIT — Preview" },
+    { "from": 390, "to": 450, "label": "REJECT por defecto" }
+  ],
+  "messages": [
+    { "id": "raw-stimulus", "from": "trigger", "to": "ingress", "y": 170, "label": "estímulo crudo: webhook o evento", "variant": "default" },
+    { "id": "evaluate", "from": "ingress", "to": "admission", "y": 205, "label": "evaluateAdmissionForActivationRequest(ActivationRequest)", "variant": "emphasis", "note": "Dentro aplica admissionRulesGrantAccess antes de decidir." },
+    { "id": "decision", "from": "admission", "to": "ingress", "y": 245, "label": "AdmissionDecision (outcome, reason)", "variant": "return" },
+    { "id": "route", "from": "ingress", "to": "routing", "y": 305, "label": "enrutar — Preview", "variant": "dashed" },
+    { "id": "activate", "from": "routing", "to": "core", "y": 345, "label": "activateAgent — Preview", "variant": "dashed" },
+    { "id": "reject", "from": "admission", "to": "ingress", "y": 420, "label": "NO_ADMISSION_RULE_GRANTS_ACCESS", "variant": "return", "note": "No se crea ningún AgentRun ni se emite evento." }
+  ],
+  "activations": [
+    { "participant": "ingress", "from": 165, "to": 430, "type": "frontend" },
+    { "participant": "admission", "from": 200, "to": 425, "type": "security" }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Admisión",
+      "items": [
+        "El adaptador normaliza el estímulo en un ActivationRequest; el ingreso nunca llama a AgentLoop (INV-E01)",
+        "AdmissionController evalúa admissionRulesGrantAccess (paso interno omitido como flecha)",
+        "Identidad, tenant, capacidad, rate y budget (P-17) se reducen a esa regla"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Rechazo y Preview",
+      "items": [
+        "Sin regla que conceda acceso: REJECT (fail-closed), recoverable=T, retryable=F",
+        "Con REJECT no hay AgentRun ni evento: AgentEvent exige runId",
+        "Enrutar y activateAgent son Preview en el libro"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "Evidencia",
+      "items": [
+        "ch14:390-396 problema · ch14:827-884 secuencia",
+        "ch14:941-946 rechazo · ch14:972-991 sin eventos",
+        "ARCHITECTURE_CONSTITUTION.md:930-935 P-16 y P-17"
+      ]
+    }
+  ]
+}

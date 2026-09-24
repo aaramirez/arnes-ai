@@ -1,0 +1,239 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Gobierno de una tool call",
+    "quality_profile": "showcase"
+  },
+  "lanes": [
+    {
+      "id": "runtime",
+      "label": "Camino permitido"
+    },
+    {
+      "id": "human",
+      "label": "Aprobación humana y cola",
+      "variant": "exception"
+    },
+    {
+      "id": "deny",
+      "label": "Denegación fail-closed",
+      "variant": "exception"
+    }
+  ],
+  "mainPath": [
+    "propose",
+    "resolve",
+    "policy",
+    "execute",
+    "result",
+    "tail"
+  ],
+  "nodes": [
+    {
+      "id": "propose",
+      "lane": "runtime",
+      "col": 0,
+      "type": "external",
+      "label": "Modelo propone",
+      "sublabel": "tool call",
+      "width": 140
+    },
+    {
+      "id": "resolve",
+      "lane": "runtime",
+      "col": 1,
+      "type": "backend",
+      "label": "CapabilityRegistry",
+      "sublabel": "resolve…ToolCall",
+      "width": 140
+    },
+    {
+      "id": "policy",
+      "lane": "runtime",
+      "col": 2,
+      "type": "security",
+      "label": "PolicyEngine",
+      "sublabel": "orden fijo",
+      "width": 140
+    },
+    {
+      "id": "execute",
+      "lane": "runtime",
+      "col": 3,
+      "type": "backend",
+      "label": "ToolRuntime",
+      "sublabel": "before → exec → after",
+      "width": 140
+    },
+    {
+      "id": "result",
+      "lane": "runtime",
+      "col": 4,
+      "type": "database",
+      "label": "ToolResult",
+      "sublabel": "observación",
+      "width": 140
+    },
+    {
+      "id": "tail",
+      "lane": "human",
+      "col": 5,
+      "type": "backend",
+      "label": "resumeTurn…",
+      "sublabel": "WithObservation",
+      "width": 140
+    },
+    {
+      "id": "resfail",
+      "lane": "deny",
+      "col": 1,
+      "type": "security",
+      "label": "Falla resolución",
+      "sublabel": "RESOLUTION_FAILED",
+      "width": 140
+    },
+    {
+      "id": "denyobs",
+      "lane": "deny",
+      "col": 2,
+      "type": "security",
+      "label": "DENY",
+      "sublabel": "observación, no ejecuta",
+      "width": 140
+    },
+    {
+      "id": "pause",
+      "lane": "human",
+      "col": 3,
+      "type": "messagebus",
+      "label": "Pausa humana",
+      "sublabel": "WAITING_FOR_HUMAN",
+      "width": 140
+    },
+    {
+      "id": "resolution",
+      "lane": "human",
+      "col": 4,
+      "type": "security",
+      "label": "Resolución",
+      "sublabel": "resumeAfter…",
+      "width": 140
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-propose",
+      "from": "propose",
+      "to": "resolve"
+    },
+    {
+      "id": "e-resfail",
+      "from": "resolve",
+      "to": "resfail",
+      "label": "no encontrada",
+      "variant": "security",
+      "role": "error"
+    },
+    {
+      "id": "e-toolcall",
+      "from": "resolve",
+      "to": "policy",
+      "label": "ToolCall",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-deny",
+      "from": "policy",
+      "to": "denyobs",
+      "label": "DENY",
+      "variant": "security",
+      "role": "error"
+    },
+    {
+      "id": "e-approval",
+      "from": "policy",
+      "to": "pause",
+      "label": "REQUIRE_APPROVAL",
+      "variant": "security",
+      "role": "branch"
+    },
+    {
+      "id": "e-allow",
+      "from": "policy",
+      "to": "execute",
+      "label": "ALLOW",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-resolve",
+      "from": "pause",
+      "to": "resolution",
+      "variant": "dashed",
+      "role": "async"
+    },
+    {
+      "id": "e-approved",
+      "from": "resolution",
+      "to": "execute",
+      "label": "APPROVED",
+      "variant": "emphasis",
+      "role": "return"
+    },
+    {
+      "id": "e-rejected",
+      "from": "resolution",
+      "to": "tail",
+      "label": "REJECTED",
+      "variant": "security",
+      "role": "return"
+    },
+    {
+      "id": "e-exec",
+      "from": "execute",
+      "to": "result"
+    },
+    {
+      "id": "e-tail",
+      "from": "result",
+      "to": "tail",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-deny-tail",
+      "from": "denyobs",
+      "to": "tail",
+      "variant": "dashed",
+      "role": "return"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "rose",
+      "title": "Política fail-closed y pausa",
+      "items": [
+        "Orden fijo: sin regla → DENY (NO_APPLICABLE_POLICY_RULE); no permite → DENY (POLICY_DENIED); aprobación → REQUIRE_APPROVAL; permite → ALLOW",
+        "REQUIRE_APPROVAL: createHumanInteractionRequest PENDING, WAITING_FOR_HUMAN + checkpoint; beginToolApprovalPause retorna, nada espera",
+        "Evidencia: ch08:794-860, ch08:882-908, ch05:514-518, ch05:728-760, ch06:847-956"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Ejecución y cola compartida",
+      "items": [
+        "executeToolCall: beforeToolCall → execute → afterToolCall; TOOL_CALL_COMPLETED o FAILED",
+        "resumeTurnWithObservation: continuación → contexto → modelo → runTurn → checkpoint",
+        "Evidencia: ch02:674-764, ch13:734-997, ARCHITECTURE_CONSTITUTION.md:468-498 (Article VI)"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "Alcance y compresión",
+      "items": [
+        "CH-13 no se llama desde runAgentTurnEndToEnd (ch13:643-646): caminos documentados, no cableados",
+        "Compresión: decisiones como etiquetas; DENY + observación en un nodo; REJECTED (HUMAN_APPROVAL_REJECTED) va directo a la cola",
+        "chNN = repos/aaramirez/book-harness/book/chapters/NN-*/chapter.md; constitución en repos/aaramirez/book-harness/constitution/"
+      ]
+    }
+  ]
+}

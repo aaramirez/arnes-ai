@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Flujo 8 — Clasificación y retención de datos",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [1200, 640]
+  },
+  "participants": [
+    { "id": "ce", "type": "backend", "label": "ContextEngine" },
+    { "id": "dge", "type": "security", "label": "DataGovernanceEngine" },
+    { "id": "ops", "type": "external", "label": "Proceso de retención" }
+  ],
+  "segments": [
+    { "from": 160, "to": 330, "label": "Clasificación" },
+    { "from": 350, "to": 590, "label": "Retención" }
+  ],
+  "messages": [
+    { "id": "m1", "from": "ce", "to": "dge", "y": 200, "label": "classifyData(subjectRef, provenance, legalHold)", "variant": "emphasis", "note": "DGE busca y aplica la regla de clasificación (paso interno plegado)." },
+    { "id": "m2", "from": "dge", "to": "ce", "y": 250, "label": "hay regla: DataGovernanceLabel", "variant": "return", "note": "Clasificación, residencia, retención y linaje. DATA_CLASSIFIED condicional." },
+    { "id": "m3", "from": "dge", "to": "ce", "y": 300, "label": "sin regla: RESTRICTED (fail-closed)", "variant": "security", "note": "Valor por defecto fail-closed." },
+    { "id": "m4", "from": "ops", "to": "dge", "y": 400, "label": "enforceRetention(label, evaluatedAt)", "variant": "emphasis" },
+    { "id": "m5", "from": "dge", "to": "ops", "y": 450, "label": "legalHold: SUSPENDED_BY_LEGAL_HOLD", "variant": "security", "note": "El legal hold tiene prioridad sobre el vencimiento." },
+    { "id": "m6", "from": "dge", "to": "ops", "y": 500, "label": "vencido: DELETION_DUE (borrado Preview)", "variant": "dashed", "note": "El borrado real es Preview en el libro." },
+    { "id": "m7", "from": "dge", "to": "ops", "y": 550, "label": "vigente: NOT_YET_DUE", "variant": "return" }
+  ],
+  "activations": [
+    { "participant": "dge", "from": 192, "to": 308, "type": "security" },
+    { "participant": "dge", "from": 392, "to": 558, "type": "security" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Clasificación fuera del modelo", "items": ["DGE busca y aplica la regla (paso interno)", "Etiqueta: clasificación, residencia, retención, linaje", "Sin regla aplicable: RESTRICTED (fail-closed)", "DATA_CLASSIFIED se emite de forma condicional"] },
+    { "dot": "amber", "title": "Retención y Preview", "items": ["legalHold tiene prioridad sobre el vencimiento", "Borrado efectivo tras DELETION_DUE: Preview", "classifyData falla (no recuperable) sin subjectRef o provenance", "enforceRetention nunca falla"] },
+    { "dot": "slate", "title": "Evidencia (book-harness)", "items": ["ch20:448-460 — el problema", "ch20:1028-1254 — secuencia y pseudocódigo", "ch20:1340-1371 — fallos", "ch20:1382-1386 — eventos"] }
+  ]
+}

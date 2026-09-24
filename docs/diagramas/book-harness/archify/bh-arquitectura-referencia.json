@@ -1,0 +1,336 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Arquitectura de referencia para una empresa",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/aaramirez/book-harness",
+      "provider": "github",
+      "revision": "d16e2c742eae7b47dda2939b58f04c67f2d850f0"
+    },
+    "viewBox": [
+      1305,
+      560
+    ]
+  },
+  "components": [
+    {
+      "id": "control",
+      "type": "security",
+      "label": "Control y ciclo de vida",
+      "sublabel": "OperationalController · HandoffCoordinator · EvaluationHarness",
+      "pos": [
+        520,
+        40
+      ],
+      "size": [
+        360,
+        70
+      ],
+      "sources": [
+        {
+          "path": "constitution/ARCHITECTURE_CONSTITUTION.md",
+          "line": 926,
+          "end_line": 1000,
+          "label": "Amendment v1.1 y planos"
+        }
+      ]
+    },
+    {
+      "id": "ingreso",
+      "type": "frontend",
+      "label": "Ingress Adapters",
+      "sublabel": "webhooks/colas/cron/chat",
+      "pos": [
+        40,
+        235
+      ],
+      "size": [
+        160,
+        70
+      ]
+    },
+    {
+      "id": "admision",
+      "type": "security",
+      "label": "AdmissionController",
+      "sublabel": "identidad, tenant, budget…",
+      "pos": [
+        225,
+        235
+      ],
+      "size": [
+        170,
+        70
+      ]
+    },
+    {
+      "id": "integracion",
+      "type": "backend",
+      "label": "Funciones de integración",
+      "sublabel": "turno gobernado",
+      "pos": [
+        480,
+        235
+      ],
+      "size": [
+        200,
+        70
+      ],
+      "sources": [
+        {
+          "path": "book/chapters/26-integracion-enterprise-camino-feliz/chapter.md",
+          "line": 621,
+          "end_line": 647,
+          "label": "turno gobernado"
+        }
+      ]
+    },
+    {
+      "id": "nucleo",
+      "type": "backend",
+      "label": "Núcleo del agente",
+      "sublabel": "7 componentes (ver tarjeta)",
+      "pos": [
+        730,
+        225
+      ],
+      "size": [
+        220,
+        90
+      ],
+      "sources": [
+        {
+          "path": "constitution/ARCHITECTURE_CONSTITUTION.md",
+          "line": 147,
+          "label": "P-15 substrato compartido"
+        }
+      ]
+    },
+    {
+      "id": "gobierno",
+      "type": "security",
+      "label": "Gobierno",
+      "sublabel": "PolicyEngine · HumanInteractionService",
+      "pos": [
+        730,
+        460
+      ],
+      "size": [
+        220,
+        70
+      ]
+    },
+    {
+      "id": "llm",
+      "type": "external",
+      "label": "Proveedores LLM",
+      "pos": [
+        1080,
+        110
+      ],
+      "size": [
+        210,
+        70
+      ]
+    },
+    {
+      "id": "credenciales",
+      "type": "security",
+      "label": "CredentialBroker",
+      "sublabel": "+ secret store → sistemas de negocio",
+      "pos": [
+        1080,
+        235
+      ],
+      "size": [
+        210,
+        70
+      ]
+    },
+    {
+      "id": "a2a",
+      "type": "external",
+      "label": "AgentCommunicationGateway",
+      "sublabel": "A2A / otros agentes",
+      "pos": [
+        1080,
+        360
+      ],
+      "size": [
+        210,
+        70
+      ]
+    },
+    {
+      "id": "durable",
+      "type": "database",
+      "label": "SessionManager · AuditLedger",
+      "sublabel": "checkpoints · append-only + hash",
+      "pos": [
+        170,
+        460
+      ],
+      "size": [
+        240,
+        70
+      ]
+    },
+    {
+      "id": "datos",
+      "type": "database",
+      "label": "IdempotencyGuard",
+      "sublabel": "+ DataGovernanceEngine",
+      "pos": [
+        990,
+        460
+      ],
+      "size": [
+        170,
+        70
+      ]
+    },
+    {
+      "id": "eventbus",
+      "type": "messagebus",
+      "label": "EventBus",
+      "sublabel": "telemetría",
+      "pos": [
+        1180,
+        460
+      ],
+      "size": [
+        100,
+        70
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Ingreso",
+      "wraps": [
+        "ingreso",
+        "admision"
+      ]
+    },
+    {
+      "kind": "region",
+      "label": "Runtime del agente: substrato compartido",
+      "wraps": [
+        "integracion",
+        "nucleo",
+        "gobierno"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "normaliza",
+      "from": "ingreso",
+      "to": "admision",
+      "variant": "emphasis"
+    },
+    {
+      "id": "admite",
+      "from": "admision",
+      "to": "integracion",
+      "variant": "emphasis"
+    },
+    {
+      "id": "turno",
+      "from": "integracion",
+      "to": "nucleo",
+      "variant": "emphasis"
+    },
+    {
+      "id": "gobierna",
+      "from": "nucleo",
+      "to": "gobierno",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "modelo",
+      "from": "nucleo",
+      "to": "llm"
+    },
+    {
+      "id": "credencial",
+      "from": "nucleo",
+      "to": "credenciales"
+    },
+    {
+      "id": "delega",
+      "from": "nucleo",
+      "to": "a2a"
+    },
+    {
+      "id": "datos-edge",
+      "from": "nucleo",
+      "to": "datos",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "telemetria",
+      "from": "nucleo",
+      "to": "eventbus",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "persiste",
+      "from": "integracion",
+      "to": "durable"
+    },
+    {
+      "id": "kill-switch",
+      "from": "control",
+      "to": "nucleo",
+      "label": "sin pasar por AgentLoop",
+      "variant": "security",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelSegment": 2
+    },
+    {
+      "id": "certifica",
+      "from": "control",
+      "to": "integracion",
+      "label": "certifica antes de producción",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelSegment": 2
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Qué se agrupó (18 → 12 nodos)",
+      "items": [
+        "Núcleo = AgentCore, AgentLoop, ContextEngine, ModelGateway, CapabilityRegistry, ToolRuntime, ExecutionController.",
+        "Fuentes + Ingress Adapters en un nodo; CredentialBroker absorbe los sistemas de negocio; OperationalController → HandoffCoordinator queda dentro de Control.",
+        "EvaluationHarness certifica todo el Runtime; aquí la flecha llega a su entrada."
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Lectura",
+      "items": [
+        "Ingress normaliza a ActivationRequest; AdmissionController valida identidad, tenant, capacidad, rate y budget.",
+        "Las integraciones persisten sesión y auditoría; el núcleo usa LLM, credenciales, idempotencia, datos y A2A."
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Evidencia",
+      "items": [
+        "constitución:926-1000 (Amendment v1.1 y planos) · ch26:621-647 (turno gobernado) · constitución:147 (P-15)."
+      ]
+    }
+  ]
+}

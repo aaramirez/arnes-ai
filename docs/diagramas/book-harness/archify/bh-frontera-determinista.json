@@ -1,0 +1,254 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Frontera determinista / agéntica (Article XII)",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/aaramirez/book-harness",
+      "provider": "github",
+      "revision": "d16e2c742eae7b47dda2939b58f04c67f2d850f0"
+    },
+    "viewBox": [
+      1260,
+      450
+    ]
+  },
+  "components": [
+    {
+      "id": "ag-intencion",
+      "type": "external",
+      "label": "Interpretar intención",
+      "sublabel": "y formar hipótesis",
+      "pos": [
+        30,
+        60
+      ],
+      "size": [
+        240,
+        70
+      ],
+      "sources": [
+        {
+          "path": "constitution/ARCHITECTURE_CONSTITUTION.md",
+          "line": 777,
+          "end_line": 840,
+          "label": "Article XII"
+        }
+      ]
+    },
+    {
+      "id": "ag-capability",
+      "type": "external",
+      "label": "Elegir capability",
+      "sublabel": "y analizar observaciones",
+      "pos": [
+        30,
+        200
+      ],
+      "size": [
+        240,
+        70
+      ],
+      "sources": [
+        {
+          "path": "constitution/ARCHITECTURE_CONSTITUTION.md",
+          "line": 777,
+          "end_line": 840,
+          "label": "Article XII"
+        }
+      ]
+    },
+    {
+      "id": "ag-accion",
+      "type": "external",
+      "label": "Proponer siguiente acción",
+      "sublabel": "y juzgar si el objetivo parece cumplido",
+      "pos": [
+        30,
+        340
+      ],
+      "size": [
+        240,
+        70
+      ],
+      "sources": [
+        {
+          "path": "constitution/ARCHITECTURE_CONSTITUTION.md",
+          "line": 777,
+          "end_line": 840,
+          "label": "Article XII"
+        }
+      ]
+    },
+    {
+      "id": "frontera",
+      "type": "security",
+      "label": "FRONTERA DETERMINISTA",
+      "sublabel": "el runtime toma el control",
+      "pos": [
+        410,
+        60
+      ],
+      "size": [
+        160,
+        350
+      ],
+      "sources": [
+        {
+          "path": "constitution/ARCHITECTURE_CONSTITUTION.md",
+          "line": 842,
+          "end_line": 844,
+          "label": "regla suprema"
+        }
+      ]
+    },
+    {
+      "id": "det-identidad",
+      "type": "security",
+      "label": "Identidad y autorización",
+      "sublabel": "validación de schema y permisos",
+      "pos": [
+        680,
+        60
+      ],
+      "size": [
+        260,
+        70
+      ],
+      "sources": [
+        {
+          "path": "constitution/ARCHITECTURE_CONSTITUTION.md",
+          "line": 777,
+          "end_line": 840,
+          "label": "Article XII"
+        }
+      ]
+    },
+    {
+      "id": "det-limites",
+      "type": "backend",
+      "label": "Budgets, timeouts, retries",
+      "sublabel": "idempotencia y sandboxing",
+      "pos": [
+        680,
+        200
+      ],
+      "size": [
+        260,
+        70
+      ],
+      "sources": [
+        {
+          "path": "constitution/ARCHITECTURE_CONSTITUTION.md",
+          "line": 777,
+          "end_line": 840,
+          "label": "Article XII"
+        }
+      ]
+    },
+    {
+      "id": "det-estado",
+      "type": "database",
+      "label": "Aprobaciones y transiciones de estado",
+      "sublabel": "auditoría y límites de recursos",
+      "pos": [
+        680,
+        340
+      ],
+      "size": [
+        260,
+        70
+      ],
+      "sources": [
+        {
+          "path": "constitution/ARCHITECTURE_CONSTITUTION.md",
+          "line": 777,
+          "end_line": 840,
+          "label": "Article XII"
+        }
+      ]
+    },
+    {
+      "id": "mundo",
+      "type": "cloud",
+      "label": "Mundo real",
+      "pos": [
+        1100,
+        200
+      ],
+      "size": [
+        130,
+        70
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Agéntico: el LLM puede",
+      "wraps": [
+        "ag-intencion",
+        "ag-capability",
+        "ag-accion"
+      ]
+    },
+    {
+      "kind": "security-group",
+      "label": "Determinista: el runtime controla",
+      "wraps": [
+        "det-identidad",
+        "det-limites",
+        "det-estado"
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "propone-2",
+      "from": "ag-capability",
+      "to": "frontera",
+      "label": "propone intención",
+      "variant": "dashed"
+    },
+    {
+      "id": "gobierna-2",
+      "from": "frontera",
+      "to": "det-limites",
+      "variant": "security"
+    },
+    {
+      "id": "efecto-2",
+      "from": "det-limites",
+      "to": "mundo",
+      "label": "consecuencias gobernadas",
+      "variant": "emphasis"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "rose",
+      "title": "Regla suprema",
+      "items": [
+        "\"Probabilistic systems may propose decisions. Deterministic systems must govern consequences.\" (constitución:842-844)",
+        "Doctrina final: \"Model proposes; Harness governs…\" (constitución:887-924)."
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Qué se comprimió",
+      "items": [
+        "Las 6 capacidades agénticas y los 6 controles deterministas de Article XII (constitución:777-840) se agrupan de a dos por nodo.",
+        "Como en el original, las flechas van de zona a zona: una sola flecha por salto."
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Cómo leerlo",
+      "items": [
+        "El LLM solo produce intención; nada toca el mundo real sin pasar por la frontera.",
+        "Identidad, schema, budgets, idempotencia, aprobaciones y auditoría son responsabilidad del runtime."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,234 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Ensamblado de contexto",
+    "quality_profile": "showcase"
+  },
+  "lanes": [
+    {
+      "id": "fit",
+      "label": "Cabe en presupuesto"
+    },
+    {
+      "id": "compact",
+      "label": "Compactación"
+    },
+    {
+      "id": "drop",
+      "label": "Descarte y error",
+      "variant": "exception"
+    }
+  ],
+  "mainPath": [
+    "iterate",
+    "fits",
+    "add",
+    "next",
+    "empty",
+    "snapshot"
+  ],
+  "nodes": [
+    {
+      "id": "iterate",
+      "lane": "fit",
+      "col": 0,
+      "type": "frontend",
+      "label": "candidates",
+      "sublabel": "orden = ranking",
+      "width": 140
+    },
+    {
+      "id": "fits",
+      "lane": "fit",
+      "col": 1,
+      "type": "security",
+      "label": "¿Cabe?",
+      "sublabel": "estimateTokens",
+      "width": 140
+    },
+    {
+      "id": "add",
+      "lane": "fit",
+      "col": 2,
+      "type": "backend",
+      "label": "ContextBlock",
+      "sublabel": "compacted FALSE",
+      "width": 140
+    },
+    {
+      "id": "next",
+      "lane": "fit",
+      "col": 3,
+      "type": "security",
+      "label": "¿Quedan?",
+      "sublabel": "más candidatos",
+      "width": 140
+    },
+    {
+      "id": "empty",
+      "lane": "fit",
+      "col": 4,
+      "type": "security",
+      "label": "¿Sin bloques?",
+      "sublabel": "hubo candidatos",
+      "width": 140
+    },
+    {
+      "id": "snapshot",
+      "lane": "fit",
+      "col": 5,
+      "type": "database",
+      "label": "ContextSnapshot",
+      "sublabel": "…_ASSEMBLED",
+      "width": 140
+    },
+    {
+      "id": "cfits",
+      "lane": "compact",
+      "col": 1,
+      "type": "messagebus",
+      "label": "compact",
+      "sublabel": "¿cabe compactado?",
+      "width": 140
+    },
+    {
+      "id": "addc",
+      "lane": "compact",
+      "col": 2,
+      "type": "backend",
+      "label": "ContextBlock",
+      "sublabel": "compacted TRUE",
+      "width": 140
+    },
+    {
+      "id": "dropped",
+      "lane": "drop",
+      "col": 1,
+      "type": "security",
+      "label": "Descartar",
+      "sublabel": "explícitamente",
+      "width": 140
+    },
+    {
+      "id": "err",
+      "lane": "drop",
+      "col": 4,
+      "type": "security",
+      "label": "BUDGET_EXHAUSTED",
+      "sublabel": "SNAPSHOT_FAILED",
+      "width": 140
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-iter",
+      "from": "iterate",
+      "to": "fits"
+    },
+    {
+      "id": "e-fit-yes",
+      "from": "fits",
+      "to": "add",
+      "label": "Sí",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-fit-no",
+      "from": "fits",
+      "to": "cfits",
+      "label": "No",
+      "variant": "security",
+      "role": "branch"
+    },
+    {
+      "id": "e-c-yes",
+      "from": "cfits",
+      "to": "addc",
+      "label": "Sí",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-c-no",
+      "from": "cfits",
+      "to": "dropped",
+      "label": "No",
+      "variant": "security",
+      "role": "error"
+    },
+    {
+      "id": "e-add-next",
+      "from": "add",
+      "to": "next"
+    },
+    {
+      "id": "e-addc-next",
+      "from": "addc",
+      "to": "next",
+      "variant": "dashed"
+    },
+    {
+      "id": "e-drop-next",
+      "from": "dropped",
+      "to": "next",
+      "variant": "dashed"
+    },
+    {
+      "id": "e-loop",
+      "from": "next",
+      "to": "iterate",
+      "label": "Sí",
+      "variant": "dashed",
+      "role": "return"
+    },
+    {
+      "id": "e-next-no",
+      "from": "next",
+      "to": "empty",
+      "label": "No"
+    },
+    {
+      "id": "e-empty-yes",
+      "from": "empty",
+      "to": "err",
+      "label": "Sí",
+      "variant": "security",
+      "role": "error"
+    },
+    {
+      "id": "e-empty-no",
+      "from": "empty",
+      "to": "snapshot",
+      "label": "No",
+      "variant": "emphasis"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Entrada y presupuesto",
+      "items": [
+        "candidates: List de AgentMessage ya dados, sin retrieval; el orden dado es el ranking",
+        "estimateTokens de cada candidato contra budget.maxInputTokens",
+        "Evidencia: ch04:686-765 (assembleContextSnapshot)"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Bloques, snapshot y fallo",
+      "items": [
+        "ContextBlock: provenance conversation_history, compacted FALSE o TRUE",
+        "Sin bloques pese a candidatos → CONTEXT_BUDGET_EXHAUSTED + CONTEXT_SNAPSHOT_FAILED; si no, CONTEXT_SNAPSHOT_ASSEMBLED",
+        "Evidencia: ch04:478-500; ch04:776-792 (sin retrieval ni filtrado de autorización)"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "Compresión",
+      "items": [
+        "compact y ¿cabe compactado? en un solo nodo; candidates e iterar en orden en el nodo de entrada",
+        "chNN = repos/aaramirez/book-harness/book/chapters/NN-*/chapter.md"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Flujo 9 — Certificación antes de promover a producción",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [1280, 640]
+  },
+  "participants": [
+    { "id": "rel", "type": "external", "label": "Responsable de release" },
+    { "id": "eh", "type": "security", "label": "EvaluationHarness" },
+    { "id": "promo", "type": "backend", "label": "Promoción controlada" },
+    { "id": "run", "type": "backend", "label": "Run en producción" }
+  ],
+  "segments": [
+    { "from": 160, "to": 400, "label": "Evaluación previa" },
+    { "from": 420, "to": 590, "label": "Promoción y correlación" }
+  ],
+  "messages": [
+    { "id": "m1", "from": "rel", "to": "eh", "y": 200, "label": "evaluateCandidateForPromotion(subjectRef, riskClass, certificationRequired)", "variant": "emphasis" },
+    { "id": "m2", "from": "eh", "to": "rel", "y": 250, "label": "CERTIFIED (no requerida o satisfecha)", "variant": "return", "note": "Dos ramas del Mermaid plegadas: no requiere certificación / requerida y satisfecha." },
+    { "id": "m3", "from": "eh", "to": "rel", "y": 300, "label": "REJECTED (requerida y no satisfecha)", "variant": "security" },
+    { "id": "m4", "from": "eh", "to": "rel", "y": 350, "label": "NEEDS_REVIEW por defecto (sin información)", "variant": "dashed", "note": "EVALUATION_REPORT_PRODUCED condicional." },
+    { "id": "m5", "from": "rel", "to": "promo", "y": 450, "label": "promover solo si CERTIFIED", "variant": "emphasis" },
+    { "id": "m6", "from": "run", "to": "eh", "y": 500, "label": "correlateRunWithBusinessOutcome(runId, outcome, SLA)", "variant": "default" },
+    { "id": "m7", "from": "eh", "to": "run", "y": 550, "label": "BusinessOutcomeCorrelation", "variant": "return" }
+  ],
+  "activations": [
+    { "participant": "eh", "from": 192, "to": 358, "type": "security" },
+    { "participant": "eh", "from": 492, "to": 558, "type": "security" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Certificación por riesgo", "items": ["Evalúa antes de que exista un run del candidato", "Dos ramas CERTIFIED plegadas en un mensaje", "Valor por defecto: NEEDS_REVIEW", "EVALUATION_REPORT_PRODUCED es condicional"] },
+    { "dot": "amber", "title": "Producción separada (P-28)", "items": ["La promoción queda condicionada al reporte", "Cada run se correlaciona con valor, SLA y escalamiento", "Certificación real (suites, datasets): abierta en el libro"] },
+    { "dot": "slate", "title": "Evidencia (book-harness)", "items": ["ch22:455-466 — el problema", "ch22:1148-1323 — secuencia y pseudocódigo", "ch22:1394-1432 — fallos y eventos", "ch25:778-796 — pendientes antes de orquestar"] }
+  ]
+}

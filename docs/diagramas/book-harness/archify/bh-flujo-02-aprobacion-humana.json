@@ -1,0 +1,193 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Flujo 2 — Aprobación humana dentro del turno",
+    "viewBox": [
+      1440,
+      660
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase"
+  },
+  "participants": [
+    {
+      "id": "integration",
+      "type": "backend",
+      "label": "Integración CH-13"
+    },
+    {
+      "id": "policy",
+      "type": "security",
+      "label": "PolicyEngine"
+    },
+    {
+      "id": "his",
+      "type": "messagebus",
+      "label": "HumanInteractionService"
+    },
+    {
+      "id": "session",
+      "type": "database",
+      "label": "SessionManager"
+    },
+    {
+      "id": "approver",
+      "type": "external",
+      "label": "Aprobador"
+    },
+    {
+      "id": "tools",
+      "type": "backend",
+      "label": "ToolRuntime"
+    }
+  ],
+  "segments": [
+    {
+      "from": 180,
+      "to": 320,
+      "label": "Política y pausa: beginToolApprovalPause retorna"
+    },
+    {
+      "from": 340,
+      "to": 410,
+      "label": "Resolución humana"
+    },
+    {
+      "from": 430,
+      "to": 500,
+      "label": "APPROVED (REJECTED → HUMAN_APPROVAL_REJECTED)"
+    },
+    {
+      "from": 515,
+      "to": 560,
+      "label": "Reanudación"
+    }
+  ],
+  "messages": [
+    {
+      "id": "evaluate",
+      "from": "integration",
+      "to": "policy",
+      "y": 190,
+      "label": "evaluatePolicyForToolCall",
+      "variant": "security"
+    },
+    {
+      "id": "require",
+      "from": "policy",
+      "to": "integration",
+      "y": 225,
+      "label": "REQUIRE_APPROVAL",
+      "variant": "return"
+    },
+    {
+      "id": "create-request",
+      "from": "integration",
+      "to": "his",
+      "y": 260,
+      "label": "createHumanInteractionRequest — PENDING persistido",
+      "variant": "emphasis"
+    },
+    {
+      "id": "checkpoint",
+      "from": "integration",
+      "to": "session",
+      "y": 300,
+      "label": "checkpoint WAITING_FOR_HUMAN",
+      "variant": "default",
+      "note": "beginToolApprovalPause retorna: nada queda esperando."
+    },
+    {
+      "id": "human-resolution",
+      "from": "approver",
+      "to": "his",
+      "y": 355,
+      "label": "resolución APPROVED o REJECTED",
+      "variant": "default"
+    },
+    {
+      "id": "resolve",
+      "from": "integration",
+      "to": "his",
+      "y": 390,
+      "label": "resolveHumanInteractionRequest",
+      "variant": "emphasis",
+      "note": "Protege contra REQUEST_ALREADY_RESOLVED y tipo de resultado incorrecto."
+    },
+    {
+      "id": "execute",
+      "from": "integration",
+      "to": "tools",
+      "y": 445,
+      "label": "executeToolCall (si APPROVED)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "tool-result",
+      "from": "tools",
+      "to": "integration",
+      "y": 480,
+      "label": "ToolResult como observación",
+      "variant": "return",
+      "note": "Si REJECTED: observación HarnessError HUMAN_APPROVAL_REJECTED."
+    },
+    {
+      "id": "resume",
+      "from": "integration",
+      "to": "session",
+      "y": 540,
+      "label": "resumeTurnWithObservation — sigue el turno",
+      "variant": "default"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "integration",
+      "from": 185,
+      "to": 305,
+      "type": "backend"
+    },
+    {
+      "participant": "integration",
+      "from": 385,
+      "to": 545,
+      "type": "backend"
+    },
+    {
+      "participant": "his",
+      "from": 255,
+      "to": 395,
+      "type": "messagebus"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Pausa sin bloqueo",
+      "items": [
+        "La política exige aprobación: solicitud PENDING persistida y checkpoint WAITING_FOR_HUMAN",
+        "beginToolApprovalPause retorna; la reanudación es otra llamada (INV-15)",
+        "resolveHumanInteractionRequest rechaza REQUEST_ALREADY_RESOLVED"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Ramas y límites",
+      "items": [
+        "APPROVED: executeToolCall y ToolResult como observación",
+        "REJECTED: HarnessError HUMAN_APPROVAL_REJECTED (categoría POLICY) vuelve al modelo",
+        "Canal (Slack, web) es un adaptador (INV-14); resumeAfterHumanResolution no está cableada en runAgentTurnEndToEnd"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "Evidencia",
+      "items": [
+        "ch05:728-760 orden de la política",
+        "ch06:847-956 solicitud y resolución",
+        "ch13:867-997 pausa y reanudación · ch13:1092-1096 transiciones"
+      ]
+    }
+  ]
+}

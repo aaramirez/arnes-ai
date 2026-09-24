@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Flujo 3 — Credencial que nunca ve el modelo",
+    "viewBox": [
+      1200,
+      520
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase"
+  },
+  "participants": [
+    {
+      "id": "registry",
+      "type": "backend",
+      "label": "CapabilityRegistry"
+    },
+    {
+      "id": "broker",
+      "type": "security",
+      "label": "CredentialBroker"
+    },
+    {
+      "id": "secrets",
+      "type": "database",
+      "label": "Secret Store (borde)"
+    },
+    {
+      "id": "tools",
+      "type": "backend",
+      "label": "ToolRuntime"
+    }
+  ],
+  "segments": [
+    {
+      "from": 180,
+      "to": 300,
+      "label": "Chequeos en orden: pertenencia → existencia → vigencia"
+    },
+    {
+      "from": 320,
+      "to": 370,
+      "label": "Referencia opaca + evento"
+    },
+    {
+      "from": 383,
+      "to": 420,
+      "label": "Futuro"
+    }
+  ],
+  "messages": [
+    {
+      "id": "resolve",
+      "from": "registry",
+      "to": "broker",
+      "y": 195,
+      "label": "resolveCredentialReference(descriptor, credentialName)",
+      "variant": "security",
+      "note": "Primero: ¿la credencial pertenece a la capability?"
+    },
+    {
+      "id": "exists",
+      "from": "broker",
+      "to": "secrets",
+      "y": 260,
+      "label": "¿existe el secreto?",
+      "variant": "default",
+      "note": "Después: ¿no está vencido?"
+    },
+    {
+      "id": "reference",
+      "from": "broker",
+      "to": "registry",
+      "y": 340,
+      "label": "CredentialReference opaca, nunca el secreto",
+      "variant": "return",
+      "note": "Emite CREDENTIAL_RESOLVED o CREDENTIAL_RESOLUTION_FAILED."
+    },
+    {
+      "id": "inject",
+      "from": "registry",
+      "to": "tools",
+      "y": 400,
+      "label": "la referencia viaja a la implementación — futuro",
+      "variant": "dashed"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "broker",
+      "from": 190,
+      "to": 345,
+      "type": "security"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Orden de chequeos",
+      "items": [
+        "Pertenencia a la capability antes que existencia y vigencia (evita canal lateral)",
+        "Los dos chequeos internos del broker van como notas, no como flechas",
+        "Siempre se emite CREDENTIAL_RESOLVED o CREDENTIAL_RESOLUTION_FAILED (INV-E08)"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Fallos y límites",
+      "items": [
+        "CREDENTIAL_CAPABILITY_MISMATCH no es recuperable",
+        "CREDENTIAL_NOT_FOUND y CREDENTIAL_EXPIRED: recuperables, no reintentables",
+        "Elegir la credencial no es autorizar: eso sigue en PolicyEngine"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "Evidencia",
+      "items": [
+        "ch16:364-386 problema · ch16:845-982 secuencia",
+        "ch16:992-998, ch16:1042-1050 fallos y orden",
+        "ch16:1080-1082 eventos"
+      ]
+    }
+  ]
+}

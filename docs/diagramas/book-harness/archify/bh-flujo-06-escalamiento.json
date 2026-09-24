@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Flujo 6 — Escalamiento tras una denegación grave",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [1200, 520]
+  },
+  "participants": [
+    { "id": "policy", "type": "security", "label": "PolicyEngine" },
+    { "id": "escfn", "type": "backend", "label": "Función de escalamiento" },
+    { "id": "handoff", "type": "backend", "label": "HandoffCoordinator" },
+    { "id": "audit", "type": "database", "label": "AuditLedger" },
+    { "id": "humano", "type": "external", "label": "Humano" }
+  ],
+  "segments": [
+    { "from": 162, "to": 218, "label": "Solo DENY" },
+    { "from": 232, "to": 368, "label": "Paquete y auditoría" },
+    { "from": 382, "to": 440, "label": "Revisión humana" }
+  ],
+  "messages": [
+    { "from": "policy", "to": "escfn", "y": 190, "label": "1 · PolicyDecision DENY", "variant": "security", "note": "Si no es DENY lanza NOT_A_SEVERE_DENIAL." },
+    { "from": "escfn", "to": "handoff", "y": 256, "label": "2 · createHandoffPackage EXPLICIT_ESCALATION", "variant": "emphasis" },
+    { "from": "handoff", "to": "escfn", "y": 296, "label": "3 · HandoffPackage", "variant": "return", "note": "HANDOFF_PACKAGE_CREATED si hay execution y agentId." },
+    { "from": "escfn", "to": "audit", "y": 336, "label": "4 · recordAuditEntry", "variant": "default", "note": "AUDIT_RECORD_CREATED condicional." },
+    { "from": "handoff", "to": "humano", "y": 412, "label": "5 · paquete para revisión", "variant": "dashed" }
+  ],
+  "cards": [
+    { "dot": "rose", "title": "Solo una denegación", "items": ["Función: escalateGovernedEnterpriseRunAfterSevereDenial", "Cualquier decisión que no sea DENY lanza NOT_A_SEVERE_DENIAL", "Qué es grave lo decide quien llama: PolicyDecision no tiene severidad"] },
+    { "dot": "violet", "title": "Eventos condicionales", "items": ["HANDOFF_PACKAGE_CREATED solo si hay execution y agentId", "AUDIT_RECORD_CREATED también es condicional", "En paralelo, el DENY vuelve al modelo como observación (runAgentTurnWithPolicyDenial, CH-13)"] },
+    { "dot": "slate", "title": "Evidencia en el libro", "items": ["ch27:651-672 pseudocódigo y severidad externa", "ch13:808-857 DENY como observación"] }
+  ]
+}

@@ -1,0 +1,168 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Flujo 4 — Side effect crítico sin duplicados",
+    "viewBox": [
+      1440,
+      600
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase"
+  },
+  "participants": [
+    {
+      "id": "tools",
+      "type": "backend",
+      "label": "ToolRuntime"
+    },
+    {
+      "id": "guard",
+      "type": "security",
+      "label": "IdempotencyGuard"
+    },
+    {
+      "id": "external",
+      "type": "external",
+      "label": "Sistema externo"
+    }
+  ],
+  "segments": [
+    {
+      "from": 160,
+      "to": 190,
+      "label": "Consulta"
+    },
+    {
+      "from": 205,
+      "to": 390,
+      "label": "Sin registro"
+    },
+    {
+      "from": 405,
+      "to": 440,
+      "label": "PENDING"
+    },
+    {
+      "from": 455,
+      "to": 495,
+      "label": "COMPLETED"
+    }
+  ],
+  "messages": [
+    {
+      "id": "check",
+      "from": "tools",
+      "to": "guard",
+      "y": 170,
+      "label": "checkIdempotency(toolCall, idempotencyKey)",
+      "variant": "security"
+    },
+    {
+      "id": "null",
+      "from": "guard",
+      "to": "tools",
+      "y": 220,
+      "label": "NULL: proceder",
+      "variant": "return"
+    },
+    {
+      "id": "execute",
+      "from": "tools",
+      "to": "external",
+      "y": 255,
+      "label": "ejecutar el side effect",
+      "variant": "emphasis"
+    },
+    {
+      "id": "result",
+      "from": "external",
+      "to": "tools",
+      "y": 290,
+      "label": "ToolResult",
+      "variant": "return"
+    },
+    {
+      "id": "record",
+      "from": "tools",
+      "to": "guard",
+      "y": 330,
+      "label": "recordIdempotentExecution",
+      "variant": "default"
+    },
+    {
+      "id": "completed",
+      "from": "guard",
+      "to": "tools",
+      "y": 365,
+      "label": "IdempotencyRecord COMPLETED",
+      "variant": "return"
+    },
+    {
+      "id": "pending",
+      "from": "guard",
+      "to": "tools",
+      "y": 420,
+      "label": "esperar: hay una ejecución en curso",
+      "variant": "return"
+    },
+    {
+      "id": "reuse",
+      "from": "guard",
+      "to": "tools",
+      "y": 475,
+      "label": "reutilizar el result anterior",
+      "variant": "return",
+      "note": "IDEMPOTENT_EXECUTION_DETECTED"
+    }
+  ],
+  "activations": [
+    {
+      "participant": "guard",
+      "from": 165,
+      "to": 225,
+      "type": "security"
+    },
+    {
+      "participant": "external",
+      "from": 250,
+      "to": 295,
+      "type": "external"
+    },
+    {
+      "participant": "guard",
+      "from": 325,
+      "to": 480,
+      "type": "security"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Sin registro",
+      "items": [
+        "NULL: se ejecuta el side effect y se registra COMPLETED",
+        "Se conservan el id y el createdAt de un PENDING previo",
+        "No se emite evento cuando el resultado es NULL"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "PENDING y COMPLETED",
+      "items": [
+        "PENDING: esperar; por eso un booleano no basta (INV-11, P-24)",
+        "COMPLETED: result anterior sin tocar el sistema externo; IDEMPOTENT_EXECUTION_DETECTED",
+        "Escritura única: IDEMPOTENCY_RECORD_ALREADY_COMPLETED; IDEMPOTENCY_KEY_CAPABILITY_MISMATCH no recuperable"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "Evidencia",
+      "items": [
+        "ch17:418-450 problema · ch17:927-1085 secuencia",
+        "ch17:1166-1174 fallos",
+        "ch17:1208-1224 eventos"
+      ]
+    }
+  ]
+}
