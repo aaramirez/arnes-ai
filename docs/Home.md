@@ -24,6 +24,10 @@ Aquí consolidamos análisis, arquitecturas, decisiones de diseño, comparacione
 | [[vercel-eve]] | harness completo (agentes durables) | publicado |
 | *pendiente — betta-tech/byo-coding-agent* | harness completo | próximamente |
 
+## Comparativas
+
+- [[Eve-vs-BookHarness-vs-Pi]] — qué tiene eve que no tienen book-harness ni pi, y 10 lecciones de eve que les faltan a ambos (`docs/comparativas/`)
+
 ## Notas del vault
 
 - Diagramas de eve (`docs/diagramas/vercel-eve/`): [[Eve-Arquitectura-y-Flujos]] · [[Eve-10-Flujos-Empresariales]] · [[Eve-Implementacion-Self-Hosted]] · interactivos: [[Eve-Diagramas-Archify]]

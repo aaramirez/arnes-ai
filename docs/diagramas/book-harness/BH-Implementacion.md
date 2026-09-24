@@ -11,7 +11,7 @@ tags:
 
 # book-harness — Cómo implementar la arquitectura en una empresa
 
-[[BH-Arquitectura-y-Flujos]] · [[BH-10-Flujos-Empresariales]] · [[BH-Diagramas-Archify]] · [[vercel-eve]]
+[[BH-Arquitectura-y-Flujos]] · [[BH-10-Flujos-Empresariales]] · [[BH-Diagramas-Archify]] · [[vercel-eve]] · [[Eve-vs-BookHarness-vs-Pi]]
 
 **Respuesta corta:** el libro no se instala. Es una **especificación**: constitución, 22 componentes, 35 contratos y pseudocódigo. Implementarlo significa:
 1. **construir** los componentes en el orden que el propio libro justifica (CH-25);
@@ -139,7 +139,7 @@ La columna de eve sale de [[vercel-eve]]. La de tecnología es **[inferencia]**.
 
 **Evidencia:**
 - Libro: `repos/aaramirez/book-harness/constitution/ARCHITECTURE_CONSTITUTION.md:253-352` (núcleo) y los `ch14`..`ch24` (enterprise).
-- eve: `repos/vercel/eve/docs/concepts/execution-model-and-durability.mdx:6-16`, `repos/vercel/eve/docs/tools/human-in-the-loop.md:170-190`, `repos/vercel/eve/docs/guides/auth-and-route-protection.md:267` y `repos/vercel/eve/docs/channels/eve.mdx:64-79`.
+- eve: `repos/vercel/eve/docs/concepts/execution-model-and-durability.mdx:6-16`, `repos/vercel/eve/docs/tools/human-in-the-loop.md:170-190`, `repos/vercel/eve/docs/guides/auth-and-route-protection.md:299` y `repos/vercel/eve/docs/channels/eve.mdx:64-79`.
 
 **Lectura del cuadro:** eve resuelve casi todo el **núcleo de agente único** (tramos 1–2 del libro). La **capa de gobierno enterprise** (tramo 3) está mayormente abierta. Hay que construir desde cero IdempotencyGuard, AuditLedger, DataGovernanceEngine y HandoffCoordinator, y ampliar mucho PolicyEngine, AdmissionController, OperationalController y AgentCommunicationGateway.
 

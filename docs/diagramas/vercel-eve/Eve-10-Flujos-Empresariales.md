@@ -85,7 +85,7 @@ sequenceDiagram
 **Evidencia:**
 - `repos/vercel/eve/docs/guides/auth-and-route-protection.md:86-99`: verificadores.
 - `repos/vercel/eve/docs/channels/eve.mdx:136-157`: CORS.
-- `repos/vercel/eve/docs/guides/auth-and-route-protection.md:267`: sin control de propiedad de sesión.
+- `repos/vercel/eve/docs/guides/auth-and-route-protection.md:299`: sin control de propiedad de sesión.
 - `repos/vercel/eve/packages/eve/src/react/use-eve-agent.ts:136`: `useEveAgent`.
 
 ---
@@ -141,7 +141,7 @@ Teams funciona igual: Bot Framework Activity y Adaptive Cards para HITL.
 **Evidencia:**
 - `repos/vercel/eve/docs/channels/slack.mdx:50-63`: credenciales propias.
 - `repos/vercel/eve/docs/concepts/security-model.md:60-72`: verificación de firma.
-- `repos/vercel/eve/docs/guides/auth-and-route-protection.md:318`: principal user en canales de plataforma.
+- `repos/vercel/eve/docs/guides/auth-and-route-protection.md:350`: principal user en canales de plataforma.
 - `repos/vercel/eve/docs/channels/teams.mdx:82`: HITL en Teams.
 
 ---
@@ -254,7 +254,7 @@ sequenceDiagram
 
 **Evidencia:**
 - `repos/vercel/eve/docs/connections/overview.mdx:236-270`: OAuth self-hosted.
-- `repos/vercel/eve/docs/guides/auth-and-route-protection.md:273`: requiere principal user.
+- `repos/vercel/eve/docs/guides/auth-and-route-protection.md:305`: requiere principal user.
 - `repos/vercel/eve/docs/connections/overview.mdx:206`: `authorization.required` y resume.
 
 ---
@@ -438,8 +438,8 @@ sequenceDiagram
 - El transporte por defecto entre agentes del mismo workspace requiere Vercel; hay que configurar un `transport` explícito.
 
 **Evidencia:**
-- `repos/vercel/eve/docs/guides/remote-agents.md:185-201`: dispatch y callbacks.
-- `repos/vercel/eve/docs/guides/auth-and-route-protection.md:224-246`: `trustedForwarders`.
+- `repos/vercel/eve/docs/guides/remote-agents.md:185-203`: dispatch y callbacks.
+- `repos/vercel/eve/docs/guides/auth-and-route-protection.md:224-282`: `trustedForwarders`.
 - `repos/vercel/eve/docs/subagents/index.mdx:126-141`: transporte explícito.
 
 ---
@@ -490,7 +490,7 @@ sequenceDiagram
 - `repos/vercel/eve/docs/patterns/multi-tenant-auth.md:14-37`: el tenant sale de la auth.
 - `repos/vercel/eve/docs/patterns/multi-tenant-memory.md:14`: memoria con scope del tenant.
 - `repos/vercel/eve/docs/patterns/multi-tenant-approvals.md:19`: aprobaciones por tenant.
-- `repos/vercel/eve/docs/guides/auth-and-route-protection.md:256-267`: `initiator` / `current` y sin ACL.
+- `repos/vercel/eve/docs/guides/auth-and-route-protection.md:288-299`: `initiator` / `current` y sin ACL.
 
 ---
 

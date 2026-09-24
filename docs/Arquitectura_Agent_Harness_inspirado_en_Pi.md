@@ -8,6 +8,8 @@ tags:
 
 # Arquitectura de un Agent Harness inspirado en Pi
 
+> Comparativa con el código real de pi, eve y book-harness: [[Eve-vs-BookHarness-vs-Pi]].
+
 ## 1. Propósito
 
 Este documento consolida los principales conceptos discutidos alrededor de cómo diseñar y construir un **Agent Harness** inspirado en Pi, con énfasis en:

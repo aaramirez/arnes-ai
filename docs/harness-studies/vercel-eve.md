@@ -35,11 +35,13 @@ Repo: `vercel/eve` · Categoría: harness completo (framework de agentes durable
 
 > Diagramas: [[Eve-Arquitectura-y-Flujos]] · [[Eve-10-Flujos-Empresariales]] · [[Eve-Implementacion-Self-Hosted]] · [[Eve-Diagramas-Archify]]
 
+> Comparativa: [[Eve-vs-BookHarness-vs-Pi]] (eve frente a book-harness y pi).
+
 > Foco secundario de este estudio: **viabilidad para casos de uso empresariales** (despliegue, interacción, auth, multi-tenancy). Se resume en la sección 15.
 
 ## 0. Ficha
 
-**Hallazgo:** eve es un framework "filesystem-first" para **agentes de IA durables** en backend, hecho por Vercel. Un agente se define como un directorio `agent/`: `instructions.md` (obligatorio), `agent.ts`, `tools/`, `skills/`, `channels/`, `schedules/`, `subagents/`. En runtime corre como servidor Nitro (Node) y cada conversación es un workflow durable. La licencia es Apache-2.0 y la versión estudiada del paquete `eve` es 0.66.0. Está en **beta pública**, bajo los términos beta de Vercel. Está pensado para equipos que quieren operar agentes de larga duración detrás de canales como HTTP, Slack, Teams o MCP, no un coding agent de terminal.
+**Hallazgo:** eve es un framework "filesystem-first" para **agentes de IA durables** en backend, hecho por Vercel. Un agente se define como un directorio `agent/`: `instructions.md` (obligatorio), `agent.ts`, `tools/`, `skills/`, `channels/`, `schedules/`, `subagents/`. En runtime corre como servidor Nitro (Node) y cada conversación es un workflow durable. La licencia es Apache-2.0 y la versión estudiada del paquete `eve` es 0.66.0 (commit `055f1d1`). Las citas de las notas Markdown se re-verificaron el 2026-09-24 contra 0.66.1 (commit `8a5e8b9`); los diagramas Archify siguen fijados a `055f1d1`. Está en **beta pública**, bajo los términos beta de Vercel. Está pensado para equipos que quieren operar agentes de larga duración detrás de canales como HTTP, Slack, Teams o MCP, no un coding agent de terminal.
 
 **Evidencia:**
 - `repos/vercel/eve/README.md:17` — tagline "filesystem-first framework for durable AI agents".
@@ -206,7 +208,7 @@ En cada llamada se agregan las instrucciones dinámicas, primero las de sesión 
 - `repos/vercel/eve/packages/eve/src/tools/approval/policies.ts:86-131` — `auto()`.
 - `repos/vercel/eve/packages/eve/src/shared/sandbox-network-policy.ts:6-27` — network policy.
 - `repos/vercel/eve/docs/concepts/security-model.md:8-20` — fronteras de confianza.
-- `repos/vercel/eve/docs/guides/auth-and-route-protection.md:267` — "Route auth does not enforce session ownership".
+- `repos/vercel/eve/docs/guides/auth-and-route-protection.md:299` — "Route auth does not enforce session ownership".
 
 ## 10. Compaction / gestión de contexto
 
