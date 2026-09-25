@@ -1,31 +1,39 @@
-# arnes0.1 filesystem-first (agent/ como interfaz de autoría)
+# arnes0.1 filesystem-first (agent/ obligatorio como interfaz de autoría)
 
 ## Objective
 
-Hacer que `arnes0.1` arme su agente a partir de un directorio `agent/` con ranuras convencionales, como eve: la ruta es la identidad, los defaults ocupan las mismas ranuras, todo es inspeccionable y el markdown es dato.
+Hacer que `arnes0.1` se configure **exclusivamente** desde un directorio `agent/` obligatorio, con la estructura de la propuesta v2 (`docs/propuestas/arnes0.1/Arnes-Filesystem-First.md`):
+- identidad;
+- capacidades;
+- integraciones de salida (MCP, OpenAPI, A2A, datos);
+- entradas y automatización (canales HTTP/WS/MCP/A2A, schedules, triggers);
+- gobierno y operación.
 
-El loop (`Agent`), los providers y el `Registry` **no cambian**. Solo se agrega una capa de descubrimiento, validación y ensamblado entre el disco y `main.ts`.
-
-Diseño: `docs/propuestas/arnes0.1/Arnes-Filesystem-First.md`.
+El manifiesto **reconoce todas las ranuras desde la fase 1**, y el runtime de cada familia llega por fases. El loop (`Agent`), los providers y el `Registry` no cambian.
 
 ## Requirements
 
-1. **Sin `agent/`, el comportamiento es idéntico al actual** (prompt, `bash` / `read_file` / `write_file`, `maxTurns: 50`, `NoCompaction`). Los tests existentes pasan sin tocarlos. — priority: high
-2. `discover(root, fs)` es **pura** sobre un puerto `FileSystem` y devuelve un `AgentManifest` (fuentes ordenadas + diagnósticos). No importa código. — priority: high
-3. Ranuras de la **fase 1**: `agent.ts` (`defineAgent`), `instructions.md` o `instructions/*.md`, `tools/<nombre>.ts` (`defineTool` o `disabled()`). — priority: high
-4. Ranuras de la **fase 2**: `skills/<nombre>.md` (frontmatter `description`, tool `load_skill`) y `commands/<nombre>.md` (plantilla con `$ARGUMENTS`). — priority: medium
-5. **La ruta es la identidad:** el nombre es el nombre del archivo, con `^[a-z][a-z0-9_]*$`. Un nombre inválido o duplicado (sin distinguir mayúsculas) es un diagnóstico de error con la ruta. — priority: high
-6. **Defaults en las mismas ranuras:** un archivo propio reemplaza al default del mismo nombre, `disabled()` lo quita y `defaultTools: false` quita todos. — priority: high
-7. **Confianza del proyecto antes de importar `.ts`:**
-   - La decisión se guarda en `~/.arnes/trust.json`, por ruta canónica.
-   - En modo no interactivo y sin decisión guardada, se falla cerrado: se cargan markdown y defaults, y se emite una advertencia.
+1. **`agent/`, `agent.ts` (con `description`, `model` y `limits`) e `instructions.md` son obligatorios.**
+   - Sin ellos, arnes sale con el código `discover/required-*-missing`, la ruta esperada y la sugerencia `arnes init`.
+   - `arnes init` genera el esqueleto mínimo.
    - priority: high
-8. **Frontmatter:** subconjunto de YAML (`clave: valor`, listas `- x`), con parser propio. Todo lo demás (`---js`, anclas, bloques) es un error. — priority: high
-9. **Inspección:**
-   - `/info` en el REPL.
-   - `node src/main.ts --info [--json]`, que imprime el manifiesto y sale con código 1 si hay errores.
+2. `discover(root, fs, globalRoot)` es **pura** sobre un puerto `FileSystem`. Devuelve un `AgentManifest` (fuentes con `origin` project/global/default + diagnósticos con código) y reconoce **las 20 ranuras** de la v2. — priority: high
+3. **Una sola gramática de nombres:** `^[a-z][a-z0-9-]{0,63}$`. Una subcarpeta agrega un prefijo con `-`, y un duplicado (sin distinguir mayúsculas) es un error. — priority: high
+4. **Defaults en las mismas ranuras:** `tools/bash|read_file|write_file.ts` y `channels/cli.ts`. `disabled()` quita un default y `defaultTools: false` quita todas las tools por defecto. — priority: high
+5. **Confianza del proyecto** (`~/.arnes/trust.json`) antes de importar un `.ts`. Sin confianza, no arranca, salvo `--untrusted` (solo markdown). — priority: high
+6. **Frontmatter:** subconjunto de YAML con parser propio. `---js` y la sintaxis desconocida son un error. — priority: high
+7. **Validación semántica antes de ensamblar:**
+   - secretos referenciados y declarados en `secrets.ts`;
+   - ningún literal con forma de secreto;
+   - `policies/tools.ts` presente si hay tools con side effects (default `deny`);
+   - todo canal distinto de `cli` necesita regla en `policies/admission.ts`, y sin ella no escucha;
+   - toda fuente de `data/` declara `classification`, y si no la declara se trata como `restricted`.
    - priority: high
-10. Cero dependencias de runtime, Node ≥ 23.6 sin build, y funcionamiento en macOS, Linux y Windows (rutas normalizadas a POSIX en el manifiesto). — priority: high
+8. **Ámbito global** `~/.arnes/`: solo skills, commands y connections personales. Gana el proyecto, y el origen queda visible. — priority: medium
+9. **Inspección:** `arnes info [--json]`, `/info` y `.arnes/manifest.json` + `diagnostics.json` (en `.gitignore`). — priority: high
+10. **Fase 1 (runtime):** `agent.ts`, `instructions`, `tools/`, `skills/` (`load_skill`), `commands/` (`$1`, `$ARGUMENTS`), `policies/tools.ts` (reemplaza a la puerta de confirmación actual), `secrets.ts` y `lib/`. — priority: high
+11. **Ranuras de fases 2–5 reconocidas pero sin runtime:** se reportan como `discover/slot-not-yet-supported` (warning), nunca se ignoran en silencio. — priority: high
+12. Cero dependencias de runtime, Node ≥ 23.6 sin build, y funcionamiento en macOS, Linux y Windows (rutas POSIX en el manifiesto). — priority: high
 
 ## Architecture
 
@@ -33,77 +41,90 @@ Diseño: `docs/propuestas/arnes0.1/Arnes-Filesystem-First.md`.
 
 | Archivo | Qué contiene |
 | --- | --- |
-| `src/fs/types.ts` | `AgentManifest`, `ToolSource`, `SkillSource`, `CommandSource`, `Diagnostic`, `AgentConfigSource` y el puerto `FileSystem` |
+| `src/fs/types.ts` | `SlotKind` (las 20 ranuras), `Source`, `Origin`, `AgentManifest`, `Diagnostic` y el puerto `FileSystem` |
+| `src/fs/slots.ts` | La **tabla de ranuras**, fuente única de la estructura: forma, recursión, raíz o subagente, obligatoria, fase de soporte |
+| `src/fs/grammar.ts` | La regex de nombres, los prefijos por subcarpeta y los códigos `discover/*` |
 | `src/fs/node-fs.ts` | Adaptador del puerto sobre `node:fs/promises` |
-| `src/fs/frontmatter.ts` | `parseFrontmatter(text)`: `{ data, body }` o un error tipado |
-| `src/fs/discover.ts` | `discover(root, fs, defaults)`: el `AgentManifest` |
-| `src/fs/defaults.ts` | Las fuentes por defecto (tools built-in, prompt actual, `maxTurns: 50`, `NoCompaction`), movidas desde `main.ts` |
-| `src/fs/trust.ts` | `isTrusted(path)` / `recordTrust(path, decision)` sobre `~/.arnes/trust.json` (ruta inyectable para los tests) |
-| `src/fs/load.ts` | `load(manifest, { trusted })`: import dinámico de los `.ts`, validación de las exportaciones por defecto, y armado de `Registry`, system prompt, `AgentOptions` y comandos |
-| `src/define.ts` | `defineAgent(config)`, `defineTool(spec)` y `disabled()`. Son helpers puros; `defineTool` devuelve un `Tool` que implementa la interfaz actual |
-| `src/tool/loadskill.ts` | La tool `load_skill`, que devuelve el cuerpo de una skill por nombre (fase 2) |
-| `test/fs-discover.test.ts` | Tests de descubrimiento con un disco en memoria |
-| `test/fs-frontmatter.test.ts` | Tests del parser, incluidos los casos que debe rechazar |
-| `test/fs-load.test.ts` | Tests de carga sobre `test/fixtures/agent-basic/`, `agent-override/` y `agent-invalid/` |
-| `test/fixtures/agent-*/**` | Agentes de ejemplo para los tests |
+| `src/fs/frontmatter.ts` | Parser del subconjunto de YAML |
+| `src/fs/discover.ts` | Recorre `agent/` y `~/.arnes/` y fusiona con los defaults |
+| `src/fs/defaults.ts` | Tools built-in, `channels/cli`, y el prompt y los límites de referencia para `arnes init` |
+| `src/fs/trust.ts` | Decisiones de confianza (ruta inyectable para los tests) |
+| `src/fs/load.ts` | Import dinámico de los `.ts` y validación de `export default` por ranura |
+| `src/fs/validate.ts` | Secretos, políticas, admisión y clasificación (Requirement 7) |
+| `src/fs/assemble.ts` | Arma `Registry`, system prompt, `AgentOptions` y comandos a partir del manifiesto |
+| `src/fs/init.ts` | `arnes init`: `agent/agent.ts`, `agent/instructions.md`, `agent/policies/tools.ts` y `.gitignore` con `.arnes/` |
+| `src/define.ts` | `defineAgent`, `defineTool`, `disabled`, `defineToolPolicy`, `defineSecrets` (fase 1). También las firmas de `defineMcpConnection`, `defineOpenApiConnection`, `defineA2aAgent`, `defineDataSource`, `defineChannel`, `defineSchedule`, `defineTrigger` (validadas, sin runtime) |
+| `src/policy/engine.ts` | Evalúa `policies/tools.ts` (allow / deny / require_approval, default deny) y se conecta al `confirm` actual |
+| `src/tool/loadskill.ts` | La tool `load_skill` |
+| `test/fs-*.test.ts` | frontmatter, grammar, discover, load, validate, assemble, init, policy |
+| `test/fixtures/agent-*/` | Agentes de ejemplo: `minimal`, `full` (las 20 ranuras), `invalid-names`, `missing-config`, `secret-literal`, `channel-without-admission`, `global-override` |
 
 ### Files to modify
 
-- **`src/tool/bash.ts`, `readfile.ts`, `writefile.ts`:** quitar `Default.register(...)`, que es un efecto secundario al importar. Las clases siguen exportadas. `Default` se mantiene y lo llena el loader, por compatibilidad.
+- **`src/tool/bash.ts`, `readfile.ts`, `writefile.ts`:** quitar el autorregistro en `Default`; las clases siguen exportadas.
 - **`src/main.ts`:**
-  - reemplazar el prompt fijo y los imports de efecto por `discover` → `trust` → `load` → `new Agent(...)`;
-  - agregar `--info` y `--json`;
-  - mantener `loadAgentsContext()` como contexto de proyecto (R8).
+  - arranque: `discover` → confianza → `load` → `validate` → `assemble` → `new Agent(...)`;
+  - subcomandos `init` e `info`, y flags `--json` y `--untrusted`;
+  - el prompt fijo se mueve a la plantilla de `arnes init`;
+  - `AGENTS.md` sigue como contexto del proyecto.
 - **`src/commands.ts`:**
-  - `registerCommand` exportado para los comandos de `agent/commands/`;
-  - el comando `/info`;
-  - `/skills` (fase 2).
-- **`arnes0.1/README.md`:** sección "Authoring an agent" con el árbol de ejemplo, y la tabla de ranuras y reglas.
+  - `registerCommand` exportado;
+  - los comandos `/info`, `/skills` y `/policy`;
+  - los comandos de `commands/*.md`.
+- **`arnes0.1/README.md`:** sección "Authoring an agent" con el árbol, la tabla de ranuras y las fases.
+- **Raíz `arnes-ai`:** un `agent/` de ejemplo en `arnes0.1/examples/` (no en la raíz del repo de estudio), usado por el smoke test.
 
 ### Decisions
 
-- **Descubrimiento en el arranque, sin build:** Node ≥ 23.6 importa `.ts` directo. `--info --json` reemplaza a los artefactos `.eve/` como forma de inspección.
-- **`discover()` pura y `load()` impura:** es la única forma de testear las reglas R1–R8 sin tocar el disco ni ejecutar código. Es el mismo patrón que `MockProvider`.
-- **Confianza tomada de pi, no de eve:** eve compila código del autor en su propio deploy. arnes, en cambio, abre repos ajenos en la máquina del usuario, así que importar `agent/tools/*.ts` sin preguntar sería ejecución de código arbitrario.
-- **`agent.ts` en lugar de `agent.json`:** tipado, autodescriptivo, y consistente con que las tools son `.ts`. El descubrimiento lo lee con `import()` solo si hay confianza. Si no la hay, se usan los defaults y se emite una advertencia.
-- **Solo tres ranuras en la fase 1:** evita ranuras vacías sin runtime (`channels`, `schedules`, `sandbox`). Se agregan cuando exista la capacidad (EVO-01 del libro: mantener el núcleo pequeño).
+- **Obligatorio en lugar de retrocompatible:** una sola forma de configurar, explícita e inspeccionable. Los límites se declaran siempre (INV-09 del libro). Los tests actuales que construyen `Agent` directamente siguen valiendo; solo cambia el arranque de `main.ts`.
+- **La tabla de ranuras (`slots.ts`) es la fuente única:** discover, info, init y la documentación se derivan de ella. Esto evita el drift entre documentación y código, que en eve sí ocurre (p.ej. `repos/vercel/eve/packages/eve/src/discover/named-source-directory.ts:101` dice "flat" para tools, pero `discover-agent.ts:222` las descubre con `recursive: true`).
+- **Estructura completa desde el día 1, runtime por fases:** los autores pueden escribir `connections/mcp/github.ts` hoy; arnes la valida y avisa que su runtime llega en la fase 2. Nada queda ignorado en silencio.
+- **`hooks/` interviene y `observers/` observa:** es la separación P-12 del libro, más clara que los `hooks/` de eve, que solo observan.
+- **Políticas como archivo, no como puerta hardcodeada:** la confirmación actual de `main.ts` pasa a ser el resultado `require_approval` del policy engine.
 
 ## TDD Flow
 
-1. **`fs-frontmatter.test.ts` (rojo → verde):**
-   - Acepta `description: x`, listas y ausencia de frontmatter.
-   - Rechaza `---js`, líneas mal formadas y frontmatter sin cerrar.
-2. **`fs-discover.test.ts` (rojo → verde):**
-   - Sin `agent/`, el manifiesto con `root: null` es igual a los defaults actuales. **Este test de compatibilidad va primero.**
-   - `tools/grep.ts` produce la tool `grep` con origen `authored`.
-   - `tools/bash.ts` reemplaza al default, y `disabled()` lo quita (el diagnóstico queda en `/info`).
-   - `defaultTools: false` quita todos los defaults.
-   - `Bad-Name.ts` y el duplicado `grep.ts` / `GREP.ts` dan un error con código y ruta.
-   - `instructions/` concatena en orden alfabético, e `instructions.md` más `instructions/` a la vez es un error.
-   - Las salidas están ordenadas por nombre.
-3. **`fs-load.test.ts` (rojo → verde):**
-   - Sobre `fixtures/agent-basic/`, el `Registry` tiene `bash`, `read_file`, `write_file` y `grep`, el prompt usa `instructions.md` y `maxTurns` sale de `agent.ts`.
-   - Sin confianza, no se importa ningún `.ts` (se verifica con un fixture que lanza al importarse) y se usan markdown y defaults.
-   - Una exportación por defecto inválida da un diagnóstico, no un crash.
-4. **`commands.test.ts` (ampliar):** `/info` imprime las fuentes y los diagnósticos.
-5. **`agent.test.ts` / `smoke.test.ts`:** sin cambios. Deben seguir en verde, porque son la prueba de R3.
-6. **Fase 2**, con el mismo ciclo: `skills/` + `load_skill`, y `commands/*.md` con `$ARGUMENTS`.
+1. **`fs-grammar.test.ts`:** nombres válidos e inválidos, prefijos por subcarpeta y duplicados sin distinguir mayúsculas.
+2. **`fs-frontmatter.test.ts`:** acepta el subconjunto; rechaza `---js`, sintaxis desconocida y frontmatter sin cerrar.
+3. **`fs-discover.test.ts`:**
+   - Sin `agent/`: `discover/required-agent-dir-missing`. Sin `agent.ts` o sin `instructions.md`: su código.
+   - `fixtures/agent-full`: las 20 ranuras reconocidas, con las de fases 2–5 como `slot-not-yet-supported`.
+   - Reemplazo y desactivación de defaults.
+   - Ámbito global: gana el proyecto y el `origin` es correcto.
+   - Evals dentro de `agent/`: error.
+   - Salida ordenada.
+4. **`fs-validate.test.ts`:**
+   - un secreto referenciado y no declarado da error; un literal `sk-…` da error;
+   - un canal `http.ts` sin regla de admisión queda en "no escucha", con diagnóstico;
+   - una fuente de datos sin `classification` queda `restricted`;
+   - tools con side effects sin `policies/tools.ts` dan error.
+5. **`fs-load.test.ts`:**
+   - sin confianza, no se importa ningún `.ts` (se verifica con un fixture que lanza al importarse);
+   - con `--untrusted`, solo markdown;
+   - un export inválido da un diagnóstico, no un crash.
+6. **`policy-engine.test.ts`:** default deny, allow, y `require_approval` llamando a `confirm`.
+7. **`fs-assemble.test.ts` y `fs-init.test.ts`:**
+   - `agent-minimal` arma un `Agent` con los límites de `agent.ts`;
+   - `init` produce un árbol que pasa `discover` sin errores.
+8. **`agent.test.ts`, `tool.test.ts` y `provider*.test.ts`:** sin cambios, siguen en verde. **`smoke.test.ts`:** arranca con `examples/agent-minimal`.
 
 ## Verification
 
-- `npm test` en la raíz de arnes-ai (incluye `arnes0.1/test`) y `npm run typecheck` en `arnes0.1/` pasan.
+- `npm test` en la raíz (incluye `arnes0.1/test`) y `npm run typecheck` en `arnes0.1/` pasan.
 - **Manual:**
-  1. En un directorio sin `agent/`, `npm start` se comporta igual que antes.
-  2. Con `test/fixtures/agent-basic/` como raíz, `node src/main.ts --info` lista las fuentes, y `--info --json` produce JSON válido.
-  3. En un directorio no confiado, aparece la pregunta de confianza. Si se rechaza, se carga solo markdown.
-  4. Poner un `agent/tools/bash.ts` con `export default disabled()`, y comprobar que `/tools` ya no muestra `bash`.
-- En Windows: nombres con mayúsculas y rutas con `\` dan el mismo manifiesto normalizado.
+  1. En un directorio vacío, `npm start` falla con un diagnóstico claro. `node src/main.ts init` y `npm start` → REPL.
+  2. `node src/main.ts info --json` sobre `examples/agent-full` → JSON con las 20 ranuras, los orígenes y los warnings de fase.
+  3. En un proyecto no confiado, aparece la pregunta de confianza; `--untrusted` carga solo markdown.
+  4. `agent/tools/bash.ts` con `disabled()` → `/tools` no muestra `bash`.
+  5. `policies/tools.ts` con `bash: deny` → el modelo recibe el error de política como dato.
+- **Windows:** mayúsculas y separadores `\` dan el mismo manifiesto.
 
 ## Notas
 
-- **Fase 3 (fuera de este plan):**
-  - `hooks/` (`before_tool` / `after_tool`, alineado con P-12 del libro y los hooks de pi);
-  - `subagents/<nombre>/` (reusa `discover()` de forma recursiva y `Registry.subset`, que ya existe);
-  - compactación elegida por nombre en `agent.ts`.
-- **Relación con el libro:** esta capa es un **adaptador de autoría** de `AgentConfig` (C-002) y de `CapabilityDescriptor` (C-018). Ver §7 del diseño y el capítulo de ExtensionHost (CH-38 en el plan 005).
-- **Riesgo:** el parser de frontmatter propio. Se mitiga limitándolo a un subconjunto mínimo con tests de rechazo.
+- **Fases siguientes** (un plan propio cada una, derivado de la tabla de fases de la propuesta):
+  - **2:** MCP stdio/http, OpenAPI y `data/`.
+  - **3:** canales HTTP/WS/webhooks, admisión, schedules y triggers.
+  - **4:** subagentes, A2A cliente y servidor, y MCP servidor.
+  - **5:** memoria, sandbox, hooks, observers, instrumentation y evals.
+- **Relación con el libro:** cada ranura se mapea a un componente o contrato (tabla §3.1 de la propuesta). La fase 1 materializa `AgentConfig` (C-002) y `ExecutionBudget` (C-012) en `agent.ts`, y `PolicyEngine` en `policies/`.
+- **Riesgo:** implementar MCP y A2A sin dependencias (fases 2 y 4). Se acota a subconjuntos, con tests contra servidores de ejemplo.

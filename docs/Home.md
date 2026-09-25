@@ -32,7 +32,7 @@ Aquí consolidamos análisis, arquitecturas, decisiones de diseño, comparacione
 
 - [[BH-Propuestas]] — diseño para incorporar a book-harness las lecciones de eve ([[BH-Propuesta-Lecciones-eve]]) y los aportes de pi ([[BH-Propuesta-Aportes-pi]]): planos, componentes, contratos, capítulos CH-28..43, Amendment v1.2 y ADRs (`docs/propuestas/book-harness/`)
 
-- [[Arnes-Filesystem-First]] — llevar el enfoque filesystem-first de eve a `arnes0.1/` (`docs/propuestas/arnes0.1/`, plan `plans/006-…`)
+- [[Arnes-Filesystem-First]] — estructura `agent/` obligatoria para `arnes0.1/` (identidad, capacidades, MCP/OpenAPI/A2A/datos, canales HTTP/WS/MCP/A2A, schedules/triggers, gobierno), basada en eve + pi + libro (`docs/propuestas/arnes0.1/`, plan `plans/006-…`)
 
 ## Notas del vault
 
