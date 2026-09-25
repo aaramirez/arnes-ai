@@ -287,6 +287,8 @@ Cada lección tiene la misma estructura: **qué aprendió eve**, **por qué impo
 
 ## 5. Qué hacer con esto
 
+> Diseño detallado para book-harness: [[BH-Propuestas]] ([[BH-Propuesta-Lecciones-eve]] · [[BH-Propuesta-Aportes-pi]]).
+
 - **Para un diseño propio** (p.ej. `arnes0.1/`) **[inferencia]**, conviene mezclar lo mejor de los tres:
   - el **gobierno** de book-harness: constitución, auditoría, idempotencia, gobierno de datos;
   - la **operación** de eve: durabilidad por defecto, esperas durables, canales, identidad, frontera física, handoff de deploys;

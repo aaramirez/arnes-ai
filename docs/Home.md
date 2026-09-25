@@ -28,6 +28,10 @@ Aquí consolidamos análisis, arquitecturas, decisiones de diseño, comparacione
 
 - [[Eve-vs-BookHarness-vs-Pi]] — qué tiene eve que no tienen book-harness ni pi, y 10 lecciones de eve que les faltan a ambos (`docs/comparativas/`)
 
+## Propuestas
+
+- [[BH-Propuestas]] — diseño para incorporar a book-harness las lecciones de eve ([[BH-Propuesta-Lecciones-eve]]) y los aportes de pi ([[BH-Propuesta-Aportes-pi]]): planos, componentes, contratos, capítulos CH-28..43, Amendment v1.2 y ADRs (`docs/propuestas/book-harness/`)
+
 ## Notas del vault
 
 - Diagramas de eve (`docs/diagramas/vercel-eve/`): [[Eve-Arquitectura-y-Flujos]] · [[Eve-10-Flujos-Empresariales]] · [[Eve-Implementacion-Self-Hosted]] · interactivos: [[Eve-Diagramas-Archify]]

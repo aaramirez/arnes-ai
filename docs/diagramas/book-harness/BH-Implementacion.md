@@ -11,7 +11,7 @@ tags:
 
 # book-harness — Cómo implementar la arquitectura en una empresa
 
-[[BH-Arquitectura-y-Flujos]] · [[BH-10-Flujos-Empresariales]] · [[BH-Diagramas-Archify]] · [[vercel-eve]] · [[Eve-vs-BookHarness-vs-Pi]]
+[[BH-Arquitectura-y-Flujos]] · [[BH-10-Flujos-Empresariales]] · [[BH-Diagramas-Archify]] · [[vercel-eve]] · [[Eve-vs-BookHarness-vs-Pi]] · [[BH-Propuestas]]
 
 **Respuesta corta:** el libro no se instala. Es una **especificación**: constitución, 22 componentes, 35 contratos y pseudocódigo. Implementarlo significa:
 1. **construir** los componentes en el orden que el propio libro justifica (CH-25);
