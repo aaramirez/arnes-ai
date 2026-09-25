@@ -500,7 +500,7 @@ sequenceDiagram
 ## Qué **no** se propone traer de eve (y por qué)
 
 - **La dependencia de Vercel** (Workflow, Sandbox, Connect, AI Gateway): contradice P-27 ("deployment topology is independent from agent semantics"). En el libro todo queda como adaptadores.
-- **El sistema de archivos como interfaz de autoría** (`agent/tools/*.ts`): es una decisión de producto, no de arquitectura del runtime. El libro ya tiene CapabilityRegistry.
+- **El sistema de archivos como interfaz de autoría** (`agent/tools/*.ts`): **no como componente del runtime**, porque ningún plano "descubre archivos". **Sí como adaptador de autoría** de `AgentConfig` (C-002) y `CapabilityDescriptor` (C-018), que es la forma práctica de P-06. Va como sección del capítulo de ExtensionHost. El diseño aplicado a nuestro harness está en [[Arnes-Filesystem-First]].
 - **`auto()` con un modelo evaluador para aprobar:** choca con P-13 e INV-03 ("the model is never an authorization source"). Como mucho, podría ser una **señal** que PolicyEngine consume, nunca la decisión.
 
 ---

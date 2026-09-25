@@ -32,6 +32,8 @@ Aquí consolidamos análisis, arquitecturas, decisiones de diseño, comparacione
 
 - [[BH-Propuestas]] — diseño para incorporar a book-harness las lecciones de eve ([[BH-Propuesta-Lecciones-eve]]) y los aportes de pi ([[BH-Propuesta-Aportes-pi]]): planos, componentes, contratos, capítulos CH-28..43, Amendment v1.2 y ADRs (`docs/propuestas/book-harness/`)
 
+- [[Arnes-Filesystem-First]] — llevar el enfoque filesystem-first de eve a `arnes0.1/` (`docs/propuestas/arnes0.1/`, plan `plans/006-…`)
+
 ## Notas del vault
 
 - Diagramas de eve (`docs/diagramas/vercel-eve/`): [[Eve-Arquitectura-y-Flujos]] · [[Eve-10-Flujos-Empresariales]] · [[Eve-Implementacion-Self-Hosted]] · interactivos: [[Eve-Diagramas-Archify]]
