@@ -22,6 +22,8 @@ Diseño de **cómo** incorporar a *"¿Cómo construir un arnés?"* (`aaramirez/b
 
 ---
 
+> **Plan de ejecución:** `plans/005-book-harness-actualizacion-2026-09-24.md`. Reordena en dos releases, v0.2 (CH-28..36) y v0.3 (CH-37..44), con un mapa de renumeración; los P e INV se mantienen.
+
 ## 1. Principios de ubicación
 
 Las propuestas respetan las reglas del propio libro:
