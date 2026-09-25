@@ -1,5 +1,7 @@
 # Actualización de book-harness con las lecciones de eve y los aportes de pi
 
+> **Reemplazado (2026-09-24)** por el plan ejecutable en el repo del libro: `C:UsersHomeDocumentsPook-harnessplanes6-09-24-extension-v0-2-v0-3-eve-pi-conexiones.md`. Ese plan agrega los capítulos de conexiones MCP/OpenAPI, datos, A2A y autoría (CH-28..CH-47), la línea base verificada y el entorno instalado.
+
 ## Objective
 
 Aplicar al libro **"¿Cómo construir un arnés?"** (`aaramirez/book-harness`, @ `d16e2c7`) el diseño de `docs/propuestas/book-harness/BH-Propuestas.md`:
