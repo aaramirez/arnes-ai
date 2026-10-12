@@ -12,6 +12,8 @@ tags:
 
 [[BH-10-Flujos-Empresariales]] · [[BH-Implementacion]] · [[BH-Diagramas-Archify]]
 
+> **Estado (2026-10-12):** estos diagramas describen book-harness **v0.1** (@ `d16e2c7`: 28 capítulos, 22 componentes, 35 contratos). El libro ya está en **v0.3** (50 capítulos, 29 componentes, 66 contratos). Ver [[BH-Estado-Implementacion]].
+
 `aaramirez/book-harness` es el libro **"¿Cómo construir un arnés?"**. No contiene código ejecutable del harness: tiene 28 capítulos con **pseudocódigo propio**, una **constitución arquitectónica**, registros canónicos (22 componentes, 35 contratos, 134 términos) y su propio arnés de producción del libro (validadores y build en Node).
 
 Estos diagramas son **vistas transversales**. El libro ya trae 32 diagramas Archify, uno por capítulo más 4 generales, en `repos/aaramirez/book-harness/diagrams/archify/rendered/`. Aquí se referencian, no se duplican.

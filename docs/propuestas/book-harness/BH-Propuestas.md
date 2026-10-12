@@ -2,7 +2,7 @@
 title: Propuestas para book-harness — índice y hoja de ruta
 type: propuesta
 repo: aaramirez/book-harness
-estado: borrador
+estado: implementado
 fecha: 2026-09-24
 tags:
   - propuesta
@@ -21,6 +21,8 @@ Diseño de **cómo** incorporar a *"¿Cómo construir un arnés?"* (`aaramirez/b
 > **Por qué vive aquí:** `repos/` es material de referencia de solo lectura en este vault. La propuesta se escribe en `docs/propuestas/book-harness/`, y **se aplicaría en el repositorio del libro** siguiendo su propio proceso (§5). Todo es **[inferencia]** de diseño, y los IDs son propuestos.
 
 ---
+
+> **Estado (2026-10-12): implementada.** Se aplicó en book-harness hasta el tag `v0.3`: 50 capítulos, 29 componentes, 66 contratos, 5 ADRs y 0 deudas abiertas. Lo construido difiere de esta propuesta en IDs, orden y alcance. Ver [[BH-Estado-Implementacion]].
 
 > **Plan de ejecución:** `plans/005-book-harness-actualizacion-2026-09-24.md`. Reordena en dos releases, v0.2 (CH-28..36) y v0.3 (CH-37..44), con un mapa de renumeración; los P e INV se mantienen.
 

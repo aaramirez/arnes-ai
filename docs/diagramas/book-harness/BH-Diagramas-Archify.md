@@ -12,6 +12,8 @@ tags:
 
 [[BH-Arquitectura-y-Flujos]] · [[BH-10-Flujos-Empresariales]] · [[BH-Implementacion]]
 
+> **Estado (2026-10-12):** estos diagramas describen book-harness **v0.1** (@ `d16e2c7`: 28 capítulos, 22 componentes, 35 contratos). El libro ya está en **v0.3** (50 capítulos, 29 componentes, 66 contratos). Ver [[BH-Estado-Implementacion]].
+
 Versión **navegable** de los diagramas Mermaid de las tres notas de arriba; las notas Mermaid siguen intactas. Se generaron con [Archify](https://github.com/tt-a1i/archify) (skill local `~/.agents/skills/archify`, v2.17) siguiendo el skill `estudio-visual` (`.claude/skills/estudio-visual/`).
 
 - Cada HTML es autocontenido. Ábrelo en un navegador: Obsidian no renderiza HTML inline.

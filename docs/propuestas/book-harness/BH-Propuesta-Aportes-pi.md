@@ -3,7 +3,7 @@ title: Propuesta — Enriquecer book-harness con lo que tiene pi
 type: propuesta
 repo: aaramirez/book-harness
 fuente: earendil-works/pi
-estado: borrador
+estado: implementado
 fecha: 2026-09-24
 tags:
   - propuesta
@@ -12,6 +12,8 @@ tags:
 ---
 
 # Propuesta — Enriquecer book-harness con lo que tiene pi
+
+> **Estado (2026-10-12): implementada** en book-harness v0.3. Los IDs de esta propuesta son los propuestos; los reales están en [[BH-Estado-Implementacion]].
 
 [[BH-Propuestas]] · [[BH-Propuesta-Lecciones-eve]] · [[Eve-vs-BookHarness-vs-Pi]] · [[Arquitectura_Agent_Harness_inspirado_en_Pi]]
 

@@ -3,7 +3,7 @@ title: Propuesta — Incorporar las lecciones de eve a book-harness
 type: propuesta
 repo: aaramirez/book-harness
 fuente: vercel/eve
-estado: borrador
+estado: implementado
 fecha: 2026-09-24
 tags:
   - propuesta
@@ -12,6 +12,8 @@ tags:
 ---
 
 # Propuesta — Incorporar las lecciones de eve a book-harness
+
+> **Estado (2026-10-12): implementada** en book-harness v0.3. Los IDs de esta propuesta son los propuestos; los reales están en [[BH-Estado-Implementacion]].
 
 [[BH-Propuestas]] · [[BH-Propuesta-Aportes-pi]] · [[Eve-vs-BookHarness-vs-Pi]] · [[vercel-eve]] · [[BH-Implementacion]]
 

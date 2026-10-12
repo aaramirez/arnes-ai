@@ -13,6 +13,8 @@ tags:
 
 [[BH-Arquitectura-y-Flujos]] · [[BH-10-Flujos-Empresariales]] · [[BH-Diagramas-Archify]] · [[vercel-eve]] · [[Eve-vs-BookHarness-vs-Pi]] · [[BH-Propuestas]]
 
+> **Estado (2026-10-12):** estos diagramas describen book-harness **v0.1** (@ `d16e2c7`: 28 capítulos, 22 componentes, 35 contratos). El libro ya está en **v0.3** (50 capítulos, 29 componentes, 66 contratos). Ver [[BH-Estado-Implementacion]].
+
 **Respuesta corta:** el libro no se instala. Es una **especificación**: constitución, 22 componentes, 35 contratos y pseudocódigo. Implementarlo significa:
 1. **construir** los componentes en el orden que el propio libro justifica (CH-25);
 2. **elegir tecnología real** para cada uno;

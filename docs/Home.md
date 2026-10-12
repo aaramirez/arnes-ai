@@ -30,14 +30,14 @@ Aquí consolidamos análisis, arquitecturas, decisiones de diseño, comparacione
 
 ## Propuestas
 
-- [[BH-Propuestas]] — diseño para incorporar a book-harness las lecciones de eve ([[BH-Propuesta-Lecciones-eve]]) y los aportes de pi ([[BH-Propuesta-Aportes-pi]]): planos, componentes, contratos, capítulos CH-28..43, Amendment v1.2 y ADRs (`docs/propuestas/book-harness/`)
+- [[BH-Propuestas]] — diseño para incorporar a book-harness las lecciones de eve ([[BH-Propuesta-Lecciones-eve]]) y los aportes de pi ([[BH-Propuesta-Aportes-pi]]): planos, componentes, contratos, capítulos CH-28..43, Amendment v1.2 y ADRs (`docs/propuestas/book-harness/`). **Implementada** en book-harness v0.3: 50 capítulos, 29 componentes, 66 contratos; lo propuesto frente a lo construido está en [[BH-Estado-Implementacion]]
 
 - [[Arnes-Filesystem-First]] — estructura `agent/` obligatoria para `arnes0.1/` (identidad, capacidades, MCP/OpenAPI/A2A/datos, canales HTTP/WS/MCP/A2A, schedules/triggers, gobierno), basada en eve + pi + libro (`docs/propuestas/arnes0.1/`, plan `plans/006-…`)
 
 ## Notas del vault
 
 - Diagramas de eve (`docs/diagramas/vercel-eve/`): [[Eve-Arquitectura-y-Flujos]] · [[Eve-10-Flujos-Empresariales]] · [[Eve-Implementacion-Self-Hosted]] · interactivos: [[Eve-Diagramas-Archify]]
-- Diagramas de book-harness (`docs/diagramas/book-harness/`): [[BH-Arquitectura-y-Flujos]] · [[BH-10-Flujos-Empresariales]] · [[BH-Implementacion]] · interactivos: [[BH-Diagramas-Archify]]
+- Diagramas de book-harness (`docs/diagramas/book-harness/`): [[BH-Arquitectura-y-Flujos]] · [[BH-10-Flujos-Empresariales]] · [[BH-Implementacion]] · interactivos: [[BH-Diagramas-Archify]] (describen v0.1; ver [[BH-Estado-Implementacion]])
 - [[Arquitectura_Agent_Harness_inspirado_en_Pi]] — diseño conceptual de un agent harness inspirado en Pi
 
 ## Repos de referencia

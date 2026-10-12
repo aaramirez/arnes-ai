@@ -12,6 +12,8 @@ tags:
 
 [[BH-Arquitectura-y-Flujos]] · [[BH-Implementacion]] · [[BH-Diagramas-Archify]]
 
+> **Estado (2026-10-12):** estos diagramas describen book-harness **v0.1** (@ `d16e2c7`: 28 capítulos, 22 componentes, 35 contratos). El libro ya está en **v0.3** (50 capítulos, 29 componentes, 66 contratos). Ver [[BH-Estado-Implementacion]].
+
 Diez escenarios empresariales resueltos con la arquitectura del libro. Cada flujo trae:
 - un **diagrama de secuencia numerado**;
 - un **paso a paso** con la misma numeración;
