@@ -9,10 +9,6 @@
     {
       "id": "orden",
       "label": "Orden prescrito por el libro"
-    },
-    {
-      "id": "reglas",
-      "label": "Principio y excepción"
     }
   ],
   "phases": [
@@ -31,9 +27,22 @@
     },
     {
       "id": "enterprise",
-      "label": "Enterprise",
+      "label": "Enterprise v1.1",
       "fromCol": 3,
+      "toCol": 3
+    },
+    {
+      "id": "durable",
+      "label": "Durable v0.2",
+      "fromCol": 4,
       "toCol": 4,
+      "variant": "dashed"
+    },
+    {
+      "id": "conectividad",
+      "label": "Conectividad v0.3",
+      "fromCol": 5,
+      "toCol": 5,
       "variant": "dashed"
     }
   ],
@@ -42,7 +51,8 @@
     "t1",
     "t2",
     "t3",
-    "t4"
+    "t4",
+    "t5"
   ],
   "nodes": [
     {
@@ -51,125 +61,112 @@
       "col": 0,
       "type": "database",
       "label": "CH-00",
-      "sublabel": "Constitución",
-      "tag": "7 contratos base"
+      "sublabel": "Constitución + contratos",
+      "tag": "tramo 0",
+      "width": 170
     },
     {
       "id": "t1",
       "lane": "orden",
       "col": 1,
       "type": "backend",
-      "label": "Tramo 1",
-      "sublabel": "CH-01..11",
-      "tag": "núcleo"
+      "label": "CH-01..11",
+      "sublabel": "Núcleo de agente único",
+      "tag": "tramo 1",
+      "width": 170
     },
     {
       "id": "t2",
       "lane": "orden",
       "col": 2,
       "type": "backend",
-      "label": "Tramo 2",
-      "sublabel": "CH-12..13",
-      "tag": "integración"
+      "label": "CH-12..13",
+      "sublabel": "Integración + gobierno",
+      "tag": "tramo 2",
+      "width": 170
     },
     {
       "id": "t3",
       "lane": "orden",
       "col": 3,
-      "type": "cloud",
-      "label": "Tramo 3",
-      "sublabel": "CH-14..24",
-      "tag": "planos enterprise"
+      "type": "security",
+      "label": "CH-14..24 + 26..27",
+      "sublabel": "Planos enterprise",
+      "tag": "tramo 3",
+      "width": 170
     },
     {
       "id": "t4",
       "lane": "orden",
       "col": 4,
       "type": "cloud",
-      "label": "CH-26..27",
-      "sublabel": "turno gobernado",
-      "tag": "kill switch"
+      "label": "CH-28..36 + 37..38",
+      "sublabel": "Journal, esperas, sandbox",
+      "tag": "tramo 4",
+      "width": 170
     },
     {
-      "id": "p09",
-      "lane": "reglas",
-      "col": 1,
-      "type": "security",
-      "label": "P-09",
-      "sublabel": "agente único primero",
-      "tag": "Article I"
-    },
-    {
-      "id": "cmp013",
-      "lane": "reglas",
-      "col": 3,
+      "id": "t5",
+      "lane": "orden",
+      "col": 5,
       "type": "external",
-      "label": "CMP-013",
-      "sublabel": "único multi-agente",
-      "tag": "CH-15"
+      "label": "CH-39..49",
+      "sublabel": "Conectividad y autoría",
+      "tag": "tramo 5",
+      "width": 170
     }
   ],
   "edges": [
     {
-      "id": "e-t0-t1",
       "from": "t0",
-      "to": "t1"
-    },
-    {
-      "id": "e-t1-t2",
-      "from": "t1",
-      "to": "t2"
-    },
-    {
-      "id": "e-t2-t3",
-      "from": "t2",
-      "to": "t3"
-    },
-    {
-      "id": "e-t3-t4",
-      "from": "t3",
-      "to": "t4"
-    },
-    {
-      "id": "e-p09-t1",
-      "from": "p09",
       "to": "t1",
-      "variant": "security",
-      "role": "branch",
-      "fromSide": "top",
-      "toSide": "bottom"
+      "variant": "emphasis"
     },
     {
-      "id": "e-t3-cmp013",
+      "from": "t1",
+      "to": "t2",
+      "variant": "emphasis"
+    },
+    {
+      "from": "t2",
+      "to": "t3",
+      "variant": "emphasis"
+    },
+    {
       "from": "t3",
-      "to": "cmp013",
-      "variant": "dashed",
-      "role": "branch"
+      "to": "t4",
+      "variant": "emphasis"
+    },
+    {
+      "from": "t4",
+      "to": "t5",
+      "variant": "emphasis"
     }
   ],
   "cards": [
     {
       "dot": "emerald",
-      "title": "Secuencia [doc]",
+      "title": "P-09 manda el orden",
       "items": [
-        "CH-00 → Tramo 1 (núcleo) → Tramo 2 (DENY / APPROVAL / STOP) → Tramo 3 (planos enterprise) → CH-26..27",
-        "P-09 (Article I) rige todo el orden; CMP-013 AgentCommunicationGateway, parte del Tramo 3 (CH-15), es el único multi-agente"
+        "La confiabilidad de un solo agente precede a la complejidad multi-agente.",
+        "De los 29 componentes solo AgentCommunicationGateway es multi-agente; la invocación durable (CH-44) va después de los presupuestos heredados (CH-43) (ch25:382-401)."
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Qué entra en cada tramo",
+      "items": [
+        "Tramos 1 a 3: ch25:313-342. Tramo 4 (cierre v0.2 y v0.2.1, planos CMP-023..026): ch25:352-380.",
+        "Tramo 4: journal, esperas, canales, sandbox e identidad. Tramo 5: modelo como dato, extensiones, conexiones, datos, presupuestos, agentes, evolución, audiencia, lift y autoría.",
+        "Totales de v0.3: ch25:838-840."
       ]
     },
     {
       "dot": "amber",
-      "title": "Cableado abierto (ch25:778-796)",
+      "title": "Límites declarados",
       "items": [
-        "9 puntos: p. ej. admisión → activateAgent, Gateway end-to-end, CredentialBroker en ToolCall",
-        "Además: registro, certificación, handoff y skills reales"
-      ]
-    },
-    {
-      "dot": "slate",
-      "title": "Evidencia (chNN = book/chapters/NN-*/chapter.md)",
-      "items": [
-        "ch25:268-270 P-09 · ch25:312-343 orden",
-        "ch25:421-445 P-06, P-15 · ch25:533-546 CMP-013"
+        "La vista de secuencia de CH-25 solo llega a CH-36, sin el tramo 5 (ch25:630-661).",
+        "Sin deudas abiertas: 48 en registry/debt.yaml, 42 resueltas y 6 fuera de alcance."
       ]
     }
   ]

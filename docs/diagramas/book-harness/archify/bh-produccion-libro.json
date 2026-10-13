@@ -2,218 +2,249 @@
   "schema_version": 2,
   "diagram_type": "workflow",
   "meta": {
-    "title": "Cómo se produce el propio libro",
+    "title": "Cómo se produce el propio libro (v0.3)",
     "quality_profile": "showcase"
   },
   "lanes": [
     {
-      "id": "author",
-      "label": "Gobierno y autoría"
+      "id": "autoria",
+      "label": "Plan y autoría"
     },
     {
-      "id": "gate",
-      "label": "Bloqueo de publicación",
+      "id": "desvio",
+      "label": "Desvíos: validación fallida y aprobación humana",
       "variant": "exception"
     },
     {
-      "id": "build",
-      "label": "Build (build-all)"
+      "id": "publica",
+      "label": "Publicación y cierre"
     }
   ],
   "mainPath": [
-    "constitution",
-    "registries",
-    "plans",
-    "architect",
-    "author",
-    "validators"
+    "constitucion",
+    "plan_maestro",
+    "plan_cap",
+    "rojo",
+    "autor",
+    "validadores"
   ],
   "nodes": [
     {
-      "id": "constitution",
-      "lane": "author",
+      "id": "constitucion",
+      "lane": "autoria",
       "col": 0,
       "type": "security",
       "label": "Constitución",
-      "sublabel": "P-01..P-30, INV",
-      "width": 140
+      "sublabel": "v1.0 + v1.1 + v1.2",
+      "width": 160
     },
     {
-      "id": "registries",
-      "lane": "author",
+      "id": "plan_maestro",
+      "lane": "autoria",
       "col": 1,
-      "type": "database",
-      "label": "Registros",
-      "sublabel": "components / contracts",
-      "tag": "+ glossary",
-      "width": 140
+      "type": "frontend",
+      "label": "Plan maestro",
+      "sublabel": "fichas CH-28..CH-49",
+      "width": 160
     },
     {
-      "id": "plans",
-      "lane": "author",
+      "id": "plan_cap",
+      "lane": "autoria",
       "col": 2,
-      "type": "database",
-      "label": "Planes",
-      "sublabel": "planes/ por capítulo",
-      "width": 140
+      "type": "frontend",
+      "label": "Plan del capítulo",
+      "sublabel": "registro de ejecución",
+      "width": 160
     },
     {
-      "id": "architect",
-      "lane": "author",
+      "id": "rojo",
+      "lane": "autoria",
       "col": 3,
-      "type": "backend",
-      "label": "book-architect",
-      "sublabel": "Chapter Brief",
-      "width": 140
+      "type": "database",
+      "label": "Rojo + registros",
+      "sublabel": "contracts/glossary/debt",
+      "width": 160
     },
     {
-      "id": "author",
-      "lane": "author",
+      "id": "autor",
+      "lane": "autoria",
       "col": 4,
       "type": "backend",
       "label": "chapter-author",
-      "sublabel": "+ skills",
-      "width": 140
+      "sublabel": "+ skills, secciones 0..21",
+      "width": 160
     },
     {
-      "id": "validators",
-      "lane": "author",
+      "id": "validadores",
+      "lane": "autoria",
       "col": 5,
       "type": "security",
       "label": "Validadores",
-      "sublabel": "contracts → chapter",
-      "width": 140
+      "sublabel": "orden de build-all",
+      "width": 160
     },
     {
-      "id": "stop",
-      "lane": "gate",
-      "col": 5,
+      "id": "fallido",
+      "lane": "desvio",
+      "col": 4,
       "type": "security",
       "label": "failed_validation",
-      "sublabel": "exit 1",
-      "width": 140
+      "sublabel": "book-state, exit 1",
+      "width": 160
     },
     {
-      "id": "ir",
-      "lane": "build",
-      "col": 2,
-      "type": "database",
+      "id": "build_ir",
+      "lane": "publica",
+      "col": 5,
+      "type": "backend",
       "label": "build-book-ir",
-      "sublabel": "dist/book-ir.json",
-      "width": 140
+      "sublabel": "mind map, web, pdf",
+      "width": 160
     },
     {
-      "id": "mindmap",
-      "lane": "build",
-      "col": 3,
-      "type": "frontend",
-      "label": "build-mind-map",
-      "width": 140
-    },
-    {
-      "id": "web",
-      "lane": "build",
+      "id": "archify",
+      "lane": "publica",
       "col": 4,
       "type": "frontend",
-      "label": "build-web",
-      "width": 140
+      "label": "Diagrama Archify",
+      "sublabel": "+ nota en la KB",
+      "width": 160
     },
     {
-      "id": "pdf",
-      "lane": "build",
-      "col": 5,
+      "id": "puerta",
+      "lane": "publica",
+      "col": 3,
+      "type": "security",
+      "label": "¿ADR, enmienda",
+      "sublabel": "o cierre de release?",
+      "width": 160
+    },
+    {
+      "id": "merge",
+      "lane": "publica",
+      "col": 2,
+      "type": "cloud",
+      "label": "commit → merge",
+      "sublabel": "ff-only a main",
+      "width": 160
+    },
+    {
+      "id": "aprobacion",
+      "lane": "desvio",
+      "col": 3,
       "type": "external",
-      "label": "build-pdf",
-      "sublabel": "pandoc",
-      "width": 140
+      "label": "Aprobación humana",
+      "sublabel": "el arquitecto no aprueba",
+      "width": 160
     }
   ],
   "edges": [
     {
-      "id": "e-k-reg",
-      "from": "constitution",
-      "to": "registries"
+      "id": "e1",
+      "from": "constitucion",
+      "to": "plan_maestro"
     },
     {
-      "id": "e-reg-pl",
-      "from": "registries",
-      "to": "plans"
+      "id": "e2",
+      "from": "plan_maestro",
+      "to": "plan_cap"
     },
     {
-      "id": "e-pl-ba",
-      "from": "plans",
-      "to": "architect"
+      "id": "e3",
+      "from": "plan_cap",
+      "to": "rojo"
     },
     {
-      "id": "e-ba-ca",
-      "from": "architect",
-      "to": "author",
-      "label": "brief"
+      "id": "e4",
+      "from": "rojo",
+      "to": "autor"
     },
     {
-      "id": "e-ca-val",
-      "from": "author",
-      "to": "validators"
+      "id": "e5",
+      "from": "autor",
+      "to": "validadores"
     },
     {
-      "id": "e-val-stop",
-      "from": "validators",
-      "to": "stop",
-      "label": "falla: deny",
+      "id": "e-fail",
+      "from": "validadores",
+      "to": "fallido",
+      "label": "falla",
       "variant": "security",
       "role": "error"
     },
     {
-      "id": "e-val-ir",
-      "from": "validators",
-      "to": "ir",
+      "id": "e-ok",
+      "from": "validadores",
+      "to": "build_ir",
       "label": "ok",
-      "variant": "emphasis",
-      "fromSide": "right",
-      "toSide": "top"
+      "variant": "emphasis"
     },
     {
-      "id": "e-ir-mm",
-      "from": "ir",
-      "to": "mindmap"
+      "id": "e7",
+      "from": "build_ir",
+      "to": "archify"
     },
     {
-      "id": "e-mm-web",
-      "from": "mindmap",
-      "to": "web"
+      "id": "e8",
+      "from": "archify",
+      "to": "puerta"
     },
     {
-      "id": "e-web-pdf",
-      "from": "web",
-      "to": "pdf"
+      "id": "e-si",
+      "from": "puerta",
+      "to": "aprobacion",
+      "label": "sí",
+      "variant": "security",
+      "role": "branch"
+    },
+    {
+      "id": "e-no",
+      "from": "puerta",
+      "to": "merge",
+      "label": "no",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-apr",
+      "from": "aprobacion",
+      "to": "merge",
+      "role": "branch"
     }
   ],
   "cards": [
     {
-      "dot": "violet",
-      "title": "Constitución, agentes y skills",
+      "dot": "cyan",
+      "title": "Protocolo por incremento",
       "items": [
-        "Constitución (P-01..P-30, INV) → registros components / contracts / glossary → planes/",
-        "book-architect: Chapter Brief; chapter-author + skills write-technical-chapter, define-contract / component, write-pseudocode, impacto, retrieval",
-        "Evidencia: ARCHITECTURE_CONSTITUTION.md:8-28, agents/book-architect.md:3-10, agents/chapter-author.md:3-8"
+        "El repo aplica su constitución a sí mismo: plan maestro y plan por capítulo como registro de ejecución",
+        "Rojo: solo frontmatter, el validador falla; luego registros y autoría",
+        "Evidencia: planes/2026-09-24-extension-v0-2-v0-3-eve-pi-conexiones.md:25-32, :390-419"
       ]
     },
     {
       "dot": "rose",
-      "title": "Validación y build",
+      "title": "Validación que bloquea",
       "items": [
-        "Validadores: contracts → components → chapter + retrieval-set; falla + publishing deny → book-state failed_validation, exit 1",
-        "ok → build-book-ir (dist/book-ir.json) → build-mind-map → build-web → build-pdf (pandoc); Node sin dependencias",
-        "Evidencia: policies/publishing.yaml:13-14, scripts/build-all:41-80, scripts/README.md:3-12"
+        "Orden: contracts → components → debt → chapter + retrieval-set (scripts/build-all)",
+        "publishing deny: unresolved_validation_errors (policies/publishing.yaml:13-14)",
+        "Una deuda vencida falla el build (registry/debt.yaml:9, :15-18)"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Aprobación humana",
+      "items": [
+        "ADRs, enmiendas y cierres de release requieren aprobación humana (plan:32, :418)",
+        "El book-architect propone y no aprueba (agents/book-architect.md:7-8)"
       ]
     },
     {
       "dot": "slate",
-      "title": "Alcance y compresión",
+      "title": "Compresión y límites",
       "items": [
-        "Archify y el PDF ejecutivo (scripts/build-flujos-doc.py) se generan fuera de build-all",
-        "Compresión: skills y orden de validadores solo en tarjetas",
-        "Rutas relativas a repos/aaramirez/book-harness/ (constitución en constitution/)"
+        "«Rojo» y «Registros» se funden en un nodo; build-book-ir resume mind map → web → pdf",
+        "Los diagramas Archify y scripts/build-flujos-doc.py siguen fuera de build-all",
+        "Rutas relativas a repos/aaramirez/book-harness/"
       ]
     }
   ]

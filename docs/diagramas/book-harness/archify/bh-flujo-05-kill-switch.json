@@ -2,38 +2,54 @@
   "schema_version": 1,
   "diagram_type": "sequence",
   "meta": {
-    "title": "Flujo 5 — Kill switch con traspaso a humano",
-    "quality_profile": "showcase",
+    "title": "Flujo 5 — Kill switch y apagado de una extensión",
+    "viewBox": [1320, 600],
     "column_fit": "spread",
-    "viewBox": [1320, 620]
+    "quality_profile": "showcase"
   },
   "participants": [
     { "id": "operador", "type": "external", "label": "Operador" },
-    { "id": "killfn", "type": "backend", "label": "Función kill switch" },
     { "id": "opctl", "type": "security", "label": "OperationalController" },
-    { "id": "audit", "type": "database", "label": "AuditLedger" },
-    { "id": "handoff", "type": "backend", "label": "HandoffCoordinator" },
-    { "id": "humano", "type": "external", "label": "Humano receptor" }
+    { "id": "exthost", "type": "backend", "label": "ExtensionHost" },
+    { "id": "core", "type": "backend", "label": "AgentCore" },
+    { "id": "handoff", "type": "messagebus", "label": "HandoffCoordinator" },
+    { "id": "audit", "type": "database", "label": "AuditLedger" }
   ],
   "segments": [
-    { "from": 162, "to": 320, "label": "Directiva KILL_SWITCH" },
-    { "from": 334, "to": 470, "label": "Evidencia y traspaso" },
-    { "from": 484, "to": 540, "label": "Entrega · Preview" }
+    { "from": 160, "to": 280, "label": "Apagar una extensión" },
+    { "from": 300, "to": 460, "label": "Kill switch del run" }
   ],
   "messages": [
-    { "from": "operador", "to": "killfn", "y": 184, "label": "1 · detener el run", "variant": "emphasis" },
-    { "from": "killfn", "to": "opctl", "y": 218, "label": "2 · issueControlDirective KILL_SWITCH", "variant": "security", "note": "La directiva queda ISSUED, sin evento." },
-    { "from": "killfn", "to": "opctl", "y": 252, "label": "3 · applyControlDirective", "variant": "security" },
-    { "from": "opctl", "to": "killfn", "y": 286, "label": "4 · CANCELLED sin runTurn", "variant": "return", "note": "Emite CONTROL_DIRECTIVE_APPLIED. Sin runTurn ni evaluateExecutionContinuation." },
-    { "from": "killfn", "to": "audit", "y": 354, "label": "5 · recordAuditEntry directiva", "variant": "default" },
-    { "from": "killfn", "to": "handoff", "y": 388, "label": "6 · createHandoffPackage KILL_SWITCH", "variant": "emphasis" },
-    { "from": "handoff", "to": "killfn", "y": 422, "label": "7 · HandoffPackage PENDING", "variant": "return" },
-    { "from": "killfn", "to": "audit", "y": 456, "label": "8 · recordAuditEntry traspaso", "variant": "default" },
-    { "from": "handoff", "to": "humano", "y": 516, "label": "9 · Channel Adapter · Preview", "variant": "dashed", "note": "Entrega y PENDING→ACCEPTED→COMPLETED son Preview." }
+    { "id": "m-disable", "from": "operador", "to": "opctl", "y": 180, "label": "issueControlDirective DISABLE_CAPABILITY", "variant": "emphasis", "note": "El targetRef de la directiva debe ser la extensión (ch18:776-779, ch18:827-829)." },
+    { "id": "m-apply-ext", "from": "opctl", "to": "exthost", "y": 214, "label": "applyControlDirective y disableExtension", "variant": "security", "note": "Si la directiva no es para la extensión: DIRECTIVE_NOT_FOR_EXTENSION (ch49:643-671)." },
+    { "id": "m-disabled", "from": "exthost", "to": "opctl", "y": 248, "label": "extensión DISABLED, ya no se selecciona", "variant": "return", "note": "hooksFor solo elige extensiones ACTIVE (ch40:633)." },
+    { "id": "m-kill", "from": "operador", "to": "opctl", "y": 320, "label": "issueControlDirective KILL_SWITCH", "variant": "emphasis", "note": "interruptGovernedEnterpriseRunWithKillSwitch (ch27:579)." },
+    { "id": "m-cancel", "from": "opctl", "to": "core", "y": 354, "label": "applyControlDirective, run CANCELLED", "variant": "security", "note": "Desde cualquier estado no terminal; sobre un terminal lanza error (ch18:1140-1170)." },
+    { "id": "m-handoff", "from": "opctl", "to": "handoff", "y": 388, "label": "createHandoffPackage", "variant": "default", "note": "Paquete estructurado para una persona (ch23:998)." },
+    { "id": "m-audit", "from": "opctl", "to": "audit", "y": 422, "label": "recordAuditEntry de la directiva", "variant": "default", "note": "Ledger append-only, separado de la telemetría (ch19:1027)." }
+  ],
+  "activations": [
+    { "participant": "opctl", "from": 174, "to": 256, "type": "security" },
+    { "participant": "exthost", "from": 208, "to": 254, "type": "backend" },
+    { "participant": "opctl", "from": 314, "to": 430, "type": "security" },
+    { "participant": "core", "from": 348, "to": 362, "type": "backend" }
   ],
   "cards": [
-    { "dot": "rose", "title": "Detener sin el loop", "items": ["Función: interruptGovernedEnterpriseRunWithKillSwitch", "applyControlDirective pasa a CANCELLED sin runTurn ni evaluateExecutionContinuation", "Emite CONTROL_DIRECTIVE_APPLIED; el primero en llegar a terminal gana", "Guardas: KILL_SWITCH_ON_TERMINAL_AGENT_STATE, CONTROL_DIRECTIVE_ALREADY_APPLIED"] },
-    { "dot": "violet", "title": "Evidencia y paquete", "items": ["Directiva y traspaso quedan en AuditLedger", "HandoffPackage estructurado: runId, sessionId, motivo, contexto, destinatario", "Preview: entrega por Channel Adapter y PENDING→ACCEPTED→COMPLETED", "No se invoca desde runGovernedEnterpriseTurn"] },
-    { "dot": "slate", "title": "Evidencia en el libro", "items": ["ch27:577-650 pseudocódigo · ch27:510-514 no cableada", "ch18:1083-1197, ch18:1302-1316 directiva y guardas", "ch23:958-1090 HandoffPackage", "diagrams/archify/rendered/capitulo-27-integracion-enterprise-caminos-de-control.html"] }
+    { "dot": "amber", "title": "Apagado sin AgentLoop (P-30, INV-E14)", "items": [
+      "disableExtension exige DISABLE_CAPABILITY con targetRef = la extensión; si no, DIRECTIVE_NOT_FOR_EXTENSION",
+      "Una extensión DISABLED queda fuera de hooksFor, que solo elige ACTIVE",
+      "Evidencia: ch18:776-779, ch18:827-829, ch49:643-671, ch49:461-464, ch40:633"
+    ] },
+    { "dot": "rose", "title": "Kill switch del run", "items": [
+      "El run pasa a CANCELLED desde cualquier estado no terminal",
+      "Sobre un estado terminal lanza error: nunca reescribe un final",
+      "Evidencia: ch18:1083, ch18:1114, ch18:1140-1170, ch27:579"
+    ] },
+    { "dot": "emerald", "title": "Handoff y auditoría", "items": [
+      "createHandoffPackage pasa el caso a una persona (CH-23, integrado en CH-27)",
+      "La directiva queda en el ledger append-only, separado de la telemetría (P-25)",
+      "Otras directivas: ISOLATE_TENANT y ROLLBACK; hash cambiado = REJECTED al registrar (CH-40)",
+      "Evidencia: ch23:998, ch19:1027"
+    ] }
   ]
 }

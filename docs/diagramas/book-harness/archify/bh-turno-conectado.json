@@ -1,0 +1,239 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Turno conectado v0.3 (CH-49)",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [
+      1560,
+      700
+    ]
+  },
+  "participants": [
+    {
+      "id": "integ",
+      "type": "frontend",
+      "label": "Integración"
+    },
+    {
+      "id": "core",
+      "type": "backend",
+      "label": "AgentCore"
+    },
+    {
+      "id": "adm",
+      "type": "security",
+      "label": "AdmissionCtrl"
+    },
+    {
+      "id": "cnr",
+      "type": "backend",
+      "label": "ContinuationReg"
+    },
+    {
+      "id": "ret",
+      "type": "database",
+      "label": "RetrievalEngine"
+    },
+    {
+      "id": "jrn",
+      "type": "database",
+      "label": "ExecutionJournal"
+    },
+    {
+      "id": "mgw",
+      "type": "cloud",
+      "label": "ModelGateway"
+    },
+    {
+      "id": "pol",
+      "type": "security",
+      "label": "PolicyEngine"
+    },
+    {
+      "id": "ext",
+      "type": "backend",
+      "label": "ExtensionHost"
+    },
+    {
+      "id": "iso",
+      "type": "security",
+      "label": "Entorno aislado"
+    },
+    {
+      "id": "bus",
+      "type": "messagebus",
+      "label": "EventBus"
+    }
+  ],
+  "segments": [
+    {
+      "from": 160,
+      "to": 300,
+      "label": "Apertura del turno (una vez)"
+    },
+    {
+      "from": 310,
+      "to": 410,
+      "label": "Propuesta: el journal manda"
+    },
+    {
+      "from": 420,
+      "to": 616,
+      "label": "Gobierno, ejecución y commit"
+    }
+  ],
+  "messages": [
+    {
+      "id": "m01",
+      "from": "integ",
+      "to": "core",
+      "y": 180,
+      "label": "1 requireActivatableManifest",
+      "variant": "security",
+      "note": "Manifiesto con diagnósticos ERROR: AGENT_MANIFEST_REJECTED / AGENT_MANIFEST_HAS_ERRORS (INV-E27)."
+    },
+    {
+      "id": "m02",
+      "from": "integ",
+      "to": "adm",
+      "y": 212,
+      "label": "2 admitWithPrincipalRules",
+      "variant": "security",
+      "note": "Si no es ADMIT devuelve NULL y no se crea ningún run."
+    },
+    {
+      "id": "m03",
+      "from": "integ",
+      "to": "cnr",
+      "y": 244,
+      "label": "3 routeAdmittedRequest",
+      "variant": "default",
+      "note": "CONTINUE_SESSION exige continuationAllowedForCaller; si no, SESSION_CONTINUATION_NOT_ALLOWED."
+    },
+    {
+      "id": "m04",
+      "from": "integ",
+      "to": "ret",
+      "y": 276,
+      "label": "4 governedContextBlocks",
+      "variant": "default",
+      "note": "bindDurableCaller fija el llamante; candidatos gobernados y recortados al techo de audiencia."
+    },
+    {
+      "id": "m05",
+      "from": "integ",
+      "to": "jrn",
+      "y": 330,
+      "label": "5 beginStep + nextProposalFromJournal",
+      "variant": "emphasis",
+      "note": "Si la respuesta registrada tiene propuestas sin ejecutar, se toma la siguiente sin llamar al modelo (D-044)."
+    },
+    {
+      "id": "m06",
+      "from": "integ",
+      "to": "mgw",
+      "y": 362,
+      "label": "6 invokeModelForTurn (si no hay propuesta)",
+      "variant": "default",
+      "note": "Solo con selection.messages: los contextBlocks no se pasan (ch49:792-795)."
+    },
+    {
+      "id": "m07",
+      "from": "integ",
+      "to": "jrn",
+      "y": 394,
+      "label": "7 recordModelResponse",
+      "variant": "default"
+    },
+    {
+      "id": "m08",
+      "from": "integ",
+      "to": "pol",
+      "y": 440,
+      "label": "8 evaluatePolicyForCaller",
+      "variant": "security",
+      "note": "Solo restringe: ALLOW pasa a DENY CALLER_NOT_PERMITTED."
+    },
+    {
+      "id": "m09",
+      "from": "integ",
+      "to": "ext",
+      "y": 472,
+      "label": "9 beforeToolHooksForStep + runBeforeToolHooks",
+      "variant": "default",
+      "note": "Solo con ALLOW; extensiones PROJECT solo en el entorno aislado."
+    },
+    {
+      "id": "m10",
+      "from": "integ",
+      "to": "jrn",
+      "y": 504,
+      "label": "10 recordToolCallBeforeExecution",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m11",
+      "from": "integ",
+      "to": "iso",
+      "y": 536,
+      "label": "11 executeToolCallIsolated",
+      "variant": "security"
+    },
+    {
+      "id": "m12",
+      "from": "integ",
+      "to": "jrn",
+      "y": 568,
+      "label": "12 recordToolResult + commitStep",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m13",
+      "from": "integ",
+      "to": "bus",
+      "y": 600,
+      "label": "13 traceConnectedStep + fanOutSpan",
+      "variant": "dashed",
+      "note": "Traza recortada al techo de captura de cada destino."
+    }
+  ],
+  "activations": [
+    {
+      "participant": "integ",
+      "from": 172,
+      "to": 608,
+      "type": "frontend"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Apertura y paso",
+      "items": [
+        "1-4 abren el turno una vez (ch49:473-564); 5-13 = runConnectedGovernedStep (ch49:743-879)",
+        "5-7: el journal manda; sin llamar al modelo si hay propuesta (D-044, ch49:570-600)",
+        "Journal en una sola línea (5, 7, 10, 12); pares de funciones en un mensaje"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Ramas no dibujadas",
+      "items": [
+        "REQUIRE_APPROVAL: parkRun + approverNoticeFor, retorno sin commit",
+        "DENY o BLOCK: ToolResult fallido antes del commit (ch49:910-919)",
+        "Conexión: credentialForConnectedCall; agente: invokeAgentDurably en lugar de 11"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Hallazgo: contextBlocks sin usar",
+      "items": [
+        "openConnectedGovernedTurn produce contextBlocks (ch49:557-563)",
+        "El paso 6 invoca al modelo solo con selection.messages (ch49:792-795)",
+        "Nada une los bloques gobernados con la historia antes de la llamada"
+      ]
+    }
+  ]
+}

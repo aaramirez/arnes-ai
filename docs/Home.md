@@ -37,7 +37,7 @@ Aquí consolidamos análisis, arquitecturas, decisiones de diseño, comparacione
 ## Notas del vault
 
 - Diagramas de eve (`docs/diagramas/vercel-eve/`): [[Eve-Arquitectura-y-Flujos]] · [[Eve-10-Flujos-Empresariales]] · [[Eve-Implementacion-Self-Hosted]] · interactivos: [[Eve-Diagramas-Archify]]
-- Diagramas de book-harness (`docs/diagramas/book-harness/`): [[BH-Arquitectura-y-Flujos]] · [[BH-10-Flujos-Empresariales]] · [[BH-Implementacion]] · interactivos: [[BH-Diagramas-Archify]] (describen v0.1; ver [[BH-Estado-Implementacion]])
+- Diagramas de book-harness (`docs/diagramas/book-harness/`): [[BH-Arquitectura-y-Flujos]] · [[BH-10-Flujos-Empresariales]] · [[BH-Implementacion]] · interactivos: [[BH-Diagramas-Archify]] (v0.3)
 - [[Arquitectura_Agent_Harness_inspirado_en_Pi]] — diseño conceptual de un agent harness inspirado en Pi
 
 ## Repos de referencia

@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Flujo 6 — Mensajes que llegan durante el turno",
+    "viewBox": [1320, 600],
+    "column_fit": "spread",
+    "quality_profile": "showcase"
+  },
+  "participants": [
+    { "id": "usuario", "type": "external", "label": "Usuario" },
+    { "id": "contreg", "type": "messagebus", "label": "ContinuationRegistry" },
+    { "id": "loop", "type": "backend", "label": "AgentLoop" },
+    { "id": "paso", "type": "backend", "label": "Paso durable" },
+    { "id": "journal", "type": "database", "label": "ExecutionJournal" },
+    { "id": "gateway", "type": "cloud", "label": "ModelGateway" }
+  ],
+  "segments": [
+    { "from": 160, "to": 250, "label": "Encolar PendingInput" },
+    { "from": 270, "to": 460, "label": "Paso durable: tomar, llamar, commit, confirmar" }
+  ],
+  "messages": [
+    { "id": "m-msg", "from": "usuario", "to": "contreg", "y": 180, "label": "mensaje nuevo en el mismo hilo", "variant": "emphasis", "note": "Llega a la sesión dueña de la dirección (ch34:481-488)." },
+    { "id": "m-continue", "from": "contreg", "to": "loop", "y": 220, "label": "CONTINUE_SESSION: enqueuePendingInput STEER o FOLLOW_UP", "variant": "dashed", "note": "Hay un run en curso, así que entra como PendingInput; enqueuePendingInput rechaza runs terminales (ch28:546-606)." },
+    { "id": "m-take", "from": "paso", "to": "loop", "y": 290, "label": "takePendingInputsForStep BEFORE_MODEL_CALL", "variant": "emphasis", "note": "Solo antes de llamar al modelo, nunca entre propuestas de una respuesta (ch38:605-627)." },
+    { "id": "m-model", "from": "paso", "to": "gateway", "y": 330, "label": "invokeModelForTurn con el mensaje agregado", "variant": "default", "note": "ch49:786-807." },
+    { "id": "m-commit", "from": "paso", "to": "journal", "y": 370, "label": "commitStep", "variant": "emphasis", "note": "ch38:433-434." },
+    { "id": "m-confirm", "from": "paso", "to": "loop", "y": 410, "label": "confirmPendingInputsAfterCommit", "variant": "security", "note": "La cola se confirma después del commit; si el proceso cae antes, la entrada se reaplica." }
+  ],
+  "activations": [
+    { "participant": "loop", "from": 214, "to": 228, "type": "backend" },
+    { "participant": "paso", "from": 284, "to": 418, "type": "backend" },
+    { "participant": "journal", "from": 364, "to": 378, "type": "database" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "STEER y FOLLOW_UP", "items": [
+      "STEER: se aplica antes de la siguiente llamada al modelo y nunca interrumpe una tool",
+      "FOLLOW_UP: se aplica solo cuando el turno iba a terminar",
+      "Entrega ONE_AT_A_TIME o ALL; enqueuePendingInput rechaza runs terminales",
+      "Evidencia: ch28:332-336, ch28:546-606, ch34:481-488"
+    ] },
+    { "dot": "emerald", "title": "Confirmar después del commit", "items": [
+      "El paso toma entradas solo en BEFORE_MODEL_CALL, la única frontera cableada (ch38:611)",
+      "La cola se confirma recién tras commitStep: si el proceso cae antes, se reaplica",
+      "La compactación, si hace falta, es su propio paso del journal y va antes",
+      "Evidencia: ch38:605-627, ch38:433-434, ch49:786-807, ch49:932-933"
+    ] },
+    { "dot": "amber", "title": "Completitud con follow-up", "items": [
+      "Si el turno iba a terminar y hay follow-up, sigue en WAITING_FOR_MODEL",
+      "resolveCompletionWithPendingInput evita COMPLETED mientras quede follow-up",
+      "WOULD_COMPLETE se define en CH-28",
+      "Evidencia: ch28:628-695"
+    ] }
+  ]
+}

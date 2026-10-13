@@ -1,0 +1,239 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Recuperación tras una caída a mitad de turno",
+    "quality_profile": "showcase"
+  },
+  "lanes": [
+    {
+      "id": "main",
+      "label": "Tool con resultado desconocido"
+    },
+    {
+      "id": "other",
+      "label": "Otras decisiones por paso"
+    },
+    {
+      "id": "stop",
+      "label": "Sin re-ejecución",
+      "variant": "exception"
+    }
+  ],
+  "mainPath": [
+    "start",
+    "decide",
+    "pending",
+    "unknown",
+    "reexec",
+    "commit"
+  ],
+  "nodes": [
+    {
+      "id": "start",
+      "lane": "main",
+      "col": 0,
+      "type": "external",
+      "label": "recoverRun",
+      "sublabel": "arranque del proceso",
+      "width": 102
+    },
+    {
+      "id": "decide",
+      "lane": "main",
+      "col": 1,
+      "type": "backend",
+      "label": "Decisión por paso",
+      "sublabel": "decideStepRecovery",
+      "width": 143
+    },
+    {
+      "id": "pending",
+      "lane": "main",
+      "col": 2,
+      "type": "backend",
+      "label": "Tool pendiente",
+      "sublabel": "RESOLVE_PENDING_TOOL",
+      "width": 121
+    },
+    {
+      "id": "unknown",
+      "lane": "main",
+      "col": 3,
+      "type": "security",
+      "label": "Política replay",
+      "sublabel": "decideUnknownOutcome",
+      "width": 128
+    },
+    {
+      "id": "reexec",
+      "lane": "main",
+      "col": 4,
+      "type": "backend",
+      "label": "REEXECUTE",
+      "sublabel": "executeToolCallIsolated",
+      "width": 115
+    },
+    {
+      "id": "commit",
+      "lane": "main",
+      "col": 5,
+      "type": "database",
+      "label": "Commit del paso",
+      "sublabel": "recordToolResult+commitStep",
+      "width": 133
+    },
+    {
+      "id": "inconsistent",
+      "lane": "stop",
+      "col": 0,
+      "type": "security",
+      "label": "Journal roto",
+      "sublabel": "JOURNAL_INCONSISTENT",
+      "width": 107
+    },
+    {
+      "id": "report",
+      "lane": "stop",
+      "col": 4,
+      "type": "security",
+      "label": "REPORT_UNKNOWN",
+      "sublabel": "outcome UNKNOWN",
+      "width": 121
+    },
+    {
+      "id": "replay",
+      "lane": "other",
+      "col": 0,
+      "type": "database",
+      "label": "Reusar registro",
+      "sublabel": "REPLAY o COMMIT_RECORDED",
+      "width": 128
+    },
+    {
+      "id": "model",
+      "lane": "other",
+      "col": 1,
+      "type": "cloud",
+      "label": "Sin respuesta",
+      "sublabel": "REEXECUTE_MODEL_CALL",
+      "width": 114
+    },
+    {
+      "id": "resume",
+      "lane": "other",
+      "col": 2,
+      "type": "security",
+      "label": "Retomar respuesta",
+      "sublabel": "RESUME_FROM_RESPONSE",
+      "width": 143
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-start",
+      "from": "start",
+      "to": "decide",
+      "label": "consistente",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-incons",
+      "from": "start",
+      "to": "inconsistent",
+      "label": "no",
+      "variant": "security",
+      "role": "error"
+    },
+    {
+      "id": "e-pending",
+      "from": "decide",
+      "to": "pending",
+      "label": "toolCall sin toolResult",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-unknown",
+      "from": "pending",
+      "to": "unknown",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-safe",
+      "from": "unknown",
+      "to": "reexec",
+      "label": "SAFE",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-never",
+      "from": "unknown",
+      "to": "report",
+      "label": "NEVER o NULL",
+      "variant": "security",
+      "role": "error"
+    },
+    {
+      "id": "e-commit",
+      "from": "reexec",
+      "to": "commit",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-report-commit",
+      "from": "report",
+      "to": "commit",
+      "variant": "security"
+    },
+    {
+      "id": "e-replay",
+      "from": "decide",
+      "to": "replay",
+      "label": "ya resuelto",
+      "role": "branch"
+    },
+    {
+      "id": "e-model",
+      "from": "decide",
+      "to": "model",
+      "label": "sin respuesta",
+      "role": "branch"
+    },
+    {
+      "id": "e-resume",
+      "from": "decide",
+      "to": "resume",
+      "label": "propuesta sin toolCall",
+      "role": "branch"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "El paso es la unidad (P-32)",
+      "items": [
+        "recoverRun recorre el journal al arrancar (ch32:782-823; journal por momento: ch32:465-473)",
+        "decideStepRecovery y su tabla (ch32:743-778, ch32:851-858)",
+        "COMMITTED: reusar, nunca repetir (INV-E16); con resultado sin commit: COMMIT_RECORDED"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Resultado desconocido",
+      "items": [
+        "ReplayPolicy: NULL equivale a NEVER (ch30:334-337, ch30:512-521)",
+        "decideUnknownOutcome y ciclo del registro (ch30:542-617, ch30:668-677)",
+        "resolvePendingStepOnRecovery: aquí WAIT es imposible (ch36:651-699)"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "Compresión",
+      "items": [
+        "Salidas agrupadas: REPLAY_RECORDED + COMMIT_RECORDED; REEXECUTE_MODEL_CALL + CLOSE_WITH_PARTIAL (con parcial cierra)",
+        "REPORT_UNKNOWN: ToolResult UNKNOWN, el registro sigue PENDING",
+        "RESUME_FROM_RESPONSE reevalúa la política (ch36:753-755)"
+      ]
+    }
+  ]
+}

@@ -2,124 +2,180 @@
   "schema_version": 1,
   "diagram_type": "sequence",
   "meta": {
-    "title": "Flujo 3 — Credencial que nunca ve el modelo",
-    "viewBox": [
-      1200,
-      520
-    ],
+    "title": "Flujo 3 — Credencial del usuario: autorización interactiva y egress",
+    "quality_profile": "showcase",
     "column_fit": "spread",
-    "quality_profile": "showcase"
+    "viewBox": [
+      1440,
+      620
+    ]
   },
   "participants": [
     {
-      "id": "registry",
+      "id": "paso",
       "type": "backend",
-      "label": "CapabilityRegistry"
+      "label": "Paso conectado"
     },
     {
-      "id": "broker",
+      "id": "cb",
       "type": "security",
       "label": "CredentialBroker"
     },
     {
-      "id": "secrets",
+      "id": "rc",
       "type": "database",
-      "label": "Secret Store (borde)"
+      "label": "ResumptionCoordinator"
     },
     {
-      "id": "tools",
+      "id": "usuario",
+      "type": "external",
+      "label": "Usuario"
+    },
+    {
+      "id": "ss",
+      "type": "security",
+      "label": "Secret Store"
+    },
+    {
+      "id": "iee",
       "type": "backend",
-      "label": "ToolRuntime"
+      "label": "Entorno aislado"
+    },
+    {
+      "id": "px",
+      "type": "cloud",
+      "label": "Proxy de egress"
     }
   ],
   "segments": [
     {
-      "from": 180,
-      "to": 300,
-      "label": "Chequeos en orden: pertenencia → existencia → vigencia"
+      "from": 162,
+      "to": 284,
+      "label": "Falta la credencial: estacionar"
     },
     {
-      "from": 320,
-      "to": 370,
-      "label": "Referencia opaca + evento"
+      "from": 302,
+      "to": 398,
+      "label": "Autorización SAME_PRINCIPAL"
     },
     {
-      "from": 383,
-      "to": 420,
-      "label": "Futuro"
+      "from": 416,
+      "to": 534,
+      "label": "Ejecución y egress con credencial"
     }
   ],
   "messages": [
     {
-      "id": "resolve",
-      "from": "registry",
-      "to": "broker",
-      "y": 195,
-      "label": "resolveCredentialReference(descriptor, credentialName)",
-      "variant": "security",
-      "note": "Primero: ¿la credencial pertenece a la capability?"
+      "from": "paso",
+      "to": "cb",
+      "y": 180,
+      "label": "1 · detectMissingCallerCredential",
+      "variant": "default"
     },
     {
-      "id": "exists",
-      "from": "broker",
-      "to": "secrets",
-      "y": 260,
-      "label": "¿existe el secreto?",
-      "variant": "default",
-      "note": "Después: ¿no está vencido?"
+      "from": "cb",
+      "to": "paso",
+      "y": 210,
+      "label": "2 · falta; el llamante es USER",
+      "variant": "return"
     },
     {
-      "id": "reference",
-      "from": "broker",
-      "to": "registry",
-      "y": 340,
-      "label": "CredentialReference opaca, nunca el secreto",
-      "variant": "return",
-      "note": "Emite CREDENTIAL_RESOLVED o CREDENTIAL_RESOLUTION_FAILED."
+      "from": "paso",
+      "to": "rc",
+      "y": 240,
+      "label": "3 · parkForMissingCredential · AUTHORIZATION",
+      "variant": "emphasis",
+      "note": "Desafío de autorización con regla SAME_PRINCIPAL. Hallazgo: no llama a parkedAgentState, así que el run no pasa a PAUSED (ch37:749-771)."
     },
     {
-      "id": "inject",
-      "from": "registry",
-      "to": "tools",
-      "y": 400,
-      "label": "la referencia viaja a la implementación — futuro",
+      "from": "paso",
+      "to": "usuario",
+      "y": 270,
+      "label": "4 · WAIT_NOTICE con callbackRef",
       "variant": "dashed"
-    }
-  ],
-  "activations": [
+    },
     {
-      "participant": "broker",
-      "from": 190,
-      "to": 345,
-      "type": "security"
+      "from": "usuario",
+      "to": "ss",
+      "y": 324,
+      "label": "5 · autoriza; el token va al Secret Store",
+      "variant": "security",
+      "note": "El token nunca llega al run."
+    },
+    {
+      "from": "ss",
+      "to": "rc",
+      "y": 354,
+      "label": "6 · acceptAuthorizationCallback · APPROVED",
+      "variant": "security",
+      "note": "Valida callbackRef, desafío, mismo principal y vencimiento; si falla, AUTHORIZATION_CALLBACK_REJECTED."
+    },
+    {
+      "from": "rc",
+      "to": "paso",
+      "y": 384,
+      "label": "7 · resumeDurableAuthorization",
+      "variant": "return"
+    },
+    {
+      "from": "paso",
+      "to": "iee",
+      "y": 438,
+      "label": "8 · executeToolCallIsolated",
+      "variant": "emphasis"
+    },
+    {
+      "from": "iee",
+      "to": "px",
+      "y": 468,
+      "label": "9 · petición saliente",
+      "variant": "default"
+    },
+    {
+      "from": "px",
+      "to": "cb",
+      "y": 498,
+      "label": "10 · decideEgress y resolveEgressCredential",
+      "variant": "security",
+      "note": "DENY, ALLOW o ALLOW_WITH_CREDENTIAL. EgressRule.credentialName es un nombre, nunca un valor."
+    },
+    {
+      "from": "px",
+      "to": "iee",
+      "y": 528,
+      "label": "11 · respuesta; credencial agregada fuera",
+      "variant": "return"
     }
   ],
   "cards": [
     {
-      "dot": "cyan",
-      "title": "Orden de chequeos",
+      "dot": "rose",
+      "title": "El secreto nunca entra",
       "items": [
-        "Pertenencia a la capability antes que existencia y vigencia (evita canal lateral)",
-        "Los dos chequeos internos del broker van como notas, no como flechas",
-        "Siempre se emite CREDENTIAL_RESOLVED o CREDENTIAL_RESOLUTION_FAILED (INV-E08)"
+        "El token va al Secret Store, nunca al run ni al modelo",
+        "El proxy decide DENY, ALLOW o ALLOW_WITH_CREDENTIAL y agrega la credencial fuera",
+        "SECRET_IN_SANDBOX_ENVIRONMENT si la configuración nombra una credencial",
+        "Sin sandbox abierto: ISOLATED_ENVIRONMENT_REQUIRED"
       ]
     },
     {
-      "dot": "rose",
-      "title": "Fallos y límites",
+      "dot": "amber",
+      "title": "Autorización y hallazgo",
       "items": [
-        "CREDENTIAL_CAPABILITY_MISMATCH no es recuperable",
-        "CREDENTIAL_NOT_FOUND y CREDENTIAL_EXPIRED: recuperables, no reintentables",
-        "Elegir la credencial no es autorizar: eso sigue en PolicyEngine"
+        "Regla SAME_PRINCIPAL: solo el mismo usuario completa el desafío",
+        "Callback inválido: AUTHORIZATION_CALLBACK_REJECTED",
+        "Hallazgo: parkForMissingCredential no llama a parkedAgentState; el run no pasa a PAUSED (ch37:749-771)",
+        "Igual con CredentialScope = PER_CALLER (CH-41)"
       ]
     },
     {
       "dot": "slate",
-      "title": "Evidencia",
+      "title": "Evidencia · repos/aaramirez/book-harness/book/chapters/",
       "items": [
-        "ch16:364-386 problema · ch16:845-982 secuencia",
-        "ch16:992-998, ch16:1042-1050 fallos y orden",
-        "ch16:1080-1082 eventos"
+        "37-esperas-credenciales-canales/chapter.md:593-605 · :609-662 · :749-771 · :819-887",
+        "35-entorno-aislado/chapter.md:539-558 · :621-701 · :814-821",
+        "49-integracion-conectada/chapter.md:708-737",
+        "41-conexiones/chapter.md:718-744"
       ]
     }
   ]

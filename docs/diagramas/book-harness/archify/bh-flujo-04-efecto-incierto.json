@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Flujo 4 — Efecto con resultado desconocido tras una caída",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [1440, 620]
+  },
+  "participants": [
+    { "id": "paso", "type": "backend", "label": "Paso durable" },
+    { "id": "journal", "type": "database", "label": "ExecutionJournal" },
+    { "id": "guard", "type": "security", "label": "IdempotencyGuard" },
+    { "id": "cobro", "type": "external", "label": "Tool de cobro" },
+    { "id": "recover", "type": "backend", "label": "recoverRun" }
+  ],
+  "segments": [
+    { "from": 162, "to": 254, "label": "Registro antes del efecto · cae antes de recordToolResult" },
+    { "from": 278, "to": 370, "label": "recoverRun: decidir la recuperación" },
+    { "from": 394, "to": 486, "label": "alt · SAFE → REEXECUTE | NEVER o NULL → REPORT_UNKNOWN" },
+    { "from": 508, "to": 540, "label": "Confirmar el paso" }
+  ],
+  "messages": [
+    { "from": "paso", "to": "journal", "y": 180, "label": "1 · recordToolCallBeforeExecution", "variant": "emphasis" },
+    { "from": "paso", "to": "guard", "y": 210, "label": "2 · checkIdempotency · registro PENDING", "variant": "default" },
+    { "from": "paso", "to": "cobro", "y": 240, "label": "3 · ejecuta el cobro (el proceso cae)", "variant": "emphasis", "note": "El proceso cae antes de recordToolResult: hay toolCall pero no toolResult." },
+    { "from": "recover", "to": "journal", "y": 296, "label": "4 · decideStepRecovery", "variant": "default" },
+    { "from": "journal", "to": "recover", "y": 326, "label": "5 · RESOLVE_PENDING_TOOL", "variant": "return" },
+    { "from": "recover", "to": "guard", "y": 356, "label": "6 · decideUnknownOutcome con replayPolicy", "variant": "security", "note": "Decidir si se repite le toca a IdempotencyGuard, no al journal." },
+    { "from": "guard", "to": "recover", "y": 412, "label": "7 · [replayPolicy SAFE] REEXECUTE", "variant": "return" },
+    { "from": "recover", "to": "cobro", "y": 442, "label": "8 · [SAFE] executeToolCallIsolated", "variant": "emphasis" },
+    { "from": "guard", "to": "recover", "y": 472, "label": "9 · [NEVER o NULL] REPORT_UNKNOWN", "variant": "return", "note": "ToolResult con outcome UNKNOWN; el modelo recibe TOOL_OUTCOME_UNKNOWN y el registro sigue PENDING." },
+    { "from": "recover", "to": "journal", "y": 528, "label": "10 · recordToolResult y commitStep", "variant": "emphasis", "note": "En la siguiente recuperación el paso será REPLAY_RECORDED." }
+  ],
+  "cards": [
+    { "dot": "orange", "title": "Recuperación sin duplicar", "items": ["La tool call se registra antes del efecto; la clave queda PENDING", "Tras la caída, el journal detecta el efecto pendiente: RESOLVE_PENDING_TOOL", "Un paso confirmado nunca se repite: luego será REPLAY_RECORDED", "WAIT solo si la ejecución sigue en vuelo; imposible en recuperación (executionStillInFlight=FALSE)"] },
+    { "dot": "rose", "title": "Alternativa por replayPolicy", "items": ["SAFE → REEXECUTE: se reejecuta con executeToolCallIsolated", "NEVER o NULL → REPORT_UNKNOWN: outcome UNKNOWN, TOOL_OUTCOME_UNKNOWN al modelo", "En ese caso el registro sigue PENDING, no se marca como completado", "SAFE se audita al registrar (auditSafeReplayDeclaration); tools de conexión: NULL = NEVER"] },
+    { "dot": "slate", "title": "Evidencia · repos/aaramirez/book-harness/book/chapters/", "items": ["32-pasos-durables/chapter.md:465-473 · :743-778 · :851-858", "30-politica-de-replay/chapter.md:542-617 · :621-652 · :668-677", "36-integracion-turno-durable/chapter.md:651-699", "17-idempotency-guard/chapter.md:971 · :1021 · 38-identidad-auditoria-retencion/chapter.md:678-690"] }
+  ]
+}

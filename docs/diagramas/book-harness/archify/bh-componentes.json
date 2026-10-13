@@ -2,38 +2,45 @@
   "schema_version": 1,
   "diagram_type": "architecture",
   "meta": {
-    "title": "Mapa de componentes: núcleo + enterprise",
+    "title": "Mapa de componentes v0.3",
     "quality_profile": "showcase",
     "repository": {
       "url": "https://github.com/aaramirez/book-harness",
       "provider": "github",
-      "revision": "d16e2c742eae7b47dda2939b58f04c67f2d850f0"
+      "revision": "59288a10e2a7e134a70ed68f3bf2c39b3c064f8c"
     },
     "viewBox": [
-      1180,
-      540
+      1300,
+      600
     ]
   },
   "components": [
     {
-      "id": "admision",
+      "id": "ingreso",
       "type": "security",
       "label": "AdmissionController",
-      "sublabel": "Ingress & Activation",
+      "sublabel": "+ ContinuationRegistry (v0.2)",
+      "tag": "Ingress & Activation",
       "pos": [
         30,
-        168
+        250
       ],
       "size": [
-        160,
-        64
+        180,
+        70
       ],
       "sources": [
         {
           "path": "book/chapters/25-epilogo-secuenciacion/chapter.md",
           "line": 331,
           "end_line": 342,
-          "label": "componente → plano"
+          "label": "ch25: planos CMP-012..022"
+        },
+        {
+          "path": "book/chapters/25-epilogo-secuenciacion/chapter.md",
+          "line": 365,
+          "end_line": 368,
+          "label": "ch25: planos CMP-023..026"
         }
       ]
     },
@@ -41,27 +48,209 @@
       "id": "integracion",
       "type": "backend",
       "label": "Funciones de integración",
-      "sublabel": "no son componentes",
+      "sublabel": "CH-12/13 · CH-26/27 · CH-36 · CH-49",
+      "tag": "no son componentes",
       "pos": [
-        250,
-        160
+        300,
+        245
       ],
       "size": [
-        220,
+        230,
         80
       ],
       "sources": [
         {
           "path": "book/chapters/12-integracion-camino-feliz/chapter.md",
-          "line": 701,
+          "line": 651,
           "end_line": 717,
-          "label": "la integración vive en funciones"
+          "label": "runAgentTurnEndToEnd"
+        },
+        {
+          "path": "book/chapters/49-integracion-conectada/chapter.md",
+          "line": 403,
+          "end_line": 428,
+          "label": "dependencias del turno conectado"
+        }
+      ]
+    },
+    {
+      "id": "durable",
+      "type": "backend",
+      "label": "ExecutionJournal · ResumptionCoordinator",
+      "sublabel": "+ IsolatedExecutionEnvironment",
+      "tag": "durable v0.2",
+      "pos": [
+        620,
+        40
+      ],
+      "size": [
+        360,
+        64
+      ],
+      "sources": [
+        {
+          "path": "book/chapters/25-epilogo-secuenciacion/chapter.md",
+          "line": 365,
+          "end_line": 368,
+          "label": "ch25: planos CMP-023..026"
+        },
+        {
+          "path": "constitution/ARCHITECTURE_CONSTITUTION.md",
+          "line": 1002,
+          "end_line": 1046,
+          "label": "Amendment v1.2"
+        }
+      ]
+    },
+    {
+      "id": "gobierno",
+      "type": "security",
+      "label": "CapabilityRegistry · PolicyEngine",
+      "sublabel": "+ ToolRuntime · HumanInteractionService",
+      "tag": "núcleo",
+      "pos": [
+        620,
+        150
+      ],
+      "size": [
+        360,
+        64
+      ],
+      "sources": [
+        {
+          "path": "constitution/ARCHITECTURE_CONSTITUTION.md",
+          "line": 233,
+          "end_line": 355,
+          "label": "Article III"
+        }
+      ]
+    },
+    {
+      "id": "nucleo",
+      "type": "backend",
+      "label": "AgentCore · AgentLoop · ExecutionController",
+      "sublabel": "+ ContextEngine · ModelGateway · SessionManager",
+      "tag": "núcleo",
+      "pos": [
+        620,
+        260
+      ],
+      "size": [
+        360,
+        64
+      ],
+      "sources": [
+        {
+          "path": "constitution/ARCHITECTURE_CONSTITUTION.md",
+          "line": 233,
+          "end_line": 355,
+          "label": "Article III"
         },
         {
           "path": "registry/components.yaml",
-          "line": 171,
-          "label": "dependencies: []"
+          "line": 174,
+          "end_line": 929,
+          "label": "29 componentes, dependencies: []"
         }
+      ]
+    },
+    {
+      "id": "control",
+      "type": "security",
+      "label": "OperationalController · HandoffCoordinator",
+      "sublabel": "+ SkillLibrary · ExecutionFabricAdapter · AgentCommunicationGateway",
+      "tag": "enterprise v1.1",
+      "pos": [
+        620,
+        370
+      ],
+      "size": [
+        360,
+        64
+      ],
+      "sources": [
+        {
+          "path": "book/chapters/25-epilogo-secuenciacion/chapter.md",
+          "line": 331,
+          "end_line": 342,
+          "label": "ch25: planos CMP-012..022"
+        }
+      ]
+    },
+    {
+      "id": "conectividad",
+      "type": "cloud",
+      "label": "ExtensionHost · ConnectionManager",
+      "sublabel": "+ RetrievalEngine",
+      "tag": "conectividad v0.3",
+      "pos": [
+        620,
+        480
+      ],
+      "size": [
+        360,
+        64
+      ],
+      "sources": [
+        {
+          "path": "book/chapters/40-extension-host/chapter.md",
+          "line": 855,
+          "label": "ch40: plano de ExtensionHost"
+        },
+        {
+          "path": "book/chapters/41-conexiones/chapter.md",
+          "line": 835,
+          "label": "ch41: plano de ConnectionManager"
+        },
+        {
+          "path": "book/chapters/42-fuentes-de-datos/chapter.md",
+          "line": 879,
+          "label": "ch42: plano de RetrievalEngine"
+        }
+      ]
+    },
+    {
+      "id": "evidencia",
+      "type": "database",
+      "label": "CredentialBroker · DataGovernanceEngine",
+      "sublabel": "+ IdempotencyGuard · EvaluationHarness · AuditLedger",
+      "tag": "enterprise v1.1",
+      "pos": [
+        30,
+        480
+      ],
+      "size": [
+        360,
+        64
+      ],
+      "sources": [
+        {
+          "path": "book/chapters/25-epilogo-secuenciacion/chapter.md",
+          "line": 331,
+          "end_line": 342,
+          "label": "ch25: planos CMP-012..022"
+        },
+        {
+          "path": "constitution/ARCHITECTURE_CONSTITUTION.md",
+          "line": 991,
+          "end_line": 1000,
+          "label": "los 9 planos"
+        }
+      ]
+    },
+    {
+      "id": "eventbus",
+      "type": "messagebus",
+      "label": "EventBus",
+      "sublabel": "emitAndDistribute",
+      "tag": "núcleo",
+      "pos": [
+        1090,
+        95
+      ],
+      "size": [
+        180,
+        64
       ]
     },
     {
@@ -70,238 +259,41 @@
       "label": "Modelo LLM",
       "sublabel": "solo propone",
       "pos": [
-        990,
-        50
+        1090,
+        260
       ],
       "size": [
-        150,
-        60
+        180,
+        64
       ]
     },
     {
-      "id": "turno",
-      "type": "backend",
-      "label": "AgentLoop",
-      "sublabel": "+ ContextEngine · ModelGateway",
+      "id": "externos",
+      "type": "external",
+      "label": "MCP / OpenAPI / datos",
+      "sublabel": "otros agentes",
       "pos": [
-        590,
-        50
+        1090,
+        425
       ],
       "size": [
-        280,
-        60
-      ],
-      "sources": [
-        {
-          "path": "constitution/ARCHITECTURE_CONSTITUTION.md",
-          "line": 233,
-          "end_line": 352,
-          "label": "11 componentes del núcleo"
-        }
-      ]
-    },
-    {
-      "id": "gobierno",
-      "type": "security",
-      "label": "PolicyEngine · ToolRuntime",
-      "sublabel": "+ CapabilityRegistry · HumanInteractionService",
-      "pos": [
-        590,
-        170
-      ],
-      "size": [
-        280,
-        60
-      ],
-      "sources": [
-        {
-          "path": "constitution/ARCHITECTURE_CONSTITUTION.md",
-          "line": 233,
-          "end_line": 352,
-          "label": "11 componentes del núcleo"
-        }
-      ]
-    },
-    {
-      "id": "estado",
-      "type": "backend",
-      "label": "AgentCore",
-      "sublabel": "+ ExecutionController · SessionManager",
-      "pos": [
-        590,
-        290
-      ],
-      "size": [
-        280,
-        60
-      ],
-      "sources": [
-        {
-          "path": "constitution/ARCHITECTURE_CONSTITUTION.md",
-          "line": 233,
-          "end_line": 352,
-          "label": "11 componentes del núcleo"
-        }
-      ]
-    },
-    {
-      "id": "eventbus",
-      "type": "messagebus",
-      "label": "EventBus",
-      "sublabel": "vía emitAndDistribute",
-      "pos": [
-        990,
-        170
-      ],
-      "size": [
-        150,
-        60
-      ]
-    },
-    {
-      "id": "datos",
-      "type": "database",
-      "label": "CredentialBroker",
-      "sublabel": "+ DataGovernanceEngine",
-      "pos": [
-        35,
-        440
-      ],
-      "size": [
-        178,
-        60
-      ],
-      "sources": [
-        {
-          "path": "constitution/ARCHITECTURE_CONSTITUTION.md",
-          "line": 991,
-          "end_line": 1000,
-          "label": "9 planos enterprise"
-        }
-      ]
-    },
-    {
-      "id": "fiabilidad",
-      "type": "backend",
-      "label": "IdempotencyGuard",
-      "sublabel": "+ EvaluationHarness",
-      "pos": [
-        237,
-        440
-      ],
-      "size": [
-        178,
-        60
-      ],
-      "sources": [
-        {
-          "path": "constitution/ARCHITECTURE_CONSTITUTION.md",
-          "line": 991,
-          "end_line": 1000,
-          "label": "9 planos enterprise"
-        }
-      ]
-    },
-    {
-      "id": "auditoria",
-      "type": "database",
-      "label": "AuditLedger",
-      "sublabel": "+ SkillLibrary",
-      "pos": [
-        439,
-        440
-      ],
-      "size": [
-        178,
-        60
-      ],
-      "sources": [
-        {
-          "path": "book/chapters/25-epilogo-secuenciacion/chapter.md",
-          "line": 331,
-          "end_line": 342,
-          "label": "componente → plano"
-        }
-      ]
-    },
-    {
-      "id": "control",
-      "type": "security",
-      "label": "OperationalController",
-      "sublabel": "+ HandoffCoordinator",
-      "pos": [
-        641,
-        440
-      ],
-      "size": [
-        178,
-        60
-      ],
-      "sources": [
-        {
-          "path": "book/chapters/25-epilogo-secuenciacion/chapter.md",
-          "line": 331,
-          "end_line": 342,
-          "label": "componente → plano"
-        }
-      ]
-    },
-    {
-      "id": "interop",
-      "type": "cloud",
-      "label": "AgentCommunicationGateway",
-      "sublabel": "+ ExecutionFabricAdapter",
-      "pos": [
-        843,
-        440
-      ],
-      "size": [
-        178,
-        60
-      ],
-      "sources": [
-        {
-          "path": "book/chapters/25-epilogo-secuenciacion/chapter.md",
-          "line": 331,
-          "end_line": 342,
-          "label": "componente → plano"
-        }
-      ]
-    }
-  ],
-  "boundaries": [
-    {
-      "kind": "region",
-      "label": "Núcleo · Article III (EventBus también es núcleo)",
-      "wraps": [
-        "turno",
-        "gobierno",
-        "estado"
-      ]
-    },
-    {
-      "kind": "region",
-      "label": "Capa enterprise · Amendment v1.1",
-      "wraps": [
-        "datos",
-        "fiabilidad",
-        "auditoria",
-        "control",
-        "interop"
+        180,
+        64
       ]
     }
   ],
   "connections": [
     {
       "id": "admite",
-      "from": "admision",
+      "from": "ingreso",
       "to": "integracion",
+      "label": "ADMIT + ruta",
       "variant": "emphasis"
     },
     {
-      "id": "int-turno",
+      "id": "int-durable",
       "from": "integracion",
-      "to": "turno",
+      "to": "durable",
       "variant": "emphasis"
     },
     {
@@ -311,45 +303,35 @@
       "variant": "emphasis"
     },
     {
-      "id": "int-estado",
+      "id": "int-nucleo",
       "from": "integracion",
-      "to": "estado",
+      "to": "nucleo",
       "variant": "emphasis"
     },
     {
-      "id": "int-datos",
+      "id": "int-control",
       "from": "integracion",
-      "to": "datos",
+      "to": "control"
+    },
+    {
+      "id": "int-conectividad",
+      "from": "integracion",
+      "to": "conectividad",
+      "variant": "emphasis"
+    },
+    {
+      "id": "int-evidencia",
+      "from": "integracion",
+      "to": "evidencia",
       "fromSide": "bottom",
       "toSide": "top"
     },
     {
-      "id": "int-fiabilidad",
-      "from": "integracion",
-      "to": "fiabilidad",
-      "label": "solo IdempotencyGuard",
-      "fromSide": "bottom",
-      "toSide": "top",
-      "labelSegment": 2
-    },
-    {
-      "id": "int-auditoria",
-      "from": "integracion",
-      "to": "auditoria",
-      "fromSide": "bottom",
-      "toSide": "top"
-    },
-    {
-      "id": "invoca-llm",
-      "from": "turno",
-      "to": "llm",
-      "label": "ModelGateway"
-    },
-    {
-      "id": "emite-turno",
-      "from": "turno",
+      "id": "emite-durable",
+      "from": "durable",
       "to": "eventbus",
-      "variant": "dashed"
+      "variant": "dashed",
+      "label": "emitAndDistribute"
     },
     {
       "id": "emite-gobierno",
@@ -358,45 +340,64 @@
       "variant": "dashed"
     },
     {
-      "id": "emite-estado",
-      "from": "estado",
+      "id": "emite-nucleo",
+      "from": "nucleo",
       "to": "eventbus",
       "variant": "dashed"
     },
     {
+      "id": "invoca-llm",
+      "from": "nucleo",
+      "to": "llm",
+      "label": "ModelGateway",
+      "labelDy": 16
+    },
+    {
       "id": "kill-switch",
       "from": "control",
-      "to": "estado",
+      "to": "nucleo",
       "label": "KILL_SWITCH sin AgentLoop",
       "variant": "security",
       "fromSide": "top",
       "toSide": "bottom"
+    },
+    {
+      "id": "acg-externos",
+      "from": "control",
+      "to": "externos",
+      "label": "A2A"
+    },
+    {
+      "id": "con-externos",
+      "from": "conectividad",
+      "to": "externos",
+      "label": "MCP / OpenAPI"
     }
   ],
   "cards": [
     {
       "dot": "cyan",
-      "title": "Los componentes no se llaman entre sí",
+      "title": "Sin llamadas entre componentes",
       "items": [
-        "Todos declaran dependencies: [] (registry/components.yaml:171).",
-        "Llaman las funciones de integración: runAgentTurnEndToEnd (CH-12), runGovernedEnterpriseTurn (CH-26), caminos CH-13 / CH-27 (ch12:701-717).",
-        "KILL_SWITCH llega a AgentCore sin pasar por AgentLoop."
+        "Los 29 declaran dependencies: [] (registry/components.yaml:174-929).",
+        "Llaman las funciones de integración CH-12, CH-26, CH-36 y CH-49 (ch49:403-428).",
+        "KILL_SWITCH / DISABLE_CAPABILITY llega a AgentCore sin AgentLoop."
       ]
     },
     {
       "dot": "violet",
-      "title": "Agrupación: 22 componentes en 12 nodos",
+      "title": "29 componentes en 8 nodos",
       "items": [
-        "Núcleo (constitución:233-352): 3 nodos + EventBus; las punteadas = los 11 emiten.",
-        "Enterprise por plano (ch25:331-342); EvaluationHarness, HandoffCoordinator, AgentCommunicationGateway y ExecutionFabricAdapter sin llamadas aquí."
+        "Núcleo 11, enterprise 11 (ch25:331-342), durable 4 (ch25:365-368), conectividad 3.",
+        "ContinuationRegistry va con AdmissionController; de la columna enterprise, la integración solo llama a AgentCommunicationGateway."
       ]
     },
     {
       "dot": "amber",
-      "title": "Inconsistencias del propio libro",
+      "title": "Inconsistencias del libro",
       "items": [
-        "registry/components.yaml:101 ubica CredentialBroker en Capability & Integration; aquí se sigue ch25.",
-        "registry/glossary.yaml:1200-1202 deja EvaluationHarness fuera de los 9 planos (constitución:991-1000)."
+        "CredentialBroker: Data & Context en ch25:334, Capability & Integration en registry/components.yaml:101. Se sigue ch25.",
+        "Planos de CMP-027..029 solo en ch40:855, ch41:835 y ch42:879."
       ]
     }
   ]

@@ -2,231 +2,248 @@
   "schema_version": 2,
   "diagram_type": "workflow",
   "meta": {
-    "title": "Ensamblado de contexto",
+    "title": "Qué ve realmente el modelo (v0.3)",
     "quality_profile": "showcase"
   },
   "lanes": [
     {
-      "id": "fit",
-      "label": "Cabe en presupuesto"
+      "id": "modelo",
+      "label": "Modelo, ventana y llamada"
     },
     {
-      "id": "compact",
-      "label": "Compactación"
-    },
-    {
-      "id": "drop",
-      "label": "Descarte y error",
+      "id": "desvio",
+      "label": "Desvíos: error y compactación",
       "variant": "exception"
+    },
+    {
+      "id": "recup",
+      "label": "Recuperación gobernada (CH-42, CH-46)"
     }
   ],
   "mainPath": [
-    "iterate",
-    "fits",
-    "add",
-    "next",
-    "empty",
-    "snapshot"
+    "sel_modelo",
+    "fit",
+    "pendientes",
+    "snapshot",
+    "cache",
+    "llamada"
   ],
   "nodes": [
     {
-      "id": "iterate",
-      "lane": "fit",
+      "id": "sel_modelo",
+      "lane": "modelo",
       "col": 0,
-      "type": "frontend",
-      "label": "candidates",
-      "sublabel": "orden = ranking",
-      "width": 140
+      "type": "backend",
+      "label": "selectModelDescriptor",
+      "sublabel": "catálogo CH-39",
+      "width": 160
     },
     {
-      "id": "fits",
-      "lane": "fit",
+      "id": "fit",
+      "lane": "modelo",
       "col": 1,
       "type": "security",
-      "label": "¿Cabe?",
-      "sublabel": "estimateTokens",
-      "width": 140
+      "label": "fitsContextWindow",
+      "sublabel": "¿cabe?",
+      "width": 136
     },
     {
-      "id": "add",
-      "lane": "fit",
+      "id": "pendientes",
+      "lane": "modelo",
       "col": 2,
-      "type": "backend",
-      "label": "ContextBlock",
-      "sublabel": "compacted FALSE",
-      "width": 140
-    },
-    {
-      "id": "next",
-      "lane": "fit",
-      "col": 3,
-      "type": "security",
-      "label": "¿Quedan?",
-      "sublabel": "más candidatos",
-      "width": 140
-    },
-    {
-      "id": "empty",
-      "lane": "fit",
-      "col": 4,
-      "type": "security",
-      "label": "¿Sin bloques?",
-      "sublabel": "hubo candidatos",
-      "width": 140
+      "type": "messagebus",
+      "label": "takePendingInputsForStep",
+      "sublabel": "BEFORE_MODEL_CALL",
+      "width": 180
     },
     {
       "id": "snapshot",
-      "lane": "fit",
-      "col": 5,
+      "lane": "modelo",
+      "col": 3,
       "type": "database",
-      "label": "ContextSnapshot",
-      "sublabel": "…_ASSEMBLED",
+      "label": "assembleContextSnapshot",
+      "sublabel": "historia + pendientes",
+      "width": 176
+    },
+    {
+      "id": "cache",
+      "lane": "modelo",
+      "col": 4,
+      "type": "backend",
+      "label": "effectiveCacheRetention",
+      "sublabel": "NONE si no cachea",
+      "width": 176
+    },
+    {
+      "id": "llamada",
+      "lane": "modelo",
+      "col": 5,
+      "type": "external",
+      "label": "invokeModelForTurn",
+      "sublabel": "llamada al modelo",
       "width": 140
     },
     {
-      "id": "cfits",
-      "lane": "compact",
+      "id": "error_sel",
+      "lane": "desvio",
+      "col": 0,
+      "type": "security",
+      "label": "Error de selección",
+      "sublabel": "MODEL_NOT_IN_CATALOG",
+      "width": 140
+    },
+    {
+      "id": "compactar",
+      "lane": "desvio",
       "col": 1,
       "type": "messagebus",
-      "label": "compact",
-      "sublabel": "¿cabe compactado?",
+      "label": "compactHistoryInDurableTurn",
+      "sublabel": "resumen estructurado",
+      "width": 200
+    },
+    {
+      "id": "fuentes",
+      "lane": "recup",
+      "col": 0,
+      "type": "database",
+      "label": "Fuentes + scopeFor",
+      "sublabel": "sin clasificar = RESTRICTED",
       "width": 140
     },
     {
-      "id": "addc",
-      "lane": "compact",
-      "col": 2,
-      "type": "backend",
-      "label": "ContextBlock",
-      "sublabel": "compacted TRUE",
-      "width": 140
-    },
-    {
-      "id": "dropped",
-      "lane": "drop",
+      "id": "gobierno",
+      "lane": "recup",
       "col": 1,
       "type": "security",
-      "label": "Descartar",
-      "sublabel": "explícitamente",
-      "width": 140
+      "label": "governRetrievedCandidate",
+      "sublabel": "gana lo más restrictivo",
+      "width": 180
     },
     {
-      "id": "err",
-      "lane": "drop",
-      "col": 4,
+      "id": "techo",
+      "lane": "recup",
+      "col": 2,
       "type": "security",
-      "label": "BUDGET_EXHAUSTED",
-      "sublabel": "SNAPSHOT_FAILED",
-      "width": 140
+      "label": "contextCeilingForAudience",
+      "sublabel": "PUBLIC baja el techo",
+      "width": 186
+    },
+    {
+      "id": "seleccion",
+      "lane": "recup",
+      "col": 3,
+      "type": "backend",
+      "label": "selectRetrievedCandidates",
+      "sublabel": "score, techo, presupuesto",
+      "width": 186
     }
   ],
   "edges": [
     {
-      "id": "e-iter",
-      "from": "iterate",
-      "to": "fits"
+      "id": "e-sel-fit",
+      "from": "sel_modelo",
+      "to": "fit"
     },
     {
-      "id": "e-fit-yes",
-      "from": "fits",
-      "to": "add",
-      "label": "Sí",
+      "id": "e-sel-err",
+      "from": "sel_modelo",
+      "to": "error_sel",
+      "label": "fuera de catálogo",
+      "variant": "security",
+      "role": "error"
+    },
+    {
+      "id": "e-fit-si",
+      "from": "fit",
+      "to": "pendientes",
+      "label": "sí",
       "variant": "emphasis"
     },
     {
       "id": "e-fit-no",
-      "from": "fits",
-      "to": "cfits",
-      "label": "No",
-      "variant": "security",
+      "from": "fit",
+      "to": "compactar",
+      "label": "no",
       "role": "branch"
     },
     {
-      "id": "e-c-yes",
-      "from": "cfits",
-      "to": "addc",
-      "label": "Sí",
-      "variant": "emphasis"
+      "id": "e-cmp-pi",
+      "from": "compactar",
+      "to": "pendientes",
+      "label": "paso del journal",
+      "role": "branch"
     },
     {
-      "id": "e-c-no",
-      "from": "cfits",
-      "to": "dropped",
-      "label": "No",
-      "variant": "security",
-      "role": "error"
+      "id": "e-fu-gov",
+      "from": "fuentes",
+      "to": "gobierno"
     },
     {
-      "id": "e-add-next",
-      "from": "add",
-      "to": "next"
+      "id": "e-gov-techo",
+      "from": "gobierno",
+      "to": "techo"
     },
     {
-      "id": "e-addc-next",
-      "from": "addc",
-      "to": "next",
-      "variant": "dashed"
+      "id": "e-techo-sel",
+      "from": "techo",
+      "to": "seleccion"
     },
     {
-      "id": "e-drop-next",
-      "from": "dropped",
-      "to": "next",
-      "variant": "dashed"
+      "id": "e-pi-snap",
+      "from": "pendientes",
+      "to": "snapshot"
     },
     {
-      "id": "e-loop",
-      "from": "next",
-      "to": "iterate",
-      "label": "Sí",
-      "variant": "dashed",
-      "role": "return"
-    },
-    {
-      "id": "e-next-no",
-      "from": "next",
-      "to": "empty",
-      "label": "No"
-    },
-    {
-      "id": "e-empty-yes",
-      "from": "empty",
-      "to": "err",
-      "label": "Sí",
-      "variant": "security",
-      "role": "error"
-    },
-    {
-      "id": "e-empty-no",
-      "from": "empty",
+      "id": "e-sel-snap",
+      "from": "seleccion",
       "to": "snapshot",
-      "label": "No",
+      "label": "hueco §3",
+      "variant": "dashed",
+      "role": "async"
+    },
+    {
+      "id": "e-snap-cache",
+      "from": "snapshot",
+      "to": "cache"
+    },
+    {
+      "id": "e-cache-call",
+      "from": "cache",
+      "to": "llamada",
       "variant": "emphasis"
     }
   ],
   "cards": [
     {
       "dot": "cyan",
-      "title": "Entrada y presupuesto",
+      "title": "Modelo y ventana",
       "items": [
-        "candidates: List de AgentMessage ya dados, sin retrieval; el orden dado es el ranking",
-        "estimateTokens de cada candidato contra budget.maxInputTokens",
-        "Evidencia: ch04:686-765 (assembleContextSnapshot)"
+        "Errores de selección: MODEL_NOT_IN_CATALOG / MODEL_LACKS_CAPABILITY",
+        "No caber es una señal para compactar, no un error; la compactación es un paso del journal y nunca corta entre tool call y resultado",
+        "Evidencia: ch39:544-616, ch39:775; ch29:580-761; ch38:605-669; ch04:686-765"
       ]
     },
     {
-      "dot": "emerald",
-      "title": "Bloques, snapshot y fallo",
+      "dot": "violet",
+      "title": "Recuperación gobernada",
       "items": [
-        "ContextBlock: provenance conversation_history, compacted FALSE o TRUE",
-        "Sin bloques pese a candidatos → CONTEXT_BUDGET_EXHAUSTED + CONTEXT_SNAPSHOT_FAILED; si no, CONTEXT_SNAPSHOT_ASSEMBLED",
-        "Evidencia: ch04:478-500; ch04:776-792 (sin retrieval ni filtrado de autorización)"
+        "scopeFor: SHARED / PER_TENANT / PER_PRINCIPAL sobre el llamante; classifyData gana lo más restrictivo",
+        "La audiencia PUBLIC baja el techo de contexto",
+        "Evidencia: ch42:493-494, ch42:522-531, ch42:566-595, ch42:713-737, ch42:756-777; ch46:612-623"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Hallazgo: bloques gobernados",
+      "items": [
+        "La arista punteada marca el hueco de §3: el libro produce los bloques gobernados, pero el pseudocódigo de CH-49 no los pasa a la llamada al modelo"
       ]
     },
     {
       "dot": "slate",
       "title": "Compresión",
       "items": [
-        "compact y ¿cabe compactado? en un solo nodo; candidates e iterar en orden en el nodo de entrada",
+        "«Fuentes declaradas» y scopeFor se funden en un nodo; MODEL_LACKS_CAPABILITY va solo en esta tarjeta",
         "chNN = repos/aaramirez/book-harness/book/chapters/NN-*/chapter.md"
       ]
     }

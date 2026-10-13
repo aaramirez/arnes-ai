@@ -2,61 +2,198 @@
   "schema_version": 1,
   "diagram_type": "sequence",
   "meta": {
-    "title": "Flujo 1 — Admisión de una activación externa",
-    "viewBox": [1320, 560],
+    "title": "Flujo 1 — Admisión por principal y continuación",
+    "viewBox": [
+      1320,
+      560
+    ],
     "column_fit": "spread",
     "quality_profile": "showcase"
   },
   "participants": [
-    { "id": "trigger", "type": "external", "label": "Trigger externo" },
-    { "id": "ingress", "type": "frontend", "label": "Ingress Adapter" },
-    { "id": "admission", "type": "security", "label": "AdmissionController" },
-    { "id": "routing", "type": "messagebus", "label": "Routing (Preview)" },
-    { "id": "core", "type": "backend", "label": "AgentCore" }
+    {
+      "id": "ingress",
+      "type": "frontend",
+      "label": "Ingress Adapter"
+    },
+    {
+      "id": "turno",
+      "type": "backend",
+      "label": "enterConnectedTurn"
+    },
+    {
+      "id": "core",
+      "type": "backend",
+      "label": "AgentCore"
+    },
+    {
+      "id": "admision",
+      "type": "security",
+      "label": "AdmissionController"
+    },
+    {
+      "id": "registro",
+      "type": "messagebus",
+      "label": "ContinuationRegistry"
+    },
+    {
+      "id": "sesiones",
+      "type": "database",
+      "label": "SessionManager"
+    }
   ],
   "segments": [
-    { "from": 160, "to": 260, "label": "Admisión fail-closed" },
-    { "from": 290, "to": 360, "label": "ADMIT — Preview" },
-    { "from": 390, "to": 450, "label": "REJECT por defecto" }
+    {
+      "from": 172,
+      "to": 312,
+      "label": "Manifiesto y admisión"
+    },
+    {
+      "from": 327,
+      "to": 384,
+      "label": "alt: reclamo ACTIVE"
+    },
+    {
+      "from": 402,
+      "to": 486,
+      "label": "else: sin reclamo"
+    }
   ],
   "messages": [
-    { "id": "raw-stimulus", "from": "trigger", "to": "ingress", "y": 170, "label": "estímulo crudo: webhook o evento", "variant": "default" },
-    { "id": "evaluate", "from": "ingress", "to": "admission", "y": 205, "label": "evaluateAdmissionForActivationRequest(ActivationRequest)", "variant": "emphasis", "note": "Dentro aplica admissionRulesGrantAccess antes de decidir." },
-    { "id": "decision", "from": "admission", "to": "ingress", "y": 245, "label": "AdmissionDecision (outcome, reason)", "variant": "return" },
-    { "id": "route", "from": "ingress", "to": "routing", "y": 305, "label": "enrutar — Preview", "variant": "dashed" },
-    { "id": "activate", "from": "routing", "to": "core", "y": 345, "label": "activateAgent — Preview", "variant": "dashed" },
-    { "id": "reject", "from": "admission", "to": "ingress", "y": 420, "label": "NO_ADMISSION_RULE_GRANTS_ACCESS", "variant": "return", "note": "No se crea ningún AgentRun ni se emite evento." }
+    {
+      "id": "m1",
+      "from": "ingress",
+      "to": "turno",
+      "y": 182,
+      "label": "ActivationRequest con continuationAddress",
+      "variant": "emphasis",
+      "note": "El adaptador normaliza el mensaje (p.ej. chat-equipo / hilo 1718). El ingreso nunca llama a AgentLoop."
+    },
+    {
+      "id": "m2",
+      "from": "turno",
+      "to": "core",
+      "y": 212,
+      "label": "requireActivatableManifest",
+      "variant": "default",
+      "note": "Un diagnóstico ERROR del manifiesto bloquea la activación (INV-E27)."
+    },
+    {
+      "id": "m3",
+      "from": "turno",
+      "to": "admision",
+      "y": 242,
+      "label": "admitWithPrincipalRules",
+      "variant": "security",
+      "note": "Exige principal verificado; sin reglas configuradas solo admite en DEVELOPMENT."
+    },
+    {
+      "id": "m4",
+      "from": "admision",
+      "to": "turno",
+      "y": 272,
+      "label": "ADMIT o REJECT con reason",
+      "variant": "return",
+      "note": "REJECT PRINCIPAL_NOT_ADMITTED: la función devuelve NULL y no existe run."
+    },
+    {
+      "id": "m5",
+      "from": "turno",
+      "to": "registro",
+      "y": 302,
+      "label": "routeAdmittedRequest",
+      "variant": "default",
+      "note": "routeAdmittedRequest no emite eventos."
+    },
+    {
+      "id": "m6",
+      "from": "registro",
+      "to": "turno",
+      "y": 340,
+      "label": "[reclamo ACTIVE] CONTINUE_SESSION + sessionId de la dueña",
+      "variant": "return"
+    },
+    {
+      "id": "m7",
+      "from": "turno",
+      "to": "sesiones",
+      "y": 370,
+      "label": "continuationAllowedForCaller contra el iniciador",
+      "variant": "security",
+      "note": "Mismo principal o mismo tenant; si no, SESSION_CONTINUATION_NOT_ALLOWED."
+    },
+    {
+      "id": "m8",
+      "from": "registro",
+      "to": "turno",
+      "y": 416,
+      "label": "[sin reclamo] ACTIVATE_NEW",
+      "variant": "return"
+    },
+    {
+      "id": "m9",
+      "from": "turno",
+      "to": "sesiones",
+      "y": 446,
+      "label": "crear sesión",
+      "variant": "default"
+    },
+    {
+      "id": "m10",
+      "from": "turno",
+      "to": "registro",
+      "y": 476,
+      "label": "claimContinuationAddress",
+      "variant": "emphasis",
+      "note": "Si otra sesión ya la tiene: CONTINUATION_ADDRESS_ALREADY_OWNED."
+    }
   ],
   "activations": [
-    { "participant": "ingress", "from": 165, "to": 430, "type": "frontend" },
-    { "participant": "admission", "from": 200, "to": 425, "type": "security" }
+    {
+      "participant": "turno",
+      "from": 177,
+      "to": 482,
+      "type": "backend"
+    },
+    {
+      "participant": "admision",
+      "from": 237,
+      "to": 278,
+      "type": "security"
+    },
+    {
+      "participant": "registro",
+      "from": 297,
+      "to": 422,
+      "type": "messagebus"
+    }
   ],
   "cards": [
     {
       "dot": "cyan",
-      "title": "Admisión",
+      "title": "Admisión fail-closed",
       "items": [
-        "El adaptador normaliza el estímulo en un ActivationRequest; el ingreso nunca llama a AgentLoop (INV-E01)",
-        "AdmissionController evalúa admissionRulesGrantAccess (paso interno omitido como flecha)",
-        "Identidad, tenant, capacidad, rate y budget (P-17) se reducen a esa regla"
+        "El ingreso nunca llama a AgentLoop; un ERROR del manifiesto bloquea (INV-E27)",
+        "Sin reglas solo se admite en DEVELOPMENT; REJECT PRINCIPAL_NOT_ADMITTED devuelve NULL y no hay run",
+        "Evidencia: ch49:473-514 · ch38:494-528 · ch31:514-585"
       ]
     },
     {
-      "dot": "rose",
-      "title": "Rechazo y Preview",
+      "dot": "violet",
+      "title": "Una sola sesión dueña",
       "items": [
-        "Sin regla que conceda acceso: REJECT (fail-closed), recoverable=T, retryable=F",
-        "Con REJECT no hay AgentRun ni evento: AgentEvent exige runId",
-        "Enrutar y activateAgent son Preview en el libro"
+        "ACTIVE: continúa la dueña si el llamante es el mismo principal o tenant; si no, SESSION_CONTINUATION_NOT_ALLOWED",
+        "Sin reclamo: crea sesión y reclama; si ya es de otra, CONTINUATION_ADDRESS_ALREADY_OWNED",
+        "Evidencia: ch31:618-631 · ch34:576-619, ch34:747-752 · ch34:623-679"
       ]
     },
     {
       "dot": "slate",
-      "title": "Evidencia",
+      "title": "Control y compresión",
       "items": [
-        "ch14:390-396 problema · ch14:827-884 secuencia",
-        "ch14:941-946 rechazo · ch14:972-991 sin eventos",
-        "ARCHITECTURE_CONSTITUTION.md:930-935 P-16 y P-17"
+        "auditSessionContinuation audita la continuación (ch38:694-706); el enrutado y la denegación no emiten eventos",
+        "Después: run en curso → PendingInput (flujo 6); run estacionado → ResumptionCoordinator (flujo 2) (ch34:481-488)",
+        "alt/else como segmentos y retornos con su condición; chNN = book/chapters/NN-*/chapter.md"
       ]
     }
   ]

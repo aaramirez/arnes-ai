@@ -65,9 +65,9 @@ Las propuestas de [[BH-Propuestas]] se aplicaron en el repositorio del libro (`a
 | ADR-004 | presupuesto jerárquico | aceptado (v0.3), con `consumed` opcional y `sandboxLimits` |
 | ADR-005 | capability desde una conexión | aceptado (v0.3), con `executionKind` |
 
-## 5. Qué quedó desactualizado en este vault
+## 5. Qué conserva este vault de antes
 
 - [[BH-Propuestas]] y sus dos propuestas son el **diseño** del 24 de septiembre. Se conservan como registro de la decisión, y sus IDs son los propuestos, no los reales (ver §2).
-- Los diagramas de `docs/diagramas/book-harness/` ([[BH-Arquitectura-y-Flujos]], [[BH-10-Flujos-Empresariales]], [[BH-Implementacion]], [[BH-Diagramas-Archify]]) muestran el libro **v0.1**: 28 capítulos, 22 componentes, 35 contratos. Para ver el arnés v0.3, regenerarlos con el skill `estudio-visual`, o usar los diagramas del propio libro (`diagrams/archify/`, 55 diagramas).
+- Los diagramas de `docs/diagramas/book-harness/` ([[BH-Arquitectura-y-Flujos]], [[BH-10-Flujos-Empresariales]], [[BH-Implementacion]], [[BH-Diagramas-Archify]]) se regeneraron para la **v0.3** el 2026-10-12, con el skill `estudio-visual`.
 
 **Fuentes (en `book-harness`):** `book/book.yaml` (versión 0.3), `registry/components.yaml`, `registry/contracts.yaml`, `registry/debt.yaml`, `docs/adr/`, `planes/2026-10-10-cierre-release-v0-3.md`.
