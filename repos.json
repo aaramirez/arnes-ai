@@ -72,5 +72,10 @@
     "name": "yibie/awesome-jev",
     "url": "https://github.com/yibie/awesome-jev.git",
     "description": "Curated list of projects built on Jev, TypeSafe AI typed-decision model (default evaluator of eve auto() approvals)"
+  },
+  {
+    "name": "GrupoConex/arnes-empresarial",
+    "url": "https://github.com/GrupoConex/arnes-empresarial.git",
+    "description": "Arnés Empresarial - Base de conocimiento del arnés declarativo para agentes empresariales (arquitectura, contrato, identidad/RBAC, API, eventos, contexto, multiagente, operación, decisiones)"
   }
 ]
