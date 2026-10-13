@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Flujo 2 — Aprobación durable con aviso al aprobador",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [1440, 620]
+  },
+  "participants": [
+    { "id": "paso", "type": "backend", "label": "runConnectedGovernedStep" },
+    { "id": "policy", "type": "security", "label": "PolicyEngine" },
+    { "id": "his", "type": "backend", "label": "HumanInteractionService" },
+    { "id": "rc", "type": "database", "label": "ResumptionCoordinator" },
+    { "id": "canal", "type": "messagebus", "label": "Canal del aprobador" },
+    { "id": "aprobador", "type": "external", "label": "Aprobador" },
+    { "id": "iee", "type": "security", "label": "Entorno aislado" }
+  ],
+  "segments": [
+    { "from": 162, "to": 336, "label": "Política, solicitud y estacionamiento" },
+    { "from": 350, "to": 432, "label": "Entrega horas después" },
+    { "from": 446, "to": 528, "label": "Reanudar, ejecutar y commitStep" }
+  ],
+  "messages": [
+    { "from": "paso", "to": "policy", "y": 184, "label": "1 · evaluatePolicyForCaller", "variant": "default" },
+    { "from": "policy", "to": "paso", "y": 218, "label": "2 · REQUIRE_APPROVAL", "variant": "return" },
+    { "from": "paso", "to": "his", "y": 252, "label": "3 · beginToolApprovalPauseForDecision", "variant": "emphasis" },
+    { "from": "paso", "to": "rc", "y": 286, "label": "4 · parkRun TOOL_APPROVAL · DESIGNATED_PRINCIPAL", "variant": "emphasis", "note": "ParkedWait durable con regla de respondedor y vencimiento; estado WAITING_FOR_HUMAN. El proceso puede terminar: el paso queda STARTED y sin commit." },
+    { "from": "paso", "to": "canal", "y": 320, "label": "5 · approverNoticeFor · WAIT_NOTICE con waitId", "variant": "dashed", "note": "OutboundMessage a la dirección del aprobador designado, no a la de la sesión." },
+    { "from": "aprobador", "to": "rc", "y": 382, "label": "6 · WaitDelivery con waitId", "variant": "security", "note": "acceptDelivery valida en orden: WAIT_NOT_ADDRESSED, WAIT_ALREADY_RESUMED, WAIT_EXPIRED, RESPONDER_NOT_AUTHORIZED. Si falla, la espera sigue PARKED." },
+    { "from": "rc", "to": "paso", "y": 416, "label": "7 · RUN_RESUMED tras acceptDelivery", "variant": "return" },
+    { "from": "paso", "to": "his", "y": 478, "label": "8 · resolveApprovalForResume (resolvedBy)", "variant": "default" },
+    { "from": "paso", "to": "iee", "y": 512, "label": "9 · executeToolCallIsolated si APPROVED", "variant": "emphasis", "note": "Se ejecuta como el llamante original; después recordToolResult y commitStep. Con REJECTED: commit sin tool call." }
+  ],
+  "cards": [
+    { "dot": "amber", "title": "Espera durable sin cómputo", "items": ["parkRun crea un ParkedWait: regla DESIGNATED_PRINCIPAL y vencimiento", "El proceso puede terminar; el paso queda STARTED y sin commit", "WAIT_NOTICE va a la dirección del aprobador; sin designado: APPROVER_NOT_DESIGNATED", "Al vencer, un schedule interno expira la espera (WAIT_EXPIRED)"] },
+    { "dot": "rose", "title": "acceptDelivery y resolución", "items": ["La entrega nombra su waitId; el harness nunca lo infiere", "Orden: WAIT_NOT_ADDRESSED, WAIT_ALREADY_RESUMED, WAIT_EXPIRED, RESPONDER_NOT_AUTHORIZED", "APPROVED: ejecuta como el llamante original, luego recordToolResult y commitStep", "REJECTED: commit sin tool call; el aprobador nunca pasa a ser el llamante"] },
+    { "dot": "slate", "title": "Evidencia · repos/aaramirez/book-harness/book/chapters/", "items": ["49-integracion-conectada/chapter.md:817-834 · :677-702", "33-esperas-durables/chapter.md:372-386 · :598-653 · :742-758 · :795-846", "36-integracion-turno-durable/chapter.md:591-647 · :743-746 · :750-752", "37-esperas-credenciales-canales/chapter.md:487-587"] }
+  ]
+}

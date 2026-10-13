@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Flujo 10 — Conectar un servidor MCP como fuente de capabilities",
+    "quality_profile": "showcase",
+    "column_fit": "spread",
+    "viewBox": [1440, 580]
+  },
+  "participants": [
+    { "id": "ops", "type": "frontend", "label": "Plataforma" },
+    { "id": "cm", "type": "backend", "label": "ConnectionManager" },
+    { "id": "mcp", "type": "external", "label": "Servidor MCP" },
+    { "id": "cr", "type": "backend", "label": "CapabilityRegistry" },
+    { "id": "pe", "type": "security", "label": "PolicyEngine" },
+    { "id": "cb", "type": "security", "label": "CredentialBroker" },
+    { "id": "tr", "type": "backend", "label": "ToolRuntime" }
+  ],
+  "segments": [
+    { "from": 160, "to": 300, "label": "Al conectar" },
+    { "from": 318, "to": 490, "label": "En cada tool call" }
+  ],
+  "messages": [
+    { "id": "m1", "from": "ops", "to": "cm", "y": 192, "label": "ConnectionDescriptor con filtro y credencial", "variant": "emphasis", "note": "Tipo MCP u OPENAPI, transporte stdio o HTTP, filtro ALLOW_LIST o BLOCK_LIST (ch41:334-381)." },
+    { "id": "m2", "from": "cm", "to": "mcp", "y": 226, "label": "el adaptador lista las tools", "variant": "default", "note": "Al conectar (ch41:490-514)." },
+    { "id": "m3", "from": "cm", "to": "cr", "y": 266, "label": "translateConnectionTools: conn__tool, executionKind CONNECTION", "variant": "emphasis", "note": "Prefijo <conexión>__<tool>, saca argumentos provistos del schema, replayPolicy NULL (NEVER) (ch41:578-618)." },
+    { "id": "m4", "from": "cr", "to": "pe", "y": 350, "label": "evaluatePolicyForCaller", "variant": "security", "note": "Cada llamada pasa por la política normal (ch41:490-514)." },
+    { "id": "m5", "from": "pe", "to": "cm", "y": 384, "label": "applyConnectionApprovalDefault", "variant": "security", "note": "Solo puede subir ALLOW a REQUIRE_APPROVAL (ch41:692-744)." },
+    { "id": "m6", "from": "cm", "to": "cb", "y": 418, "label": "resolveConnectionCredential SHARED o PER_CALLER", "variant": "security", "note": "Si al usuario le falta la credencial, pasa al flujo 3 (ch41:692-744)." },
+    { "id": "m7", "from": "cm", "to": "tr", "y": 452, "label": "prepareConnectionCall con argumentos provistos", "variant": "emphasis", "note": "El modelo no puede proveer un argumento reservado: PROVIDED_ARGUMENT_FROM_MODEL (ch41:622-658)." },
+    { "id": "m8", "from": "tr", "to": "mcp", "y": 486, "label": "ejecuta con el adaptador del protocolo", "variant": "default", "note": "Falla del servidor = ToolResult fallido; caída a mitad = resultado desconocido, no se repite (ch41:776-784)." }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Al conectar", "items": [
+      "ConnectionDescriptor: MCP u OPENAPI, transporte, ALLOW_LIST o BLOCK_LIST (ch41:334-381)",
+      "translateConnectionTools: <conexión>__<tool>, replayPolicy NULL, executionKind CONNECTION (ch41:578-618)",
+      "Nombre final repetido: CAPABILITY_NAME_COLLISION"
+    ] },
+    { "dot": "rose", "title": "En cada tool call", "items": [
+      "Política normal; el default de la conexión solo sube ALLOW a REQUIRE_APPROVAL (ch41:490-514, ch41:692-744)",
+      "Credencial SHARED o PER_CALLER; si falta, flujo 3 (ch41:692-744)",
+      "Argumento reservado desde el modelo: PROVIDED_ARGUMENT_FROM_MODEL (ch41:622-658)"
+    ] },
+    { "dot": "amber", "title": "Fallos y versiones", "items": [
+      "Falla = ToolResult fallido; caída a mitad = desconocido, sin repetir (ch41:776-784)",
+      "Versión de conexión fijada en la sesión; con trabajo vivo no migra (ch45:696-731)",
+      "Sin puerta lateral: ADR-005-capability-desde-conexion.md:22-27"
+    ] }
+  ]
+}

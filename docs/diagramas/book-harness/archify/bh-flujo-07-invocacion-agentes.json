@@ -1,0 +1,199 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Flujo 7 — Invocación durable entre agentes con presupuesto heredado",
+    "viewBox": [
+      1440,
+      584
+    ],
+    "column_fit": "spread",
+    "quality_profile": "showcase"
+  },
+  "participants": [
+    {
+      "id": "padre",
+      "type": "backend",
+      "label": "Run padre"
+    },
+    {
+      "id": "execctl",
+      "type": "security",
+      "label": "ExecutionController"
+    },
+    {
+      "id": "acg",
+      "type": "messagebus",
+      "label": "AgentCommunicationGateway"
+    },
+    {
+      "id": "hijo",
+      "type": "backend",
+      "label": "Run hijo"
+    },
+    {
+      "id": "persona",
+      "type": "external",
+      "label": "Persona"
+    }
+  ],
+  "segments": [
+    {
+      "from": 184,
+      "to": 304,
+      "label": "Reparto, skill, grant y presupuesto"
+    },
+    {
+      "from": 314,
+      "to": 400,
+      "label": "Espera del hijo sube al padre"
+    },
+    {
+      "from": 410,
+      "to": 500,
+      "label": "Cierre y suma de uso"
+    }
+  ],
+  "messages": [
+    {
+      "id": "m-alloc",
+      "from": "padre",
+      "to": "execctl",
+      "y": 200,
+      "label": "allocateChildBudget con el saldo del padre",
+      "variant": "emphasis",
+      "note": "Saldo dividido por el fanout; si no alcanza: FANOUT_EXCEEDS_REMAINING_BUDGET (ch43:432-499)."
+    },
+    {
+      "id": "m-invoke",
+      "from": "padre",
+      "to": "acg",
+      "y": 230,
+      "label": "invokeAgentDurably con invocationIdForStep",
+      "variant": "emphasis",
+      "note": "Id determinista por paso y tool call: tras un reinicio devuelve la invocación existente (ch44:813-854)."
+    },
+    {
+      "id": "m-within",
+      "from": "acg",
+      "to": "execctl",
+      "y": 260,
+      "label": "requireChildWithinParent (tras skill y grant)",
+      "variant": "security",
+      "note": "Antes: requireAdvertisedSkill y authorizeAgentCommunicationMessage. Si no cabe: CHILD_BUDGET_EXCEEDS_PARENT (ch43:503-545)."
+    },
+    {
+      "id": "m-open",
+      "from": "acg",
+      "to": "hijo",
+      "y": 290,
+      "label": "openAgentInvocation, WORKING",
+      "variant": "default",
+      "note": "ch44:588-664."
+    },
+    {
+      "id": "m-wait",
+      "from": "hijo",
+      "to": "acg",
+      "y": 330,
+      "label": "surfaceChildWait, INPUT_REQUIRED",
+      "variant": "return",
+      "note": "O AUTHORIZATION_REQUIRED, con su pendingWaitId; solo hijos INTERNAL (ch44:770-806)."
+    },
+    {
+      "id": "m-surface",
+      "from": "acg",
+      "to": "padre",
+      "y": 360,
+      "label": "la espera del hijo sube al padre",
+      "variant": "return",
+      "note": "El padre espera en WAITING_FOR_TOOL."
+    },
+    {
+      "id": "m-answer",
+      "from": "persona",
+      "to": "hijo",
+      "y": 390,
+      "label": "responde a la espera del hijo",
+      "variant": "emphasis"
+    },
+    {
+      "id": "m-update",
+      "from": "hijo",
+      "to": "acg",
+      "y": 426,
+      "label": "applyInvocationUpdate, COMPLETED",
+      "variant": "return",
+      "note": "ch44:858-901."
+    },
+    {
+      "id": "m-complete",
+      "from": "acg",
+      "to": "padre",
+      "y": 456,
+      "label": "completeAgentInvocation, ToolResult del padre",
+      "variant": "return",
+      "note": "El resultado del hijo vuelve como el ToolResult del padre."
+    },
+    {
+      "id": "m-rollup",
+      "from": "padre",
+      "to": "execctl",
+      "y": 486,
+      "label": "rollUpChildUsage",
+      "variant": "default",
+      "note": "Suma tool calls, tokens y costo; no tiempo ni concurrencia (ch43:549-597)."
+    }
+  ],
+  "activations": [
+    {
+      "participant": "acg",
+      "from": 224,
+      "to": 298,
+      "type": "messagebus"
+    },
+    {
+      "participant": "hijo",
+      "from": 284,
+      "to": 434,
+      "type": "backend"
+    },
+    {
+      "participant": "padre",
+      "from": 354,
+      "to": 494,
+      "type": "backend"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "violet",
+      "title": "Presupuesto heredado (INV-E21, ADR-004)",
+      "items": [
+        "Saldo del padre dividido por el fanout: FANOUT_EXCEEDS_REMAINING_BUDGET",
+        "Skill anunciada (AgentCard) y grant; si no cabe: CHILD_BUDGET_EXCEEDS_PARENT",
+        "rollUpChildUsage: tool calls, tokens y costo; no tiempo ni concurrencia",
+        "Evidencia: ch43:432-597, docs/adr/ADR-004-presupuesto-jerarquico.md:16-19"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Durable y con espera visible",
+      "items": [
+        "invocationIdForStep: tras un reinicio devuelve la invocación existente",
+        "INPUT_REQUIRED o AUTHORIZATION_REQUIRED con pendingWaitId, solo INTERNAL; padre en WAITING_FOR_TOOL",
+        "Evidencia: ch44:813-854, ch44:588-664, ch44:770-806, ch44:858-901"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Cancelación y A2A",
+      "items": [
+        "Cancelar al padre: KILL_SWITCH al hijo INTERNAL, PARENT_CANCELLED",
+        "sandboxLimits heredados: SANDBOX_LIMIT_EXCEEDED",
+        "EXTERNAL (A2A) no recibe el llamante; el núcleo no conoce A2A",
+        "Evidencia: ch44:905-942, ch44:574-584, ch44:954-962"
+      ]
+    }
+  ]
+}

@@ -2,237 +2,230 @@
   "schema_version": 2,
   "diagram_type": "workflow",
   "meta": {
-    "title": "Gobierno de una tool call",
+    "title": "Gobierno de una tool call v0.3",
     "quality_profile": "showcase"
   },
   "lanes": [
     {
-      "id": "runtime",
-      "label": "Camino permitido"
+      "id": "main",
+      "label": "Gobierno y ejecución"
     },
     {
-      "id": "human",
-      "label": "Aprobación humana y cola",
+      "id": "wait",
+      "label": "Esperas durables",
       "variant": "exception"
     },
     {
-      "id": "deny",
-      "label": "Denegación fail-closed",
+      "id": "close",
+      "label": "Fallos y bloqueos",
       "variant": "exception"
     }
   ],
   "mainPath": [
-    "propose",
+    "prop",
     "resolve",
     "policy",
-    "execute",
-    "result",
-    "tail"
+    "hooks",
+    "exec",
+    "commit"
   ],
   "nodes": [
     {
-      "id": "propose",
-      "lane": "runtime",
+      "id": "prop",
+      "lane": "main",
       "col": 0,
       "type": "external",
-      "label": "Modelo propone",
-      "sublabel": "tool call",
-      "width": 140
+      "label": "Propuesta",
+      "sublabel": "journal o modelo",
+      "width": 96
     },
     {
       "id": "resolve",
-      "lane": "runtime",
+      "lane": "main",
       "col": 1,
       "type": "backend",
       "label": "CapabilityRegistry",
-      "sublabel": "resolve…ToolCall",
-      "width": 140
+      "sublabel": "resolveModelProposedToolCall",
+      "width": 146
     },
     {
       "id": "policy",
-      "lane": "runtime",
+      "lane": "main",
       "col": 2,
       "type": "security",
       "label": "PolicyEngine",
-      "sublabel": "orden fijo",
-      "width": 140
+      "sublabel": "evaluatePolicyForCaller",
+      "width": 104
     },
     {
-      "id": "execute",
-      "lane": "runtime",
+      "id": "hooks",
+      "lane": "main",
       "col": 3,
-      "type": "backend",
-      "label": "ToolRuntime",
-      "sublabel": "before → exec → after",
-      "width": 140
+      "type": "security",
+      "label": "Hooks BEFORE_TOOL",
+      "sublabel": "extensiones ACTIVE",
+      "width": 139
     },
     {
-      "id": "result",
-      "lane": "runtime",
+      "id": "exec",
+      "lane": "main",
       "col": 4,
-      "type": "database",
-      "label": "ToolResult",
-      "sublabel": "observación",
-      "width": 140
+      "type": "backend",
+      "label": "Registro + ejecución",
+      "sublabel": "recordToolCallBeforeExecution",
+      "width": 160
     },
     {
-      "id": "tail",
-      "lane": "human",
+      "id": "commit",
+      "lane": "main",
       "col": 5,
-      "type": "backend",
-      "label": "resumeTurn…",
-      "sublabel": "WithObservation",
-      "width": 140
+      "type": "database",
+      "label": "Commit del paso",
+      "sublabel": "recordToolResult + commitStep",
+      "width": 125
+    },
+    {
+      "id": "park",
+      "lane": "wait",
+      "col": 2,
+      "type": "messagebus",
+      "label": "parkRun",
+      "sublabel": "TOOL_APPROVAL, sin commit",
+      "width": 109
+    },
+    {
+      "id": "auth",
+      "lane": "wait",
+      "col": 4,
+      "type": "messagebus",
+      "label": "Espera credencial",
+      "sublabel": "parkForMissingCredential",
+      "width": 139
     },
     {
       "id": "resfail",
-      "lane": "deny",
+      "lane": "close",
       "col": 1,
       "type": "security",
-      "label": "Falla resolución",
-      "sublabel": "RESOLUTION_FAILED",
-      "width": 140
+      "label": "Resolución fallida",
+      "sublabel": "CAPABILITY_RESOLUTION_FAILED",
+      "width": 146
     },
     {
-      "id": "denyobs",
-      "lane": "deny",
-      "col": 2,
-      "type": "security",
-      "label": "DENY",
-      "sublabel": "observación, no ejecuta",
-      "width": 140
-    },
-    {
-      "id": "pause",
-      "lane": "human",
+      "id": "blk",
+      "lane": "close",
       "col": 3,
-      "type": "messagebus",
-      "label": "Pausa humana",
-      "sublabel": "WAITING_FOR_HUMAN",
-      "width": 140
-    },
-    {
-      "id": "resolution",
-      "lane": "human",
-      "col": 4,
       "type": "security",
-      "label": "Resolución",
-      "sublabel": "resumeAfter…",
-      "width": 140
+      "label": "ToolResult fallido",
+      "sublabel": "antes del commit",
+      "width": 146
     }
   ],
   "edges": [
     {
-      "id": "e-propose",
-      "from": "propose",
+      "id": "e-prop",
+      "from": "prop",
       "to": "resolve"
+    },
+    {
+      "id": "e-policy",
+      "from": "resolve",
+      "to": "policy",
+      "variant": "emphasis"
     },
     {
       "id": "e-resfail",
       "from": "resolve",
       "to": "resfail",
-      "label": "no encontrada",
+      "label": "no encontrada o schema",
       "variant": "security",
       "role": "error"
     },
     {
-      "id": "e-toolcall",
-      "from": "resolve",
-      "to": "policy",
-      "label": "ToolCall",
+      "id": "e-allow",
+      "from": "policy",
+      "to": "hooks",
+      "label": "ALLOW",
       "variant": "emphasis"
     },
     {
-      "id": "e-deny",
+      "id": "e-req",
       "from": "policy",
-      "to": "denyobs",
-      "label": "DENY",
-      "variant": "security",
-      "role": "error"
-    },
-    {
-      "id": "e-approval",
-      "from": "policy",
-      "to": "pause",
+      "to": "park",
       "label": "REQUIRE_APPROVAL",
       "variant": "security",
       "role": "branch"
     },
     {
-      "id": "e-allow",
+      "id": "e-deny",
       "from": "policy",
-      "to": "execute",
-      "label": "ALLOW",
-      "variant": "emphasis"
-    },
-    {
-      "id": "e-resolve",
-      "from": "pause",
-      "to": "resolution",
-      "variant": "dashed",
-      "role": "async"
-    },
-    {
-      "id": "e-approved",
-      "from": "resolution",
-      "to": "execute",
-      "label": "APPROVED",
-      "variant": "emphasis",
-      "role": "return"
-    },
-    {
-      "id": "e-rejected",
-      "from": "resolution",
-      "to": "tail",
-      "label": "REJECTED",
+      "to": "blk",
+      "label": "DENY",
       "variant": "security",
-      "role": "return"
+      "role": "error"
+    },
+    {
+      "id": "e-block",
+      "from": "hooks",
+      "to": "blk",
+      "label": "BLOCK",
+      "variant": "security",
+      "role": "error"
+    },
+    {
+      "id": "e-cred",
+      "from": "hooks",
+      "to": "auth",
+      "label": "falta credencial",
+      "variant": "dashed",
+      "role": "branch"
     },
     {
       "id": "e-exec",
-      "from": "execute",
-      "to": "result"
-    },
-    {
-      "id": "e-tail",
-      "from": "result",
-      "to": "tail",
+      "from": "hooks",
+      "to": "exec",
+      "label": "CONTINUE",
       "variant": "emphasis"
     },
     {
-      "id": "e-deny-tail",
-      "from": "denyobs",
-      "to": "tail",
-      "variant": "dashed",
-      "role": "return"
+      "id": "e-commit",
+      "from": "exec",
+      "to": "commit",
+      "variant": "emphasis"
+    },
+    {
+      "id": "e-blk-commit",
+      "from": "blk",
+      "to": "commit",
+      "variant": "security"
     }
   ],
   "cards": [
     {
-      "dot": "rose",
-      "title": "Política fail-closed y pausa",
+      "dot": "cyan",
+      "title": "Toda capa solo restringe",
       "items": [
-        "Orden fijo: sin regla → DENY (NO_APPLICABLE_POLICY_RULE); no permite → DENY (POLICY_DENIED); aprobación → REQUIRE_APPROVAL; permite → ALLOW",
-        "REQUIRE_APPROVAL: createHumanInteractionRequest PENDING, WAITING_FOR_HUMAN + checkpoint; beginToolApprovalPause retorna, nada espera",
-        "Evidencia: ch08:794-860, ch08:882-908, ch05:514-518, ch05:728-760, ch06:847-956"
+        "Política por llamante solo deniega: CALLER_NOT_PERMITTED (ch38:534-574)",
+        "Conexión: applyConnectionApprovalDefault solo sube ALLOW a aprobación (ch41:507-514, ch41:692-712)",
+        "Hook solo bloquea: EXTENSION_BLOCKED_TOOL (ch40:608-621, ch40:719-763)"
       ]
     },
     {
-      "dot": "emerald",
-      "title": "Ejecución y cola compartida",
+      "dot": "violet",
+      "title": "Ejecución por executionKind",
       "items": [
-        "executeToolCall: beforeToolCall → execute → afterToolCall; TOOL_CALL_COMPLETED o FAILED",
-        "resumeTurnWithObservation: continuación → contexto → modelo → runTurn → checkpoint",
-        "Evidencia: ch02:674-764, ch13:734-997, ARCHITECTURE_CONSTITUTION.md:468-498 (Article VI)"
+        "ISOLATED / LOCAL: executeToolCallIsolated (ch35:760-788)",
+        "CONNECTION: prepareConnectionCall, MCP / OpenAPI (ch41:664-686)",
+        "Agente: invokeAgentDurably (ch44:813-854)"
       ]
     },
     {
-      "dot": "slate",
-      "title": "Alcance y compresión",
+      "dot": "amber",
+      "title": "Esperas y compresión",
       "items": [
-        "CH-13 no se llama desde runAgentTurnEndToEnd (ch13:643-646): caminos documentados, no cableados",
-        "Compresión: decisiones como etiquetas; DENY + observación en un nodo; REJECTED (HUMAN_APPROVAL_REJECTED) va directo a la cola",
-        "chNN = repos/aaramirez/book-harness/book/chapters/NN-*/chapter.md; constitución en repos/aaramirez/book-harness/constitution/"
+        "Credencial: ch37:593-605, ch37:749-771; DENY/BLOCK: ch49:837-867",
+        "parkRun reanuda con acceptDelivery y waitId (ch33:795-846)",
+        "Fusionados: default de conexión en REQUIRE_APPROVAL; registro y executionKind en un nodo"
       ]
     }
   ]

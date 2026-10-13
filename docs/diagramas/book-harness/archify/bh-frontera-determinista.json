@@ -2,16 +2,16 @@
   "schema_version": 1,
   "diagram_type": "architecture",
   "meta": {
-    "title": "Frontera determinista / agéntica (Article XII)",
+    "title": "Frontera determinista / agéntica",
     "quality_profile": "showcase",
     "repository": {
       "url": "https://github.com/aaramirez/book-harness",
       "provider": "github",
-      "revision": "d16e2c742eae7b47dda2939b58f04c67f2d850f0"
+      "revision": "59288a10e2a7e134a70ed68f3bf2c39b3c064f8c"
     },
     "viewBox": [
-      1260,
-      450
+      1390,
+      480
     ]
   },
   "components": [
@@ -22,150 +22,215 @@
       "sublabel": "y formar hipótesis",
       "pos": [
         30,
-        60
+        75
       ],
       "size": [
-        240,
+        200,
         70
-      ],
-      "sources": [
-        {
-          "path": "constitution/ARCHITECTURE_CONSTITUTION.md",
-          "line": 777,
-          "end_line": 840,
-          "label": "Article XII"
-        }
       ]
     },
     {
       "id": "ag-capability",
       "type": "external",
       "label": "Elegir capability",
-      "sublabel": "y analizar observaciones",
+      "sublabel": "y proponer tool calls",
       "pos": [
         30,
-        200
+        195
       ],
       "size": [
-        240,
+        200,
         70
-      ],
-      "sources": [
-        {
-          "path": "constitution/ARCHITECTURE_CONSTITUTION.md",
-          "line": 777,
-          "end_line": 840,
-          "label": "Article XII"
-        }
       ]
     },
     {
-      "id": "ag-accion",
+      "id": "ag-resumen",
       "type": "external",
-      "label": "Proponer siguiente acción",
-      "sublabel": "y juzgar si el objetivo parece cumplido",
+      "label": "Resumir la historia",
+      "sublabel": "al compactar",
       "pos": [
         30,
-        340
+        315
       ],
       "size": [
-        240,
+        200,
         70
-      ],
-      "sources": [
-        {
-          "path": "constitution/ARCHITECTURE_CONSTITUTION.md",
-          "line": 777,
-          "end_line": 840,
-          "label": "Article XII"
-        }
       ]
     },
     {
       "id": "frontera",
       "type": "security",
       "label": "FRONTERA DETERMINISTA",
-      "sublabel": "el runtime toma el control",
+      "sublabel": "Article XII",
       "pos": [
-        410,
-        60
+        334,
+        65
       ],
       "size": [
-        160,
-        350
+        150,
+        330
       ],
       "sources": [
         {
           "path": "constitution/ARCHITECTURE_CONSTITUTION.md",
-          "line": 842,
+          "line": 777,
           "end_line": 844,
-          "label": "regla suprema"
+          "label": "Article XII y regla suprema"
+        },
+        {
+          "path": "constitution/ARCHITECTURE_CONSTITUTION.md",
+          "line": 771,
+          "end_line": 773,
+          "label": "EVO-10: extensiones"
         }
       ]
     },
     {
       "id": "det-identidad",
       "type": "security",
-      "label": "Identidad y autorización",
-      "sublabel": "validación de schema y permisos",
+      "label": "Identidad, admisión",
+      "sublabel": "y autorización",
       "pos": [
-        680,
-        60
+        550,
+        75
       ],
       "size": [
-        260,
+        210,
         70
+      ]
+    },
+    {
+      "id": "det-politica",
+      "type": "security",
+      "label": "Schema, política",
+      "sublabel": "y aprobaciones",
+      "pos": [
+        550,
+        195
       ],
-      "sources": [
-        {
-          "path": "constitution/ARCHITECTURE_CONSTITUTION.md",
-          "line": 777,
-          "end_line": 840,
-          "label": "Article XII"
-        }
+      "size": [
+        210,
+        70
       ]
     },
     {
       "id": "det-limites",
       "type": "backend",
-      "label": "Budgets, timeouts, retries",
-      "sublabel": "idempotencia y sandboxing",
+      "label": "Budgets, idempotencia",
+      "sublabel": "y auditoría",
       "pos": [
-        680,
-        200
+        550,
+        315
+      ],
+      "size": [
+        210,
+        70
+      ]
+    },
+    {
+      "id": "r-hooks",
+      "type": "security",
+      "label": "Hooks sin autorización",
+      "sublabel": "CONTINUE / BLOCK / TRANSFORM · INV-E24",
+      "pos": [
+        840,
+        38
       ],
       "size": [
         260,
-        70
+        56
       ],
       "sources": [
         {
-          "path": "constitution/ARCHITECTURE_CONSTITUTION.md",
-          "line": 777,
-          "end_line": 840,
-          "label": "Article XII"
+          "path": "book/chapters/40-extension-host/chapter.md",
+          "line": 406,
+          "end_line": 410,
+          "label": "HookOutcomeKind sin autorizado"
         }
       ]
     },
     {
-      "id": "det-estado",
-      "type": "database",
-      "label": "Aprobaciones y transiciones de estado",
-      "sublabel": "auditoría y límites de recursos",
+      "id": "r-descriptor",
+      "type": "security",
+      "label": "Tools externas: descriptor",
+      "sublabel": "resuelto y evaluado · INV-E25",
       "pos": [
-        680,
-        340
+        840,
+        120
       ],
       "size": [
         260,
-        70
+        56
       ],
       "sources": [
         {
           "path": "constitution/ARCHITECTURE_CONSTITUTION.md",
-          "line": 777,
-          "end_line": 840,
-          "label": "Article XII"
+          "line": 1044,
+          "label": "INV-E25"
+        }
+      ]
+    },
+    {
+      "id": "r-secretos",
+      "type": "security",
+      "label": "Secretos nunca en el sandbox",
+      "sublabel": "INV-E20",
+      "pos": [
+        840,
+        202
+      ],
+      "size": [
+        260,
+        56
+      ],
+      "sources": [
+        {
+          "path": "constitution/ARCHITECTURE_CONSTITUTION.md",
+          "line": 1039,
+          "label": "INV-E20"
+        }
+      ]
+    },
+    {
+      "id": "r-replay",
+      "type": "backend",
+      "label": "Paso confirmado no se repite",
+      "sublabel": "INV-E16 · INV-E17",
+      "pos": [
+        840,
+        284
+      ],
+      "size": [
+        260,
+        56
+      ],
+      "sources": [
+        {
+          "path": "constitution/ARCHITECTURE_CONSTITUTION.md",
+          "line": 1035,
+          "end_line": 1036,
+          "label": "INV-E16 · INV-E17"
+        }
+      ]
+    },
+    {
+      "id": "r-autoria",
+      "type": "backend",
+      "label": "ERROR de autoría bloquea",
+      "sublabel": "la activación · INV-E27",
+      "pos": [
+        840,
+        366
+      ],
+      "size": [
+        260,
+        56
+      ],
+      "sources": [
+        {
+          "path": "constitution/ARCHITECTURE_CONSTITUTION.md",
+          "line": 1046,
+          "label": "INV-E27"
         }
       ]
     },
@@ -173,12 +238,13 @@
       "id": "mundo",
       "type": "cloud",
       "label": "Mundo real",
+      "sublabel": "efectos",
       "pos": [
-        1100,
-        200
+        1250,
+        195
       ],
       "size": [
-        130,
+        110,
         70
       ]
     }
@@ -190,36 +256,54 @@
       "wraps": [
         "ag-intencion",
         "ag-capability",
-        "ag-accion"
+        "ag-resumen"
       ]
     },
     {
       "kind": "security-group",
-      "label": "Determinista: el runtime controla",
+      "label": "Determinista: v1.0 + v1.1",
       "wraps": [
         "det-identidad",
-        "det-limites",
-        "det-estado"
+        "det-politica",
+        "det-limites"
       ]
+    },
+    {
+      "kind": "security-group",
+      "label": "Refuerzos v1.2",
+      "wraps": [
+        "r-hooks",
+        "r-descriptor",
+        "r-secretos",
+        "r-replay",
+        "r-autoria"
+      ],
+      "pad": 8
     }
   ],
   "connections": [
     {
-      "id": "propone-2",
+      "id": "propone",
       "from": "ag-capability",
       "to": "frontera",
       "label": "propone intención",
       "variant": "dashed"
     },
     {
-      "id": "gobierna-2",
+      "id": "gobierna",
       "from": "frontera",
-      "to": "det-limites",
+      "to": "det-politica",
       "variant": "security"
     },
     {
-      "id": "efecto-2",
-      "from": "det-limites",
+      "id": "refuerza",
+      "from": "det-politica",
+      "to": "r-secretos",
+      "variant": "security"
+    },
+    {
+      "id": "efecto",
+      "from": "r-secretos",
       "to": "mundo",
       "label": "consecuencias gobernadas",
       "variant": "emphasis"
@@ -228,26 +312,26 @@
   "cards": [
     {
       "dot": "rose",
-      "title": "Regla suprema",
+      "title": "Regla suprema (Article XII)",
       "items": [
-        "\"Probabilistic systems may propose decisions. Deterministic systems must govern consequences.\" (constitución:842-844)",
-        "Doctrina final: \"Model proposes; Harness governs…\" (constitución:887-924)."
+        "Probabilistic systems may propose decisions. Deterministic systems must govern consequences (constitución:777-844).",
+        "La v1.2 no cambia el texto: agrega invariantes que cierran puertas laterales (constitución:1034-1046)."
       ]
     },
     {
       "dot": "violet",
-      "title": "Qué se comprimió",
+      "title": "Puertas que cierra la v1.2",
       "items": [
-        "Las 6 capacidades agénticas y los 6 controles deterministas de Article XII (constitución:777-840) se agrupan de a dos por nodo.",
-        "Como en el original, las flechas van de zona a zona: una sola flecha por salto."
+        "Extensiones: ningún hook devuelve autorización (ch40:406-410); EVO-10 (constitución:771-773).",
+        "Conexiones: la tool externa llega resuelta por CapabilityRegistry y evaluada por PolicyEngine.",
+        "Secretos, recuperación (solo SAFE se repite) y autoría (ERROR impide activar)."
       ]
     },
     {
-      "dot": "emerald",
-      "title": "Cómo leerlo",
+      "dot": "slate",
+      "title": "Compresión",
       "items": [
-        "El LLM solo produce intención; nada toca el mundo real sin pasar por la frontera.",
-        "Identidad, schema, budgets, idempotencia, aprobaciones y auditoría son responsabilidad del runtime."
+        "Las flechas entre grupos se dibujan desde el nodo central de cada grupo; aplican al grupo entero."
       ]
     }
   ]

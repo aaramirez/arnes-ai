@@ -1,0 +1,396 @@
+{
+  "schema_version": 1,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "Estados de un AgentRun v0.3 (C-013)",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1080,
+      630
+    ]
+  },
+  "lanes": [
+    {
+      "id": "main",
+      "label": "Ruta principal"
+    },
+    {
+      "id": "waits",
+      "label": "Esperas no terminales"
+    },
+    {
+      "id": "terminal",
+      "label": "Salidas terminales"
+    }
+  ],
+  "states": [
+    {
+      "id": "created",
+      "type": "start",
+      "label": "CREATED",
+      "sublabel": "activateAgent, sin ERROR",
+      "lane": "main",
+      "col": 0,
+      "step": "01"
+    },
+    {
+      "id": "initializing",
+      "type": "active",
+      "label": "INITIALIZING",
+      "sublabel": "beginAgentInitialization",
+      "lane": "main",
+      "col": 1,
+      "step": "02"
+    },
+    {
+      "id": "running",
+      "type": "active",
+      "label": "RUNNING",
+      "sublabel": "estado construido",
+      "lane": "main",
+      "col": 2,
+      "step": "03"
+    },
+    {
+      "id": "waitTool",
+      "type": "waiting",
+      "label": "WAITING_FOR_TOOL",
+      "sublabel": "tool o agente hijo",
+      "lane": "main",
+      "col": 3,
+      "step": "04"
+    },
+    {
+      "id": "completed",
+      "type": "success",
+      "label": "COMPLETED",
+      "sublabel": "modelFinished, cola vacía",
+      "lane": "main",
+      "col": 4,
+      "step": "05"
+    },
+    {
+      "id": "waitHuman",
+      "type": "waiting",
+      "label": "WAITING_FOR_HUMAN",
+      "sublabel": "acceptDelivery reanuda",
+      "lane": "waits",
+      "col": 0
+    },
+    {
+      "id": "paused",
+      "type": "waiting",
+      "label": "PAUSED",
+      "sublabel": "AUTHORIZATION o BUDGET_LIMIT",
+      "lane": "waits",
+      "col": 2
+    },
+    {
+      "id": "waitModel",
+      "type": "waiting",
+      "label": "WAITING_FOR_MODEL",
+      "sublabel": "ni fin ni tool, o follow-up",
+      "lane": "waits",
+      "col": 2,
+      "yOffset": 80
+    },
+    {
+      "id": "cancelled",
+      "type": "failure",
+      "label": "CANCELLED",
+      "sublabel": "STOP o KILL_SWITCH",
+      "lane": "terminal",
+      "col": 0
+    },
+    {
+      "id": "expired",
+      "type": "failure",
+      "label": "EXPIRED",
+      "sublabel": "MAX_RUNTIME_EXCEEDED",
+      "lane": "terminal",
+      "col": 1
+    },
+    {
+      "id": "failed",
+      "type": "failure",
+      "label": "FAILED",
+      "sublabel": "final",
+      "lane": "terminal",
+      "col": 2
+    }
+  ],
+  "transitions": [
+    {
+      "id": "t-init",
+      "from": "created",
+      "to": "initializing",
+      "route": "straight"
+    },
+    {
+      "id": "t-run",
+      "from": "initializing",
+      "to": "running",
+      "route": "straight"
+    },
+    {
+      "id": "t-tool",
+      "from": "running",
+      "to": "waitTool",
+      "label": "propone tool",
+      "labelDy": -18
+    },
+    {
+      "id": "t-tool-back",
+      "from": "waitTool",
+      "to": "running",
+      "label": "ToolResult",
+      "variant": "emphasis",
+      "labelDy": 48
+    },
+    {
+      "id": "t-done",
+      "from": "running",
+      "to": "completed",
+      "variant": "emphasis",
+      "fromSide": "top",
+      "toSide": "top",
+      "via": [
+        [
+          402,
+          80
+        ],
+        [
+          710,
+          80
+        ]
+      ]
+    },
+    {
+      "id": "t-question",
+      "from": "running",
+      "to": "waitHuman",
+      "label": "parkRun QUESTION",
+      "variant": "security",
+      "labelDx": -64,
+      "labelDy": 36
+    },
+    {
+      "id": "t-human-back",
+      "from": "waitHuman",
+      "to": "running",
+      "label": "acceptDelivery",
+      "variant": "emphasis",
+      "labelDx": -58
+    },
+    {
+      "id": "t-approval",
+      "from": "waitTool",
+      "to": "waitHuman",
+      "label": "TOOL_APPROVAL",
+      "variant": "security",
+      "fromSide": "bottom",
+      "toSide": "right",
+      "via": [
+        [
+          556,
+          307
+        ]
+      ]
+    },
+    {
+      "id": "t-pause",
+      "from": "running",
+      "to": "paused",
+      "variant": "security",
+      "fromSide": "top",
+      "toSide": "top",
+      "via": [
+        [
+          402,
+          80
+        ],
+        [
+          810,
+          80
+        ],
+        [
+          810,
+          240
+        ],
+        [
+          710,
+          240
+        ]
+      ]
+    },
+    {
+      "id": "t-pause-back",
+      "from": "paused",
+      "to": "running",
+      "variant": "emphasis",
+      "fromSide": "right",
+      "toSide": "top",
+      "via": [
+        [
+          840,
+          307
+        ],
+        [
+          840,
+          80
+        ],
+        [
+          402,
+          80
+        ]
+      ]
+    },
+    {
+      "id": "t-model",
+      "from": "running",
+      "to": "waitModel",
+      "fromSide": "top",
+      "toSide": "right",
+      "via": [
+        [
+          402,
+          80
+        ],
+        [
+          860,
+          80
+        ],
+        [
+          860,
+          387
+        ]
+      ]
+    },
+    {
+      "id": "t-fail",
+      "from": "running",
+      "to": "failed",
+      "label": "otro STOP",
+      "variant": "security",
+      "fromSide": "top",
+      "toSide": "right",
+      "via": [
+        [
+          402,
+          80
+        ],
+        [
+          880,
+          80
+        ],
+        [
+          880,
+          479
+        ]
+      ]
+    },
+    {
+      "id": "t-expire",
+      "from": "running",
+      "to": "expired",
+      "variant": "security",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "via": [
+        [
+          402,
+          80
+        ],
+        [
+          900,
+          80
+        ],
+        [
+          900,
+          535
+        ],
+        [
+          556,
+          535
+        ]
+      ]
+    },
+    {
+      "id": "t-cancel",
+      "from": "running",
+      "to": "cancelled",
+      "variant": "security",
+      "fromSide": "top",
+      "toSide": "left",
+      "via": [
+        [
+          402,
+          80
+        ],
+        [
+          20,
+          80
+        ],
+        [
+          20,
+          479
+        ]
+      ]
+    },
+    {
+      "id": "t-pause-fail",
+      "from": "paused",
+      "to": "failed",
+      "label": "rechazado o vencido",
+      "variant": "security",
+      "fromSide": "bottom",
+      "toSide": "left",
+      "via": [
+        [
+          710,
+          347
+        ],
+        [
+          632,
+          347
+        ],
+        [
+          632,
+          479
+        ]
+      ],
+      "labelAt": [
+        671,
+        350
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Enum igual, uso nuevo",
+      "items": [
+        "C-013 v1, 11 valores, modified_by: [] (registry/contracts.yaml:250-270)",
+        "Primer PAUSED: runStatusForWait (ch33:575-584, ch33:657-669)",
+        "PAUSED sale por autorización/ampliación o FAILED (ch37:891-933)"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "Corregido: credencial",
+      "items": [
+        "Hasta 59288a1 parkForMissingCredential no aplicaba parkedAgentState",
+        "Corregido en b687f2c: el run queda PAUSED (AuthorizationParking.pausedState)"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "Lectura",
+      "items": [
+        "Sin rótulo: el disparador está en el subrótulo del destino",
+        "Follow-up ch28:713-719; hijo ch44:969; KILL_SWITCH ch18:1147-1167",
+        "La recuperación cambia el StepRecord, no el run (ch32:838)"
+      ]
+    }
+  ]
+}

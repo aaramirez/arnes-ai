@@ -2,155 +2,136 @@
   "schema_version": 2,
   "diagram_type": "workflow",
   "meta": {
-    "title": "Plan de implementación sugerido",
+    "title": "Plan de implementación sugerido (v0.3)",
     "quality_profile": "showcase"
   },
   "lanes": [
     {
-      "id": "fases",
-      "label": "Fases sugeridas [inferencia]"
-    }
-  ],
-  "phases": [
-    {
-      "id": "fundar",
-      "label": "Reglas + núcleo",
-      "fromCol": 0,
-      "toCol": 1,
-      "variant": "emphasis"
+      "id": "cimientos",
+      "label": "Fases 0–2 · cimientos y control"
     },
     {
-      "id": "gobernar",
-      "label": "Gobierno enterprise",
-      "fromCol": 2,
-      "toCol": 4
-    },
-    {
-      "id": "multi",
-      "label": "Multi-agente",
-      "fromCol": 5,
-      "toCol": 5,
-      "variant": "dashed"
+      "id": "escala",
+      "label": "Fases 3–5 · datos, conectividad y multi-agente"
     }
-  ],
-  "mainPath": [
-    "f0",
-    "f1",
-    "f2",
-    "f3",
-    "f4",
-    "f5"
   ],
   "nodes": [
     {
       "id": "f0",
-      "lane": "fases",
+      "lane": "cimientos",
       "col": 0,
-      "type": "database",
-      "label": "Fase 0",
-      "sublabel": "Constitución propia",
-      "tag": "P-01..30 + INV"
+      "type": "security",
+      "label": "Fase 0 · Constitución",
+      "sublabel": "P-01..P-39 e INV como reglas",
+      "tag": "reglas de arquitectura",
+      "width": 176
     },
     {
       "id": "f1",
-      "lane": "fases",
+      "lane": "cimientos",
       "col": 1,
       "type": "backend",
-      "label": "Fase 1",
-      "sublabel": "Núcleo",
-      "tag": "Policy + Idempotency"
+      "label": "Fase 1 · Núcleo durable",
+      "sublabel": "p.ej. eve: pasos, esperas",
+      "tag": "PolicyEngine + IdempotencyGuard",
+      "width": 196
     },
     {
       "id": "f2",
-      "lane": "fases",
+      "lane": "cimientos",
       "col": 2,
       "type": "security",
-      "label": "Fase 2",
-      "sublabel": "Evidencia y control",
-      "tag": "Audit + Operational"
+      "label": "Fase 2 · Identidad",
+      "sublabel": "admisión, AuditLedger",
+      "tag": "control y egress",
+      "width": 176
     },
     {
       "id": "f3",
-      "lane": "fases",
-      "col": 3,
-      "type": "security",
-      "label": "Fase 3",
-      "sublabel": "Datos y personas",
-      "tag": "DataGov + Handoff"
+      "lane": "escala",
+      "col": 2,
+      "type": "database",
+      "label": "Fase 3 · Datos y personas",
+      "sublabel": "DataGovernance + Retrieval",
+      "tag": "HandoffCoordinator",
+      "width": 196
     },
     {
       "id": "f4",
-      "lane": "fases",
-      "col": 4,
+      "lane": "escala",
+      "col": 1,
       "type": "cloud",
-      "label": "Fase 4",
-      "sublabel": "Ciclo de vida",
-      "tag": "Eval como gate"
+      "label": "Fase 4 · Conectividad",
+      "sublabel": "MCP / OpenAPI, lift",
+      "tag": "ciclo de vida",
+      "width": 176
     },
     {
       "id": "f5",
-      "lane": "fases",
-      "col": 5,
-      "type": "external",
-      "label": "Fase 5",
-      "sublabel": "Multi-agente",
-      "tag": "grants acotados"
+      "lane": "escala",
+      "col": 0,
+      "type": "messagebus",
+      "label": "Fase 5 · Multi-agente",
+      "sublabel": "Gateway con grants",
+      "tag": "invocación durable",
+      "width": 176
     }
   ],
   "edges": [
     {
-      "id": "e-f0-f1",
+      "id": "e01",
       "from": "f0",
       "to": "f1"
     },
     {
-      "id": "e-f1-f2",
+      "id": "e12",
       "from": "f1",
       "to": "f2"
     },
     {
-      "id": "e-f2-f3",
+      "id": "e23",
       "from": "f2",
       "to": "f3"
     },
     {
-      "id": "e-f3-f4",
+      "id": "e34",
       "from": "f3",
       "to": "f4"
     },
     {
-      "id": "e-f4-f5",
+      "id": "e45",
       "from": "f4",
       "to": "f5"
     }
   ],
   "cards": [
     {
-      "dot": "amber",
-      "title": "Plan [inferencia], orden [doc]",
-      "items": [
-        "Este plan es recomendación del estudio; el orden CH-00 → CH-27 sí lo prescribe el libro (ch25:312-343)",
-        "F0: adoptar P-01..P-30 e INV · F1: eve u otro framework + PolicyEngine + IdempotencyGuard",
-        "F2: Audit + Operational + Admission · F3: DataGov + CredentialBroker + Handoff",
-        "F4: EvaluationHarness como gate + capabilities · F5: AgentCommunicationGateway con grants"
-      ]
-    },
-    {
       "dot": "cyan",
-      "title": "Checklist pre-producción",
+      "title": "Qué entra en cada fase",
       "items": [
-        "Sin API directa de proveedor; el modelo no autoriza; tool calls validadas (INV-01, 03-05, P-13)",
-        "Side effects con política e idempotencia; límites, cancelación y run reconstruible (INV-06, 09-11, 13, E09)",
-        "Aprobación válida; trazabilidad; auditoría ≠ telemetría (INV-15, 19, P-25)",
-        "Admisión, credenciales fuera del contexto, tenant aislado, kill switch fuera del loop, certificación (INV-E02, E07, E08, E13, E14)"
+        "F1: sandbox + PolicyEngine central + IdempotencyGuard con replay",
+        "F2: OperationalController, credencial del usuario y egress",
+        "F3: techo por audiencia · F4: extensiones que restringen, versión del runtime · F5: presupuestos heredados"
       ]
     },
     {
-      "dot": "slate",
-      "title": "Evidencia",
+      "dot": "emerald",
+      "title": "Checklist antes de producción (1/2)",
       "items": [
-        "constitution/ARCHITECTURE_CONSTITUTION.md:153-229: INV-01..20",
-        "constitution/ARCHITECTURE_CONSTITUTION.md:975-989: INV-E01..E14"
+        "Sin API directa de proveedor; el modelo nunca autoriza (INV-01, INV-03, P-13)",
+        "Side effects con política e idempotencia; runs acotados y cancelables (INV-06, INV-11, INV-E09, INV-09, INV-10)",
+        "Aprobación válida antes de actuar; auditoría trazable y separada de telemetría (INV-15, INV-19, P-25)",
+        "Admisión obligatoria; credenciales fuera del modelo; kill switch sin AgentLoop (INV-E02, E15, E08, E20, E14)"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Checklist antes de producción (2/2)",
+      "items": [
+        "Pasos confirmados sin repetir; reanudación y continuación acotadas (INV-E16..E19)",
+        "Presupuesto hijo ≤ saldo del padre; el trabajo vivo no migra de runtime (INV-E21, E22)",
+        "Trazas bajo su techo, hooks sin autorizar, tools como descriptores, fuentes RESTRICTED por defecto, ERROR bloquea (INV-E23..E27)",
+        "Evidencia: constitution/ARCHITECTURE_CONSTITUTION.md:153-229, :975-989, :1034-1046"
       ]
     }
   ]

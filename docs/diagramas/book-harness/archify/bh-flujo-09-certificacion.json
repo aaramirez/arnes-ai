@@ -2,37 +2,40 @@
   "schema_version": 1,
   "diagram_type": "sequence",
   "meta": {
-    "title": "Flujo 9 — Certificación antes de promover a producción",
+    "title": "Flujo 9 — Certificación con lift antes de promover",
     "quality_profile": "showcase",
     "column_fit": "spread",
-    "viewBox": [1280, 640]
+    "viewBox": [1200, 540]
   },
   "participants": [
-    { "id": "rel", "type": "external", "label": "Responsable de release" },
-    { "id": "eh", "type": "security", "label": "EvaluationHarness" },
-    { "id": "promo", "type": "backend", "label": "Promoción controlada" },
-    { "id": "run", "type": "backend", "label": "Run en producción" }
+    { "id": "dev", "type": "frontend", "label": "Equipo del agente" },
+    { "id": "eh", "type": "backend", "label": "EvaluationHarness" },
+    { "id": "sb", "type": "security", "label": "Entornos aislados por caso" },
+    { "id": "aud", "type": "database", "label": "AuditLedger" }
   ],
   "segments": [
-    { "from": 160, "to": 400, "label": "Evaluación previa" },
-    { "from": 420, "to": 590, "label": "Promoción y correlación" }
+    { "from": 160, "to": 262, "label": "Casos aislados" },
+    { "from": 276, "to": 350, "label": "En EvaluationHarness: computeLift, liftVerdict, certificationSignalFromLift, evaluateCandidateForPromotion" },
+    { "from": 364, "to": 460, "label": "Informe y evidencia" }
   ],
   "messages": [
-    { "id": "m1", "from": "rel", "to": "eh", "y": 200, "label": "evaluateCandidateForPromotion(subjectRef, riskClass, certificationRequired)", "variant": "emphasis" },
-    { "id": "m2", "from": "eh", "to": "rel", "y": 250, "label": "CERTIFIED (no requerida o satisfecha)", "variant": "return", "note": "Dos ramas del Mermaid plegadas: no requiere certificación / requerida y satisfecha." },
-    { "id": "m3", "from": "eh", "to": "rel", "y": 300, "label": "REJECTED (requerida y no satisfecha)", "variant": "security" },
-    { "id": "m4", "from": "eh", "to": "rel", "y": 350, "label": "NEEDS_REVIEW por defecto (sin información)", "variant": "dashed", "note": "EVALUATION_REPORT_PRODUCED condicional." },
-    { "id": "m5", "from": "rel", "to": "promo", "y": 450, "label": "promover solo si CERTIFIED", "variant": "emphasis" },
-    { "id": "m6", "from": "run", "to": "eh", "y": 500, "label": "correlateRunWithBusinessOutcome(runId, outcome, SLA)", "variant": "default" },
-    { "id": "m7", "from": "eh", "to": "run", "y": 550, "label": "BusinessOutcomeCorrelation", "variant": "return" }
-  ],
-  "activations": [
-    { "participant": "eh", "from": 192, "to": 358, "type": "security" },
-    { "participant": "eh", "from": 492, "to": 558, "type": "security" }
+    { "id": "m1", "from": "dev", "to": "eh", "y": 196, "label": "evaluateCandidateWithLift: línea base y candidato", "variant": "emphasis", "note": "Base igual al candidato falla con SAME_BASELINE_AND_TREATMENT (ch47:485-571)." },
+    { "id": "m2", "from": "eh", "to": "sb", "y": 234, "label": "requireIsolatedCase por cada caso", "variant": "security", "note": "Compartir un sandbox falla con SHARED_EVALUATION_ENVIRONMENT. Luego, dentro de EvaluationHarness: computeLift, liftVerdict, certificationSignalFromLift y evaluateCandidateForPromotion (ch47:461-599, ch22:1200)." },
+    { "id": "m3", "from": "eh", "to": "dev", "y": 396, "label": "EVALUATION_REPORT_PRODUCED: certificado o no", "variant": "return", "note": "El gate de CH-22 decidió con la evidencia de lift (ch47:603-656, ch47:678-684)." },
+    { "id": "m4", "from": "eh", "to": "aud", "y": 432, "label": "evidencia de la certificación", "variant": "emphasis", "note": "El informe queda como evidencia: C-032 v2 evidence (ch47:339-347)." }
   ],
   "cards": [
-    { "dot": "cyan", "title": "Certificación por riesgo", "items": ["Evalúa antes de que exista un run del candidato", "Dos ramas CERTIFIED plegadas en un mensaje", "Valor por defecto: NEEDS_REVIEW", "EVALUATION_REPORT_PRODUCED es condicional"] },
-    { "dot": "amber", "title": "Producción separada (P-28)", "items": ["La promoción queda condicionada al reporte", "Cada run se correlaciona con valor, SLA y escalamiento", "Certificación real (suites, datasets): abierta en el libro"] },
-    { "dot": "slate", "title": "Evidencia (book-harness)", "items": ["ch22:455-466 — el problema", "ch22:1148-1323 — secuencia y pseudocódigo", "ch22:1394-1432 — fallos y eventos", "ch25:778-796 — pendientes antes de orquestar"] }
+    { "dot": "cyan", "title": "Lift y veredicto (pasos internos)", "items": [
+      "computeLift: media(candidato) − media(base); emite LIFT_REPORT_PRODUCED (ch47:485-571)",
+      "liftVerdict: pocos casos o lift chico = INCONCLUSIVE; ≥ mínimo = IMPROVED; ≤ −mínimo = REGRESSED (ch47:461-481)"
+    ] },
+    { "dot": "emerald", "title": "Señal y gate", "items": [
+      "certificationSignalFromLift: algún REGRESSED = FALSE; todos IMPROVED = TRUE; si no, NULL (ch47:575-599)",
+      "evaluateCandidateForPromotion decide con esa evidencia (ch22:1200, ch47:603-656, ch47:678-684)"
+    ] },
+    { "dot": "amber", "title": "Puntos de control", "items": [
+      "INCONCLUSIVE no certifica por sí solo: decide la regla de CH-22",
+      "Negocio: correlateRunWithBusinessOutcome (CH-22); evidencia C-032 v2 (ch47:339-347)"
+    ] }
   ]
 }
