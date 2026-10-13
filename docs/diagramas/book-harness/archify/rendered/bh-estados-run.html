@@ -5578,11 +5578,11 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       <div class="card">
         <div class="card-header">
           <div class="card-dot amber"></div>
-          <h3>Hallazgo: credencial</h3>
+          <h3>Corregido: credencial</h3>
         </div>
         <ul>
-          <li>&bull; parkForMissingCredential llama a parkRun, no a parkedAgentState (ch37:749-771)</li>
-          <li>&bull; Se dibuja lo que dicta runStatusForWait</li>
+          <li>&bull; Hasta 59288a1 parkForMissingCredential no aplicaba parkedAgentState</li>
+          <li>&bull; Corregido en b687f2c: el run queda PAUSED (AuthorizationParking.pausedState)</li>
         </ul>
       </div>
 

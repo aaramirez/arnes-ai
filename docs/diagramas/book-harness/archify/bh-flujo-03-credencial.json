@@ -85,7 +85,7 @@
       "y": 240,
       "label": "3 · parkForMissingCredential · AUTHORIZATION",
       "variant": "emphasis",
-      "note": "Desafío de autorización con regla SAME_PRINCIPAL. Hallazgo: no llama a parkedAgentState, así que el run no pasa a PAUSED (ch37:749-771)."
+      "note": "Desafío de autorización con regla SAME_PRINCIPAL. Aplica parkedAgentState: el run queda PAUSED (corregido en b687f2c)."
     },
     {
       "from": "paso",
@@ -160,11 +160,11 @@
     },
     {
       "dot": "amber",
-      "title": "Autorización y hallazgo",
+      "title": "Autorización",
       "items": [
         "Regla SAME_PRINCIPAL: solo el mismo usuario completa el desafío",
         "Callback inválido: AUTHORIZATION_CALLBACK_REJECTED",
-        "Hallazgo: parkForMissingCredential no llama a parkedAgentState; el run no pasa a PAUSED (ch37:749-771)",
+        "El run queda PAUSED con parkedAgentState (corregido en b687f2c; antes seguía RUNNING)",
         "Igual con CredentialScope = PER_CALLER (CH-41)"
       ]
     },

@@ -5662,12 +5662,12 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       <div class="card">
         <div class="card-header">
           <div class="card-dot amber"></div>
-          <h3>Hallazgo: contextBlocks sin usar</h3>
+          <h3>Corregido: contextBlocks</h3>
         </div>
         <ul>
           <li>&bull; openConnectedGovernedTurn produce contextBlocks (ch49:557-563)</li>
-          <li>&bull; El paso 6 invoca al modelo solo con selection.messages (ch49:792-795)</li>
-          <li>&bull; Nada une los bloques gobernados con la historia antes de la llamada</li>
+          <li>&bull; Hasta 59288a1 el paso 6 los ignoraba</li>
+          <li>&bull; b687f2c: el paso 6 usa connectedModelMessages(contextBlocks, selection)</li>
         </ul>
       </div>
     </div>

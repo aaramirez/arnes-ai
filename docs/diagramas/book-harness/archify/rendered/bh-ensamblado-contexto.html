@@ -5182,7 +5182,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <path data-edge-from="pendientes" data-edge-to="snapshot" data-edge-key="6" data-edge-id="e-pi-snap" data-composition-points="617,119;653,119" d="M 617 119 L 653 119" class="a-default" stroke-width="1.4" marker-end="url(#arrowhead)"/>
         <path data-edge-from="sel_modelo" data-edge-to="error_sel" data-edge-label="fuera de catálogo" data-edge-key="7" data-edge-id="e-sel-err" data-composition-points="128,145;128,166;42,166;42,243;58,243" d="M 128 145 L 128 166 L 42 166 L 42 243 L 58 243" class="a-security" stroke-width="1.4" marker-end="url(#arrowhead-security)"/>
         <path data-edge-from="sel_modelo" data-edge-to="fit" data-edge-key="8" data-edge-id="e-sel-fit" data-composition-points="208,119;248,119" d="M 208 119 L 248 119" class="a-default" stroke-width="1.4" marker-end="url(#arrowhead)"/>
-        <path data-edge-from="seleccion" data-edge-to="snapshot" data-edge-label="hueco §3" data-edge-key="9" data-edge-id="e-sel-snap" data-composition-points="741,341;741,145" d="M 741 341 L 741 145" class="a-dashed" stroke-width="1.4" marker-end="url(#arrowhead-dashed)"/>
+        <path data-edge-from="seleccion" data-edge-to="snapshot" data-edge-label="connectedModelMessages" data-edge-key="9" data-edge-id="e-sel-snap" data-composition-points="741,341;741,145" d="M 741 341 L 741 145" class="a-default" stroke-width="1.4" marker-end="url(#arrowhead)"/>
         <path data-edge-from="snapshot" data-edge-to="cache" data-edge-key="10" data-edge-id="e-snap-cache" data-composition-points="829,119;857,119" d="M 829 119 L 857 119" class="a-default" stroke-width="1.4" marker-end="url(#arrowhead)"/>
         <path data-edge-from="techo" data-edge-to="seleccion" data-edge-key="11" data-edge-id="e-techo-sel" data-composition-points="620,367;648,367" d="M 620 367 L 648 367" class="a-default" stroke-width="1.4" marker-end="url(#arrowhead)"/>
 
@@ -5354,9 +5354,9 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <text x="85" y="156" class="t-security" font-size="8" text-anchor="middle">fuera de catálogo</text>
         </g>
 
-        <g data-detail="context" data-edge-from="seleccion" data-edge-to="snapshot" data-edge-label="hueco §3" data-edge-key="9" data-edge-id="e-sel-snap">
-          <rect x="716.8" y="321" width="48.4" height="14" rx="3" class="c-mask"/>
-          <text x="741" y="331" class="t-database" font-size="8" text-anchor="middle">hueco §3</text>
+        <g data-detail="context" data-edge-from="seleccion" data-edge-to="snapshot" data-edge-label="connectedModelMessages" data-edge-key="9" data-edge-id="e-sel-snap">
+          <rect x="683.2" y="321" width="115.6" height="14" rx="3" class="c-mask"/>
+          <text x="741" y="331" class="t-muted" font-size="8" text-anchor="middle">connectedModelMessages</text>
         </g>
 
 
@@ -5597,11 +5597,12 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 
       <div class="card">
         <div class="card-header">
-          <div class="card-dot rose"></div>
-          <h3>Hallazgo: bloques gobernados</h3>
+          <div class="card-dot amber"></div>
+          <h3>Corregido: bloques gobernados</h3>
         </div>
         <ul>
-          <li>&bull; La arista punteada marca el hueco de §3: el libro produce los bloques gobernados, pero el pseudocódigo de CH-49 no los pasa a la llamada al modelo</li>
+          <li>&bull; Hasta 59288a1 los bloques gobernados no llegaban a la llamada al modelo en CH-49</li>
+          <li>&bull; Corregido en b687f2c: connectedModelMessages los agrega antes de las entradas pendientes</li>
         </ul>
       </div>
 

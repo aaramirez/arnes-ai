@@ -377,10 +377,10 @@
     },
     {
       "dot": "amber",
-      "title": "Hallazgo: credencial",
+      "title": "Corregido: credencial",
       "items": [
-        "parkForMissingCredential llama a parkRun, no a parkedAgentState (ch37:749-771)",
-        "Se dibuja lo que dicta runStatusForWait"
+        "Hasta 59288a1 parkForMissingCredential no aplicaba parkedAgentState",
+        "Corregido en b687f2c: el run queda PAUSED (AuthorizationParking.pausedState)"
       ]
     },
     {

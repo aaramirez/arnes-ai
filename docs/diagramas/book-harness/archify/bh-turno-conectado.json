@@ -228,11 +228,11 @@
     },
     {
       "dot": "amber",
-      "title": "Hallazgo: contextBlocks sin usar",
+      "title": "Corregido: contextBlocks",
       "items": [
         "openConnectedGovernedTurn produce contextBlocks (ch49:557-563)",
-        "El paso 6 invoca al modelo solo con selection.messages (ch49:792-795)",
-        "Nada une los bloques gobernados con la historia antes de la llamada"
+        "Hasta 59288a1 el paso 6 los ignoraba",
+        "b687f2c: el paso 6 usa connectedModelMessages(contextBlocks, selection)"
       ]
     }
   ]

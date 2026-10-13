@@ -39,9 +39,9 @@
       "classifyDerivedData: un resumen no baja la clasificación (ch42:668-707)",
       "PER_PRINCIPAL sin llamante: CALLER_REQUIRED_FOR_SOURCE; legal hold suspende el borrado (ch38:716-742)"
     ] },
-    { "dot": "amber", "title": "Hallazgo", "items": [
-      "Los contextBlocks gobernados no llegan a la llamada al modelo en el pseudocódigo de CH-49",
-      "Ver BH-Arquitectura-y-Flujos §3"
+    { "dot": "amber", "title": "Corregido", "items": [
+      "Hasta 59288a1 los contextBlocks gobernados no llegaban a la llamada al modelo (CH-49)",
+      "b687f2c: connectedModelMessages los lleva al modelo"
     ] }
   ]
 }

@@ -5197,7 +5197,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <rect x="219.26666666666662" y="220" width="240.8" height="16" rx="3" class="c-mask"/>
           <text x="339.66666666666663" y="230" class="t-backend" font-size="9" text-anchor="middle">3 · parkForMissingCredential · AUTHORIZATION</text>
         </g>
-        <text data-detail="fine" x="163" y="258" class="t-dim" font-size="7">Desafío de autorización con regla SAME_PRINCIPAL. Hallazgo: no llama a parkedAgentState, así que el run no pasa a PAUSED (ch37:749-771).</text>
+        <text data-detail="fine" x="163" y="258" class="t-dim" font-size="7">Desafío de autorización con regla SAME_PRINCIPAL. Aplica parkedAgentState: el run queda PAUSED (corregido en b687f2c).</text>
         </g>
 
         <g data-edge-from="paso" data-edge-to="usuario" data-edge-label="4 · WAIT_NOTICE con callbackRef" data-edge-key="3">
@@ -5582,12 +5582,12 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       <div class="card">
         <div class="card-header">
           <div class="card-dot amber"></div>
-          <h3>Autorización y hallazgo</h3>
+          <h3>Autorización</h3>
         </div>
         <ul>
           <li>&bull; Regla SAME_PRINCIPAL: solo el mismo usuario completa el desafío</li>
           <li>&bull; Callback inválido: AUTHORIZATION_CALLBACK_REJECTED</li>
-          <li>&bull; Hallazgo: parkForMissingCredential no llama a parkedAgentState; el run no pasa a PAUSED (ch37:749-771)</li>
+          <li>&bull; El run queda PAUSED con parkedAgentState (corregido en b687f2c; antes seguía RUNNING)</li>
           <li>&bull; Igual con CredentialScope = PER_CALLER (CH-41)</li>
         </ul>
       </div>

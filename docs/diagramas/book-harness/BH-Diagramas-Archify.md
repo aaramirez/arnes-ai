@@ -123,9 +123,12 @@ El libro trae además un diagrama **por capítulo**, enfocado en el componente (
 - **Espacio vacío:** queda una franja vacía bajo la leyenda en `bh-orden-construccion`, que es una tira baja de 1232×282, y en los flujos 5 y 6.
 
 **Hallazgos del libro que los diagramas señalan** (no son defectos del diagrama):
-- En CH-49, `contextBlocks` no llega a `invokeModelForTurn` (`ch49:557-563` frente a `ch49:792-795`).
-- En CH-37, `parkForMissingCredential` no pone el run en PAUSED (`ch37:749-771`).
-- CredentialBroker figura en planos distintos en `ch25:334` y en `registry/components.yaml:101`.
+- **Corregidos en `b687f2c`:**
+  - en CH-49, `contextBlocks` no llegaba a `invokeModelForTurn`;
+  - en CH-37, `parkForMissingCredential` no ponía el run en PAUSED.
+
+  Los cinco diagramas afectados (`bh-turno-conectado`, `bh-ensamblado-contexto`, `bh-estados-run` y los flujos 3 y 8) se volvieron a entregar con cards "Corregido".
+- **Abierto:** CredentialBroker figura en planos distintos en `ch25:334` y en `registry/components.yaml:101`.
 
 **Regenerar un diagrama:**
 

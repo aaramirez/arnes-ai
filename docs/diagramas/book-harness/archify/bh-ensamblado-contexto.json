@@ -197,9 +197,7 @@
       "id": "e-sel-snap",
       "from": "seleccion",
       "to": "snapshot",
-      "label": "hueco §3",
-      "variant": "dashed",
-      "role": "async"
+      "label": "connectedModelMessages"
     },
     {
       "id": "e-snap-cache",
@@ -233,10 +231,10 @@
       ]
     },
     {
-      "dot": "rose",
-      "title": "Hallazgo: bloques gobernados",
+      "dot": "amber",
+      "title": "Corregido: bloques gobernados",
       "items": [
-        "La arista punteada marca el hueco de §3: el libro produce los bloques gobernados, pero el pseudocódigo de CH-49 no los pasa a la llamada al modelo"
+        "Hasta 59288a1 los bloques gobernados no llegaban a la llamada al modelo en CH-49", "Corregido en b687f2c: connectedModelMessages los agrega antes de las entradas pendientes"
       ]
     },
     {

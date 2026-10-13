@@ -20,7 +20,7 @@ tags:
 
 Estos diagramas son **vistas transversales**. El libro trae 55 diagramas Archify: uno por capítulo y 5 generales, en `repos/aaramirez/book-harness/diagrams/archify/rendered/`. Ninguno de los generales cubre la v0.3, y esa es la vista que agrega este set.
 
-- **Commit estudiado:** `59288a1` (2026-10-12, tag `v0.3` + KB).
+- **Commit estudiado:** `59288a1` (2026-10-12, tag `v0.3` + KB), más la revisión `b687f2c`, que corrige los dos huecos señalados abajo.
 - **Abreviatura:** `chNN` = `repos/aaramirez/book-harness/book/chapters/NN-*/chapter.md`.
 - **Set anterior:** describía la v0.1 (`d16e2c7`). El historial de git lo conserva.
 
@@ -194,7 +194,7 @@ Ramas que no se dibujan:
 - `ch49:910-919`: por qué se registra un DENY, y las ramas de conexión y de agente.
 - Diagrama del libro: `repos/aaramirez/book-harness/diagrams/archify/rendered/capitulo-49-integracion-conectada.html`.
 
-> **Hallazgo:** `openConnectedGovernedTurn` produce `contextBlocks` (`ch49:557-563`), pero `runConnectedGovernedStep` invoca al modelo solo con `selection.messages` (`ch49:792-795`). En el pseudocódigo mostrado no hay ninguna función que una los bloques gobernados con la historia antes de la llamada.
+> **Hallazgo corregido en `b687f2c`:** hasta `59288a1`, `openConnectedGovernedTurn` producía `contextBlocks`, pero `runConnectedGovernedStep` invocaba al modelo solo con `selection.messages`. La revisión agrega `connectedModelMessages(contextBlocks, selection)`: un `AgentMessage` USER por bloque, seguido de las entradas pendientes. El plan está en `repos/aaramirez/book-harness/planes/2026-10-12-revision-ch37-ch49-huecos.md`.
 
 ---
 
@@ -279,7 +279,7 @@ stateDiagram-v2
 - `ch18:1147-1167`: KILL_SWITCH.
 - La recuperación tras una caída cambia el estado del **paso** (StepRecord), no el del run (`ch32:838`, `ch36:718`).
 
-> **Hallazgo:** `parkForMissingCredential` llama a `parkRun` pero no a `parkedAgentState` (`ch37:749-771`), así que el pseudocódigo mostrado no pone el run en PAUSED durante una espera de autorización por credencial. El diagrama dibuja la transición que dicta `runStatusForWait`.
+> **Hallazgo corregido en `b687f2c`:** hasta `59288a1`, `parkForMissingCredential` llamaba a `parkRun` pero no a `parkedAgentState`, y el run seguía RUNNING mientras esperaba la autorización. Ahora aplica `parkedAgentState` y devuelve el estado PAUSED en `AuthorizationParking.pausedState`.
 
 ---
 
@@ -335,7 +335,7 @@ flowchart TD
   GOVR --> CEIL["contextCeilingForAudience<br/>PUBLIC baja el techo"]
   CEIL --> SEL["selectRetrievedCandidates<br/>score, techo y presupuesto"]
   PI --> SNAP["historia + entradas pendientes<br/>assembleContextSnapshot CH-04"]
-  SEL -. "bloques gobernados<br/>ver hallazgo §3" .-> SNAP
+  SEL -- "connectedModelMessages<br/>revisión b687f2c" --> SNAP
   SNAP --> CACHE["effectiveCacheRetention<br/>NONE si el modelo no cachea"]
   CACHE --> CALL["invokeModelForTurn"]
 ```
@@ -348,7 +348,7 @@ flowchart TD
 - `ch46:612-623`: techo por audiencia.
 - `ch04:686-765`: `assembleContextSnapshot`.
 
-> La arista punteada marca el hueco señalado en §3: el libro produce los bloques gobernados, pero el pseudocódigo de CH-49 no los pasa a la llamada al modelo.
+> La arista de los bloques gobernados existe desde la revisión `b687f2c` (ver §3). Antes, el pseudocódigo de CH-49 no los pasaba a la llamada al modelo.
 
 ---
 

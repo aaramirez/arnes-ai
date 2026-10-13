@@ -203,7 +203,7 @@ sequenceDiagram
 **Puntos de control:**
 - `buildSandboxEnvironment` falla con `SECRET_IN_SANDBOX_ENVIRONMENT` si la configuración nombra una credencial.
 - Una capability aislada sin sandbox abierto falla con `ISOLATED_ENVIRONMENT_REQUIRED`.
-- **Hallazgo:** `parkForMissingCredential` no llama a `parkedAgentState`, así que el pseudocódigo mostrado no pone el run en PAUSED (`ch37:749-771`).
+- **Hallazgo corregido en `b687f2c`:** `parkForMissingCredential` ahora aplica `parkedAgentState`, y el run queda PAUSED (`AuthorizationParking.pausedState`). Hasta `59288a1` seguía RUNNING.
 - En una conexión con `CredentialScope = PER_CALLER` vale lo mismo (CH-41).
 
 **Evidencia:**
@@ -457,7 +457,7 @@ sequenceDiagram
 - Un resumen no puede bajar la clasificación: `classifyDerivedData` toma la más restrictiva.
 - Una fuente PER_PRINCIPAL sin llamante falla con `CALLER_REQUIRED_FOR_SOURCE`.
 - La retención del journal no vence mientras el run o un paso siguen abiertos, y el legal hold suspende el borrado (CH-38).
-- **Hallazgo:** los bloques gobernados no llegan a la llamada al modelo en el pseudocódigo de CH-49 (ver [[BH-Arquitectura-y-Flujos]] §3).
+- **Hallazgo corregido en `b687f2c`:** desde la revisión, `connectedModelMessages` lleva los bloques gobernados a la llamada al modelo (ver [[BH-Arquitectura-y-Flujos]] §3).
 
 **Evidencia:**
 - `ch46:303-307`, `ch46:525-549`: audiencia; solo sube la restricción.
