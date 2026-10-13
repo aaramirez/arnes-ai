@@ -47,15 +47,15 @@ describe('repos.json', () => {
     assert.ok(Array.isArray(data), 'repos.json should be an array');
   });
 
-  it('contains 15 reference repos', () => {
+  it('contains 16 reference repos', () => {
     const data = JSON.parse(readFileSync(REPOS_PATH, 'utf8'));
-    assert.equal(data.length, 15, 'repos.json should contain 15 entries');
+    assert.equal(data.length, 16, 'repos.json should contain 16 entries');
   });
 
   it('contains the expected repos', () => {
     const data = JSON.parse(readFileSync(REPOS_PATH, 'utf8'));
     const names = data.map(r => r.name).sort();
-    assert.deepEqual(names, ['Aider-AI/aider', 'Ancienttwo/repo-harness', 'OpenHands/OpenHands', 'RyanAlberts/best-of-Agent-Harnesses', 'aaramirez/book-harness', 'ai-boost/awesome-harness-engineering', 'anomalyco/opencode', 'betta-tech/byo-coding-agent', 'block/buzz', 'codeaashu/claude-code', 'continuedev/continue', 'earendil-works/pi', 'openai/codex', 'vercel/eve', 'yibie/awesome-jev']);
+    assert.deepEqual(names, ['Aider-AI/aider', 'Ancienttwo/repo-harness', 'GrupoConex/arnes-empresarial', 'OpenHands/OpenHands', 'RyanAlberts/best-of-Agent-Harnesses', 'aaramirez/book-harness', 'ai-boost/awesome-harness-engineering', 'anomalyco/opencode', 'betta-tech/byo-coding-agent', 'block/buzz', 'codeaashu/claude-code', 'continuedev/continue', 'earendil-works/pi', 'openai/codex', 'vercel/eve', 'yibie/awesome-jev']);
   });
 
   it('every entry has name and url', () => {
