@@ -108,9 +108,9 @@ flowchart LR
 - `ch25:313-342`: tramos 1 a 3.
 - `ch25:352-380`: cierre de v0.2 y v0.2.1, con los planos de CMP-023..026.
 - `ch25:382-401`: cierre de v0.3, tramo 5; CH-44 va después de CH-43 por P-09.
-- `ch25:838-840`: totales de v0.3.
+- `ch25:859-861`: totales de v0.3.
 
-> La vista de secuencia de CH-25 solo se actualizó hasta CH-36 (`ch25:630-661`), sin el tramo 5. El libro no deja **deudas abiertas** (`registry/debt.yaml`: 48 en total, 42 resueltas y 6 fuera de alcance). Los límites que declara a propósito están en la §18 de cada capítulo. Por ejemplo:
+> Desde la revisión `45b3da6`, la vista de secuencia de CH-25 llega hasta CH-49 (`ch25:630-683`). El libro no deja **deudas abiertas** (`registry/debt.yaml`: 48 en total, 42 resueltas y 6 fuera de alcance). Los límites que declara a propósito están en la §18 de cada capítulo. Por ejemplo:
 > - el bucle de pasos sigue siendo de AgentLoop;
 > - las propuestas no se ejecutan en paralelo;
 > - el directorio de direcciones de aprobadores es configuración del despliegue (`ch49:1011-1022`).

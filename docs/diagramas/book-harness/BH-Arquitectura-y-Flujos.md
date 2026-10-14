@@ -20,7 +20,9 @@ tags:
 
 Estos diagramas son **vistas transversales**. El libro trae 55 diagramas Archify: uno por capítulo y 5 generales, en `repos/aaramirez/book-harness/diagrams/archify/rendered/`. Ninguno de los generales cubre la v0.3, y esa es la vista que agrega este set.
 
-- **Commit estudiado:** `59288a1` (2026-10-12, tag `v0.3` + KB), más la revisión `b687f2c`, que corrige los dos huecos señalados abajo.
+- **Commit estudiado:** `59288a1` (2026-10-12, tag `v0.3` + KB). Después hubo dos revisiones:
+  - `b687f2c` corrige los huecos de CH-37 y CH-49;
+  - `45b3da6` corrige CH-25 (planos y secuencia) y los diagramas transversales del libro.
 - **Abreviatura:** `chNN` = `repos/aaramirez/book-harness/book/chapters/NN-*/chapter.md`.
 - **Set anterior:** describía la v0.1 (`d16e2c7`). El historial de git lo conserva.
 
@@ -88,12 +90,12 @@ flowchart TB
 - `repos/aaramirez/book-harness/constitution/ARCHITECTURE_CONSTITUTION.md:233-355` (Article III), `:991-1000` (los 9 planos) y `:1002-1046` (Amendment v1.2).
 - `ch25:331-342`: los planos de CMP-012..022.
 - `ch25:365-368`: los planos de CMP-023..026.
-- `ch40:855`, `ch41:835` y `ch42:879`: los planos de CMP-027..029. El cierre de v0.3 en `ch25:388-390` no los declara.
+- `ch25:388-390`, `ch40:855`, `ch41:835` y `ch42:879`: los planos de CMP-027..029. CH-25 los declara desde `45b3da6`.
 - `ch49:403-428`: dependencias del turno conectado.
 
-> **Inconsistencias del propio libro:**
-> - CredentialBroker figura en "Data & Context" en `ch25:334` y en "Capability & Integration" en `registry/components.yaml:101`. El diagrama sigue `ch25`.
-> - Los planos de CMP-027..029 solo constan en sus capítulos.
+> **Inconsistencias corregidas en `45b3da6`:**
+> - CredentialBroker figuraba en "Data & Context" en `ch25:334`, pero CH-16 y `registry/components.yaml:101` lo ubican en "Capability & Integration". CH-25 ahora coincide y trae una fe de erratas (`ch25:403-405`).
+> - Los planos de CMP-027..029 constaban solo en sus capítulos. Ahora también están en CH-25.
 
 ---
 

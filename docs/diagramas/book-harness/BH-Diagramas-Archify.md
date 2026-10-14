@@ -36,8 +36,8 @@ Versión **navegable** de los diagramas Mermaid de las tres notas de arriba, par
 Los diagramas del libro complementan estos. Los links funcionan en local, con el repo clonado en `repos/`:
 - [capitulo-49-integracion-conectada](../../../repos/aaramirez/book-harness/diagrams/archify/rendered/capitulo-49-integracion-conectada.html), la vista del capítulo del §3.
 - [capitulo-36-integracion-turno-durable](../../../repos/aaramirez/book-harness/diagrams/archify/rendered/capitulo-36-integracion-turno-durable.html), el turno durable.
-- [capa-enterprise](../../../repos/aaramirez/book-harness/diagrams/archify/rendered/capa-enterprise.html), la capa enterprise hasta la v0.2.
-- [estados-de-un-run](../../../repos/aaramirez/book-harness/diagrams/archify/rendered/estados-de-un-run.html), la versión v0.1 del §5.
+- [capa-enterprise](../../../repos/aaramirez/book-harness/diagrams/archify/rendered/capa-enterprise.html), la capa enterprise en la v0.3: 18 componentes y 7 aristas reales (actualizado en `45b3da6`).
+- [estados-de-un-run](../../../repos/aaramirez/book-harness/diagrams/archify/rendered/estados-de-un-run.html), los estados con PAUSED producido (actualizado en `45b3da6`).
 
 ## 10 flujos empresariales
 
@@ -128,7 +128,7 @@ El libro trae además un diagrama **por capítulo**, enfocado en el componente (
   - en CH-37, `parkForMissingCredential` no ponía el run en PAUSED.
 
   Los cinco diagramas afectados (`bh-turno-conectado`, `bh-ensamblado-contexto`, `bh-estados-run` y los flujos 3 y 8) se volvieron a entregar con cards "Corregido".
-- **Abierto:** CredentialBroker figura en planos distintos en `ch25:334` y en `registry/components.yaml:101`.
+- **Corregido en `45b3da6`:** el plano de CredentialBroker en CH-25 (`ch25:334`) ahora coincide con CH-16 y con el registro. Los cards de `bh-componentes` y `bh-orden-construccion` se volvieron a entregar.
 
 **Regenerar un diagrama:**
 

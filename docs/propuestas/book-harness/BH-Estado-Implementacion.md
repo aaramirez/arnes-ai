@@ -65,7 +65,16 @@ Las propuestas de [[BH-Propuestas]] se aplicaron en el repositorio del libro (`a
 | ADR-004 | presupuesto jerárquico | aceptado (v0.3), con `consumed` opcional y `sandboxLimits` |
 | ADR-005 | capability desde una conexión | aceptado (v0.3), con `executionKind` |
 
-## 5. Qué conserva este vault de antes
+## 5. Revisiones posteriores a v0.3
+
+Estas revisiones salieron de la regeneración del set visual. No cambian contratos, componentes ni ADRs, y el libro sigue en la versión 0.3.
+
+| Commit | Qué corrige |
+| --- | --- |
+| `b687f2c` | CH-49: los bloques gobernados llegan a la llamada al modelo (`connectedModelMessages`). CH-37: el run queda PAUSED mientras espera una credencial. |
+| `45b3da6` | CH-25: el plano de CredentialBroker (Capability & Integration), los planos de CMP-027..029 y la secuencia hasta CH-49. Diagramas del libro: `capa-enterprise` (v0.3) y `estados-de-un-run` (PAUSED). KB del libro. |
+
+## 6. Qué conserva este vault de antes
 
 - [[BH-Propuestas]] y sus dos propuestas son el **diseño** del 24 de septiembre. Se conservan como registro de la decisión, y sus IDs son los propuestos, no los reales (ver §2).
 - Los diagramas de `docs/diagramas/book-harness/` ([[BH-Arquitectura-y-Flujos]], [[BH-10-Flujos-Empresariales]], [[BH-Implementacion]], [[BH-Diagramas-Archify]]) se regeneraron para la **v0.3** el 2026-10-12, con el skill `estudio-visual`.

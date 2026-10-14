@@ -7,7 +7,7 @@
     "repository": {
       "url": "https://github.com/aaramirez/book-harness",
       "provider": "github",
-      "revision": "59288a10e2a7e134a70ed68f3bf2c39b3c064f8c"
+      "revision": "45b3da65d449673cf07bd6b4ffb0dfde0fac8cd2"
     },
     "viewBox": [
       1300,
@@ -394,10 +394,10 @@
     },
     {
       "dot": "amber",
-      "title": "Inconsistencias del libro",
+      "title": "Corregido en 45b3da6",
       "items": [
-        "CredentialBroker: Data & Context en ch25:334, Capability & Integration en registry/components.yaml:101. Se sigue ch25.",
-        "Planos de CMP-027..029 solo en ch40:855, ch41:835 y ch42:879."
+        "CredentialBroker: Capability & Integration en ch25:334, igual que CH-16 y el registro",
+        "Planos de CMP-027..029 también en CH-25 (ch25:388-390)"
       ]
     }
   ]
